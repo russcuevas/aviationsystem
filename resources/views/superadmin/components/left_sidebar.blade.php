@@ -10,11 +10,11 @@
     <div style="overflow-y:auto; flex:1; padding-bottom:10px;">
         <div class="nav-section-label">Main Menu</div>
         <nav class="nav flex-column px-0" style="gap:2px;">
-            <a class="nav-link active" href="index.html">
+            <a class="nav-link active" href="{{ route('superadmin.dashboard.page') }}">
                 <i class="bi bi-grid-1x2-fill nav-icon"></i>
                 <span>Overview</span>
             </a>
-            <a class="nav-link" href="flying_schools.html">
+            <a class="nav-link" href="{{ route('superadmin.flight.school.page') }}">
                 <i class="bi bi-airplane-engines nav-icon"></i>
                 <span>Flying Schools</span>
             </a>

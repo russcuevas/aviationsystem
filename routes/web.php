@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\auth\AuthController;
 use App\Http\Controllers\superadmin\SuperadminDashboardController;
+use App\Http\Controllers\superadmin\SuperadminFlightSchoolController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,3 +26,5 @@ Route::get('/login', [AuthController::class, 'LoginPage'])->name('auth.login.pag
 
 // SUPERADMIN ROUTES
 Route::get('/superadmin/dashboard', [SuperadminDashboardController::class, 'SuperadminDashboardPage'])->name('superadmin.dashboard.page');
+
+Route::get('/superadmin/flight-school', [SuperadminFlightSchoolController::class, 'SuperadminFlightSchoolPage'])->name('superadmin.flight.school.page');
