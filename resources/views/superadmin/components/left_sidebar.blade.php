@@ -18,23 +18,23 @@
                 <i class="bi bi-airplane-engines nav-icon"></i>
                 <span>Flying Schools</span>
             </a>
-            <a class="nav-link" href="students.html">
+            <a class="nav-link" href="{{ route('superadmin.student.page') }}">
                 <i class="bi bi-people nav-icon"></i>
                 <span>Students</span>
             </a>
-            <a class="nav-link" href="instructors.html">
+            <a class="nav-link" href="{{ route('superadmin.instructor.page') }}">
                 <i class="bi bi-person-badge nav-icon"></i>
                 <span>Instructors</span>
             </a>
-            <a class="nav-link" href="aircraft.html">
+            <a class="nav-link" href="{{ route('superadmin.aircraft.page') }}">
                 <i class="bi bi-airplane nav-icon"></i>
                 <span>Aircraft</span>
             </a>
-            <a class="nav-link" href="flight_hours.html">
+            <a class="nav-link" href="{{ route('superadmin.flight.hours.page') }}">
                 <i class="bi bi-stopwatch nav-icon"></i>
                 <span>Flight Hours</span>
             </a>
-            <a class="nav-link" href="grade_sheets.html">
+            <a class="nav-link" href="{{ route('superadmin.grade.sheets.page') }}">
                 <i class="bi bi-journal-text nav-icon"></i>
                 <span>Grade Sheets</span>
             </a>

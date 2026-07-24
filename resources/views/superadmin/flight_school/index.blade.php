@@ -27,13 +27,13 @@
 
         <!-- Page Header -->
         <div class="page-header">
-            <h2>Flight Schools</h2>
+            <h2>Training Provider</h2>
             <p>Regulatory oversight for accredited schools.</p>
             <div class="page-breadcrumb">
                 <i class="bi bi-grid-1x2-fill"></i>
                 Overview
                 <i class="bi bi-chevron-right"></i>
-                <span>Flying Schools</span>
+                <span>Training Provider</span>
             </div>
         </div>
 
@@ -41,12 +41,12 @@
         <div class="panel">
             <div class="panel-header">
                 <div>
-                    <p class="panel-title">School Registry</p>
+                    <p class="panel-title">Provider Registry</p>
                     <p class="panel-subtitle">Search and sort accredited records.</p>
                 </div>
                 <button class="btn-add-form" type="button" data-bs-toggle="modal" data-bs-target="#addSchoolModal">
                     <i class="bi bi-plus-lg"></i>
-                    Add School
+                    Add Provider
                 </button>
             </div>
 
@@ -55,7 +55,7 @@
                     <thead>
                         <tr>
                             <th>Code</th>
-                            <th>School name</th>
+                            <th>Provider name</th>
                             <th class="progress-cell">Address</th>
                             <th>Email</th>
                             <th>Accreditation Course</th>
@@ -153,8 +153,8 @@
 
                             <div class="col-md-6">
                                 <label for="atoc_attachment" class="form-label">ATOC Attachment</label>
-                                <input type="file" class="form-control" id="atoc_attachment" name="atoc_attachment"
-                                    required>
+                                <input type="file" class="form-control" id="atoc_attachment"
+                                    name="atoc_attachment" required>
                             </div>
 
                         </div>

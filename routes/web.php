@@ -1,8 +1,13 @@
 <?php
 
 use App\Http\Controllers\auth\AuthController;
+use App\Http\Controllers\superadmin\SuperadminAircraftController;
 use App\Http\Controllers\superadmin\SuperadminDashboardController;
+use App\Http\Controllers\superadmin\SuperadminFlightHoursController;
 use App\Http\Controllers\superadmin\SuperadminFlightSchoolController;
+use App\Http\Controllers\superadmin\SuperadminGradeSheetsController;
+use App\Http\Controllers\superadmin\SuperadminInstructorController;
+use App\Http\Controllers\superadmin\SuperadminStudentController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,3 +33,13 @@ Route::get('/login', [AuthController::class, 'LoginPage'])->name('auth.login.pag
 Route::get('/superadmin/dashboard', [SuperadminDashboardController::class, 'SuperadminDashboardPage'])->name('superadmin.dashboard.page');
 
 Route::get('/superadmin/flight-school', [SuperadminFlightSchoolController::class, 'SuperadminFlightSchoolPage'])->name('superadmin.flight.school.page');
+
+Route::get('/superadmin/students', [SuperadminStudentController::class, 'SuperadminStudentPage'])->name('superadmin.student.page');
+
+Route::get('/superadmin/instructors', [SuperadminInstructorController::class, 'SuperadminInstructorPage'])->name('superadmin.instructor.page');
+
+Route::get('/superadmin/aircraft', [SuperadminAircraftController::class, 'SuperadminAircraftPage'])->name('superadmin.aircraft.page');
+
+Route::get('/superadmin/flight-hours', [SuperadminFlightHoursController::class, 'SuperadminFlightHoursPage'])->name('superadmin.flight.hours.page');
+
+Route::get('/superadmin/grade-sheets', [SuperadminGradeSheetsController::class, 'SuperadminGradeSheetsPage'])->name('superadmin.grade.sheets.page');
