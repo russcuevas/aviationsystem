@@ -47,7 +47,7 @@
                 <table class="data-table" id="reportsTable">
                     <thead>
                         <tr>
-                            <th>School</th>
+                            <th>Training Provider</th>
                             <th>Total Students</th>
                             <th>Completed</th>
                             <th>Completion Rate</th>
@@ -83,8 +83,8 @@
                     <thead>
                         <tr>
                             <th>Student</th>
-                            <th>School</th>
-                            <th>Modules</th>
+                            <th>Training Provider</th>
+                            <th>Last Lesson</th>
                             <th>Flight Hours</th>
                             <th>Grade</th>
                             <th>Status</th>
@@ -95,21 +95,13 @@
                         <tr>
                             <td>Juan Dela Cruz</td>
                             <td>PhilSCA Villamor</td>
-                            <td>8 / 10</td>
-                            <td>176 / 250 hrs</td>
+                            <td></td>
+                            <td></td>
                             <td>A-</td>
                             <td><span class="school-status status-active">Active</span></td>
                             <td><span class="school-status status-available">On Track</span></td>
                         </tr>
-                        <tr>
-                            <td>Carlos Santos</td>
-                            <td>PhilSCA Villamor</td>
-                            <td>9 / 10</td>
-                            <td>232 / 250 hrs</td>
-                            <td>A</td>
-                            <td><span class="school-status status-active">Active</span></td>
-                            <td><span class="school-status status-active">Near Completion</span></td>
-                        </tr>
+
                     </tbody>
                 </table>
             </div>

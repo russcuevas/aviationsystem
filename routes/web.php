@@ -35,6 +35,10 @@ Route::get('/login', [AuthController::class, 'LoginPage'])->name('auth.login.pag
 Route::get('/superadmin/dashboard', [SuperadminDashboardController::class, 'SuperadminDashboardPage'])->name('superadmin.dashboard.page');
 
 Route::get('/superadmin/flight-school', [SuperadminFlightSchoolController::class, 'SuperadminFlightSchoolPage'])->name('superadmin.flight.school.page');
+Route::post('/superadmin/flight-school', [SuperadminFlightSchoolController::class, 'store'])->name('superadmin.flight.school.store');
+Route::get('/superadmin/flight-school/{id}', [SuperadminFlightSchoolController::class, 'show'])->name('superadmin.flight.school.show');
+Route::post('/superadmin/flight-school/{id}/update', [SuperadminFlightSchoolController::class, 'update'])->name('superadmin.flight.school.update');
+Route::delete('/superadmin/flight-school/{id}', [SuperadminFlightSchoolController::class, 'destroy'])->name('superadmin.flight.school.destroy');
 
 Route::get('/superadmin/students', [SuperadminStudentController::class, 'SuperadminStudentPage'])->name('superadmin.student.page');
 
