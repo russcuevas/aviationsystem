@@ -16,6 +16,8 @@ use App\Http\Controllers\superadmin\SuperadminGradeSheetsController;
 use App\Http\Controllers\superadmin\SuperadminInstructorController;
 use App\Http\Controllers\superadmin\SuperadminReportsController;
 use App\Http\Controllers\superadmin\SuperadminStudentController;
+use App\Http\Controllers\instructor\InstructorDashboardController;
+use App\Http\Controllers\instructor\InstructorSchedulingController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -85,4 +87,11 @@ Route::middleware(['admin.auth'])->group(function () {
     Route::get('/admin/flight-hours', [AdminFlightHoursController::class, 'AdminFlightHoursPage'])->name('admin.flight.hours.page');
 
     Route::get('/admin/grade-sheets', [AdminGradeSheetsController::class, 'AdminGradeSheetsPage'])->name('admin.grade.sheets.page');
+});
+
+// INSTRUCTOR ROUTES
+Route::middleware(['instructor.auth'])->group(function () {
+    Route::get('/instructor/dashboard', [InstructorDashboardController::class, 'InstructorDashboardPage'])->name('instructor.dashboard.page');
+
+    Route::get('/instructor/scheduling', [InstructorSchedulingController::class, 'InstructorSchedulingPage'])->name('instructor.scheduling.page');
 });
