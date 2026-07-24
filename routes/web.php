@@ -1,7 +1,11 @@
 <?php
 
+use App\Http\Controllers\admin\AdminAircraftLogbooksController;
 use App\Http\Controllers\admin\AdminDashboardController;
+use App\Http\Controllers\admin\AdminFlightHoursController;
+use App\Http\Controllers\admin\AdminGradeSheetsController;
 use App\Http\Controllers\admin\AdminSchedulingController;
+use App\Http\Controllers\admin\AdminStudentProgressController;
 use App\Http\Controllers\auth\AuthController;
 use App\Http\Controllers\superadmin\SuperadminAircraftController;
 use App\Http\Controllers\superadmin\SuperadminAircraftLogBooksController;
@@ -73,4 +77,12 @@ Route::middleware(['admin.auth'])->group(function () {
     Route::post('/admin/scheduling', [AdminSchedulingController::class, 'store'])->name('admin.scheduling.store');
     Route::post('/admin/scheduling/{id}/update', [AdminSchedulingController::class, 'update'])->name('admin.scheduling.update');
     Route::delete('/admin/scheduling/{id}', [AdminSchedulingController::class, 'destroy'])->name('admin.scheduling.destroy');
+
+    Route::get('/admin/aircraft-logbooks', [AdminAircraftLogbooksController::class, 'AdminAirCraftLogbooksPage'])->name('admin.aircraft.logbooks.page');
+
+    Route::get('/admin/student-progress', [AdminStudentProgressController::class, 'AdminStudentProgressPage'])->name('admin.student.progress.page');
+
+    Route::get('/admin/flight-hours', [AdminFlightHoursController::class, 'AdminFlightHoursPage'])->name('admin.flight.hours.page');
+
+    Route::get('/admin/grade-sheets', [AdminGradeSheetsController::class, 'AdminGradeSheetsPage'])->name('admin.grade.sheets.page');
 });
