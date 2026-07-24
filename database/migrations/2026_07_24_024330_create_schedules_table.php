@@ -17,6 +17,7 @@ return new class extends Migration
             $table->time('start_time');
             $table->time('end_time');
             $table->foreignId('student_id')->constrained('students')->onDelete('cascade');
+            $table->foreignId('stage_id')->constrained('students_staging')->onDelete('cascade');
             $table->foreignId('instructor_id')->constrained('instructors')->onDelete('cascade');
             $table->foreignId('aircraft_id')->constrained('aircrafts')->onDelete('cascade');
             $table->string('lesson_type');

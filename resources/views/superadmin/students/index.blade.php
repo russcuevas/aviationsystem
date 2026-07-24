@@ -4,7 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>NAAP</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
@@ -75,15 +74,15 @@
     <!-- ================= TOPBAR ================= -->
     @include('superadmin.components.topbar')
 
-    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• MAIN CONTENT â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+    <!-- ─── MAIN CONTENT ─── -->
     <main class="main-content">
 
         <!-- Page Header -->
         <div class="page-header">
             <h2>Students</h2>
-            <p>Manage student records and progress.</p>
+            <p>Manage student pilot records, course registrations, and stages progress.</p>
             <div class="page-breadcrumb">
-                <i class="bi bi-grid-1x2-fill"></i>
+                <i class="bi bi-mortarboard-fill"></i>
                 Overview
                 <i class="bi bi-chevron-right"></i>
                 <span>Students</span>
@@ -112,7 +111,7 @@
             </div>
         @endif
 
-        <!-- â”€â”€ Recent Training Progress Table â”€â”€ -->
+        <!-- Recent Table Panel -->
         <div class="panel">
             <div class="panel-header">
                 <div>
@@ -126,15 +125,15 @@
             </div>
 
             <div style="overflow-x:auto;">
-                <table class="data-table students-table" id="trainingTable">
+                <table class="data-table" id="trainingTable">
                     <thead>
                         <tr>
                             <th>Student ID</th>
-                            <th>Name</th>
-                            <th class="progress-cell">Email</th>
-                            <th>Provider</th>
-                            <th>Stage</th>
-                            <th>Hours</th>
+                            <th>Full Name</th>
+                            <th>Email</th>
+                            <th>Training Provider</th>
+                            <th>Active Stages</th>
+                            <th>Required Hours</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -143,8 +142,7 @@
                             <tr data-id="{{ $student->id }}">
                                 <td>
                                     <div class="school-code-wrap">
-                                        <span
-                                            class="school-code">STU-{{ date('Y', strtotime($student->created_at)) }}-{{ sprintf('%03d', $student->id) }}</span>
+                                        <span class="school-code">STU-{{ date('Y', strtotime($student->created_at)) }}-{{ sprintf('%03d', $student->id) }}</span>
                                     </div>
                                 </td>
                                 <td>{{ $student->first_name }}
@@ -158,8 +156,21 @@
                                         {{ $student->provider_name }}
                                     </span>
                                 </td>
-                                <td>{{ $student->stage }}</td>
-                                <td>{{ $student->required_hours }} hrs</td>
+                                <td>
+                                    @foreach($student->stages as $stg)
+                                        <div class="mb-1">
+                                            <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle" style="font-size: 0.72rem;">
+                                                {{ $stg->stage }} 
+                                                <span class="badge bg-primary ms-1" style="font-size: 0.62rem; line-height: 1;">{{ $stg->status }}</span>
+                                            </span>
+                                        </div>
+                                    @endforeach
+                                </td>
+                                <td>
+                                    @foreach($student->stages as $stg)
+                                        <div class="mb-1" style="font-size: 0.82rem; font-weight: 500;">{{ $stg->required_hours }} hrs</div>
+                                    @endforeach
+                                </td>
                                 <td>
                                     <div class="d-flex gap-2">
                                         <button class="btn btn-sm btn-outline-primary btn-view-student"
@@ -170,8 +181,7 @@
                                             data-dob="{{ $student->date_of_birth }}"
                                             data-enrollment="{{ $student->enrollment_date }}"
                                             data-provider="{{ $student->provider_name }}"
-                                            data-stage="{{ $student->stage }}"
-                                            data-hours="{{ $student->required_hours }}"
+                                            data-stages="{{ json_encode($student->stages) }}"
                                             data-licenses="{{ json_encode($student->licenses) }}" title="View"><i
                                                 class="bi bi-eye"></i></button>
                                         <button class="btn btn-sm btn-outline-warning btn-edit-student"
@@ -182,8 +192,7 @@
                                             data-dob="{{ $student->date_of_birth }}"
                                             data-enrollment="{{ $student->enrollment_date }}"
                                             data-flying-id="{{ $student->flying_id }}"
-                                            data-stage="{{ $student->stage }}"
-                                            data-hours="{{ $student->required_hours }}"
+                                            data-stages="{{ json_encode($student->stages) }}"
                                             data-licenses="{{ json_encode($student->licenses) }}" title="Edit"><i
                                                 class="bi bi-pencil"></i></button>
                                         <button class="btn btn-sm btn-outline-danger btn-delete-student"
@@ -200,8 +209,8 @@
 
     </main>
 
-    <div class="modal fade" id="addStudentModal" tabindex="-1" aria-labelledby="addStudentModalLabel"
-        aria-hidden="true">
+    <!-- Add Student Modal -->
+    <div class="modal fade" id="addStudentModal" tabindex="-1" aria-labelledby="addStudentModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -262,36 +271,43 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-md-6">
-                                <label for="stage" class="form-label">Stage</label>
-                                <select class="form-select" id="stage" name="stage" required>
-                                    <option value="" selected disabled>Select stage</option>
-                                    <option value="PPL Ground">PPL Ground</option>
-                                    <option value="PPL Flight">PPL Flight</option>
-                                    <option value="CPL Ground">CPL Ground</option>
-                                    <option value="IR Ground">IR Ground</option>
-                                    <option value="IR Flight">IR Flight</option>
-                                    <option value="ME Ground">ME Ground</option>
-                                </select>
-                            </div>
 
-                            <div class="col-md-6">
-                                <label for="requiredHours" class="form-label">Required Hours</label>
-                                <input type="number" class="form-control" id="requiredHours" name="requiredHours"
-                                    min="1" required>
-                            </div>
-
-                            <!-- Licenses & Attachments Section -->
+                            <!-- Staging Configurations Section -->
                             <div class="col-12 mt-4">
-                                <div
-                                    class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom border-secondary-subtle">
+                                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom border-secondary-subtle">
                                     <h6 class="fw-bold mb-0 text-primary attachments-section-title">
-                                        <i class="bi bi-file-earmark-pdf-fill me-1"></i> Licenses & Document
-                                        Attachments
+                                        <i class="bi bi-graph-up-arrow me-1"></i> Staging Configurations (Bulk)
+                                    </h6>
+                                    <button type="button" class="btn btn-xs btn-primary d-flex align-items-center" id="addStageRowBtn">
+                                        <i class="bi bi-plus-lg me-1"></i> Add Stage
+                                    </button>
+                                </div>
+                                <div class="table-responsive border rounded bg-light-subtle p-2">
+                                    <table class="table table-sm table-hover align-middle mb-0 attachments-table" id="stagingTable" style="font-size: 0.85rem;">
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 45%;">Stage Name</th>
+                                                <th style="width: 25%;">Required Hours</th>
+                                                <th style="width: 25%;">Status</th>
+                                                <th style="width: 5%;" class="text-center">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="stagingTableBody">
+                                            <!-- Dynamically added staging rows appear here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Licenses & Documents Section -->
+                            <div class="col-12 mt-4">
+                                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom border-secondary-subtle">
+                                    <h6 class="fw-bold mb-0 text-primary attachments-section-title">
+                                        <i class="bi bi-file-earmark-pdf-fill me-1"></i> Student Licenses & Scanned Attachments
                                     </h6>
                                     <button type="button" class="btn btn-xs btn-primary d-flex align-items-center"
                                         id="addAttachmentRowBtn">
-                                        <i class="bi bi-plus-lg me-1"></i> Add Custom Document
+                                        <i class="bi bi-plus-lg me-1"></i> Add Document
                                     </button>
                                 </div>
                                 <div class="table-responsive border rounded bg-light-subtle p-2">
@@ -299,21 +315,17 @@
                                         id="attachmentsTable" style="font-size: 0.85rem;">
                                         <thead>
                                             <tr>
-                                                <th style="width: 30%;">License / Document Type</th>
-                                                <th style="width: 20%;">License/Doc No.</th>
+                                                <th style="width: 30%;">Document Type</th>
+                                                <th style="width: 20%;">Document No.</th>
                                                 <th style="width: 20%;">Expiration Date</th>
                                                 <th style="width: 25%;">Upload Attachment (Scanned)</th>
                                                 <th style="width: 5%;" class="text-center">Action</th>
                                             </tr>
                                         </thead>
                                         <tbody id="attachmentsTableBody">
-                                            <!-- Dynamically added rows will appear here -->
+                                            <!-- Dynamically added rows appear here -->
                                         </tbody>
                                     </table>
-                                </div>
-                                <div class="form-text mt-1 text-muted">
-                                    <i class="bi bi-info-circle-fill me-1"></i> Please specify the expiration date and
-                                    upload a scanned file (PDF, JPG, PNG) for each license.
                                 </div>
                             </div>
                         </div>
@@ -393,23 +405,53 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-md-6">
-                                <label for="editStage" class="form-label">Stage</label>
-                                <select class="form-select" id="editStage" name="stage" required>
-                                    <option value="" disabled>Select stage</option>
-                                    <option value="PPL Ground">PPL Ground</option>
-                                    <option value="PPL Flight">PPL Flight</option>
-                                    <option value="CPL Ground">CPL Ground</option>
-                                    <option value="IR Ground">IR Ground</option>
-                                    <option value="IR Flight">IR Flight</option>
-                                    <option value="ME Ground">ME Ground</option>
-                                </select>
+
+                            <!-- Current Stages Area -->
+                            <div class="col-12 mt-3">
+                                <label class="form-label fw-bold text-success"><i class="bi bi-graph-up-arrow me-1"></i> Current Stages</label>
+                                <div class="table-responsive border rounded bg-light-subtle p-2 mb-3">
+                                    <table class="table table-sm table-hover align-middle mb-0" id="editExistingStagesTable" style="font-size: 0.85rem;">
+                                        <thead>
+                                            <tr>
+                                                <th>Stage Name</th>
+                                                <th>Required Hours</th>
+                                                <th>Status</th>
+                                                <th class="text-center">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="editExistingStagesTableBody">
+                                            <!-- Existing stages populated in JS -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div id="deleted_stages_container"></div>
                             </div>
 
-                            <div class="col-md-6">
-                                <label for="editRequiredHours" class="form-label">Required Hours</label>
-                                <input type="number" class="form-control" id="editRequiredHours"
-                                    name="requiredHours" min="1" required>
+                            <!-- Add New Stages -->
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom border-secondary-subtle">
+                                    <h6 class="fw-bold mb-0 text-primary attachments-section-title">
+                                        <i class="bi bi-plus-lg me-1"></i> Add New Staging Configurations
+                                    </h6>
+                                    <button type="button" class="btn btn-xs btn-primary d-flex align-items-center" id="editAddStageRowBtn">
+                                        <i class="bi bi-plus-lg me-1"></i> Add Stage
+                                    </button>
+                                </div>
+                                <div class="table-responsive border rounded bg-light-subtle p-2">
+                                    <table class="table table-sm table-hover align-middle mb-0 attachments-table" id="editStagesTable" style="font-size: 0.85rem;">
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 45%;">Stage Name</th>
+                                                <th style="width: 25%;">Required Hours</th>
+                                                <th style="width: 25%;">Status</th>
+                                                <th style="width: 5%;" class="text-center">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="editStagesTableBody">
+                                            <!-- Dynamic new stages appended in JS -->
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
 
                             <!-- Current Documents Area -->
@@ -429,7 +471,7 @@
                                             </tr>
                                         </thead>
                                         <tbody id="editExistingLicensesTableBody">
-                                            <!-- Existing student documents populated in JS -->
+                                            <!-- Existing documents populated in JS -->
                                         </tbody>
                                     </table>
                                 </div>
@@ -441,12 +483,11 @@
                                 <div
                                     class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom border-secondary-subtle">
                                     <h6 class="fw-bold mb-0 text-primary attachments-section-title">
-                                        <i class="bi bi-file-earmark-plus-fill me-1"></i> Add New Licenses & Document
-                                        Attachments
+                                        <i class="bi bi-file-earmark-plus-fill me-1"></i> Add New Student Licenses & Document Attachments
                                     </h6>
                                     <button type="button" class="btn btn-xs btn-primary d-flex align-items-center"
                                         id="editAddAttachmentRowBtn">
-                                        <i class="bi bi-plus-lg me-1"></i> Add Custom Document
+                                        <i class="bi bi-plus-lg me-1"></i> Add Document
                                     </button>
                                 </div>
                                 <div class="table-responsive border rounded bg-light-subtle p-2">
@@ -454,8 +495,8 @@
                                         id="editAttachmentsTable" style="font-size: 0.85rem;">
                                         <thead>
                                             <tr>
-                                                <th style="width: 30%;">License / Document Type</th>
-                                                <th style="width: 20%;">License/Doc No.</th>
+                                                <th style="width: 30%;">Document Type</th>
+                                                <th style="width: 20%;">Document No.</th>
                                                 <th style="width: 20%;">Expiration Date</th>
                                                 <th style="width: 25%;">Upload Attachment (Scanned)</th>
                                                 <th style="width: 5%;" class="text-center">Action</th>
@@ -519,20 +560,15 @@
                             <label class="fw-bold text-muted small text-uppercase">Training Provider</label>
                             <div id="viewStudentProvider" class="fw-medium"></div>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="fw-bold text-muted small text-uppercase">Stage / Course</label>
-                            <div id="viewStudentStage" class="fw-medium"></div>
+                    </div>
+                    <div class="mb-3 border-top pt-3">
+                        <label class="fw-bold text-muted small text-uppercase mb-2">Staging Configurations & Progress</label>
+                        <div id="viewStudentStagesList" class="list-group">
+                            <!-- Populated in JS -->
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="fw-bold text-muted small text-uppercase">Required Hours</label>
-                            <div id="viewStudentHours" class="fw-medium"></div>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="fw-bold text-muted small text-uppercase mb-2">License & Document
-                            Attachments</label>
+                    <div class="mb-3 border-top pt-3">
+                        <label class="fw-bold text-muted small text-uppercase mb-2">License & Document Attachments</label>
                         <div id="viewStudentLicensesList" class="list-group">
                             <!-- Downloadable list populated in JS -->
                         </div>
@@ -572,7 +608,7 @@
             trainingDataTable = window.jQuery(trainingTableElement).DataTable({
                 pageLength: 10,
                 order: [
-                    [0, 'asc']
+                    [1, 'asc']
                 ],
                 autoWidth: false,
                 columnDefs: [{
@@ -586,29 +622,33 @@
         initTrainingDataTable();
 
         // --- ATTACHMENTS & LICENSES DYNAMIC UI ---
-        let addRowCounter = 0;
+        let rowCounter = 0;
         let editRowCounter = 0;
 
         function createAttachmentRow(type = '', number = '', expiry = '', formType = 'add') {
-            const counter = formType === 'add' ? ++addRowCounter : ++editRowCounter;
+            const counter = formType === 'add' ? ++rowCounter : ++editRowCounter;
             const inputPrefix = formType === 'add' ? 'attachments' : 'attachments';
             const rowId = `${formType}_row_${counter}`;
 
             const options = [{
-                    value: 'Medical Certificate',
-                    text: 'Medical Certificate'
+                    value: 'Student Pilot License (SPL)',
+                    text: 'Student Pilot License (SPL)'
                 },
                 {
-                    value: 'NTC License',
-                    text: 'NTC License'
+                    value: 'Private Pilot License (PPL)',
+                    text: 'Private Pilot License (PPL)'
                 },
                 {
-                    value: 'Pilot License',
-                    text: 'Pilot License'
+                    value: 'Commercial Pilot License (CPL)',
+                    text: 'Commercial Pilot License (CPL)'
                 },
                 {
-                    value: 'ELP Certificate',
-                    text: 'ELP Certificate'
+                    value: 'Medical Certificate (Class 1)',
+                    text: 'Medical Certificate (Class 1)'
+                },
+                {
+                    value: 'Medical Certificate (Class 2)',
+                    text: 'Medical Certificate (Class 2)'
                 },
                 {
                     value: 'Other',
@@ -656,7 +696,7 @@
                     ${customInputHtml}
                 </td>
                 <td>
-                    <input type="text" class="form-control form-control-sm" name="${inputPrefix}[${counter}][number]" placeholder="e.g. LIC-12345" value="${number}">
+                    <input type="text" class="form-control form-control-sm" name="${inputPrefix}[${counter}][number]" placeholder="e.g. SPL-12345" value="${number}">
                 </td>
                 <td>
                     <input type="date" class="form-control form-control-sm" name="${inputPrefix}[${counter}][expiration_date]" value="${expiry}">
@@ -678,41 +718,100 @@
             const tbody = document.getElementById('attachmentsTableBody');
             if (!tbody) return;
             tbody.innerHTML = '';
-            addRowCounter = 0;
+            rowCounter = 0;
 
             const defaultLicenses = [{
-                    type: 'Medical Certificate'
+                    type: 'Student Pilot License (SPL)'
                 },
                 {
-                    type: 'NTC License'
-                },
-                {
-                    type: 'Pilot License'
-                },
-                {
-                    type: 'ELP Certificate'
+                    type: 'Medical Certificate (Class 2)'
                 }
             ];
 
             defaultLicenses.forEach(license => {
                 const tr = createAttachmentRow(license.type, '', '', 'add');
-                // Make the file upload in default licenses optional on creation or keep required
-                // Let's keep it required so users actually upload them, or let's remove standard required if they can choose not to upload.
-                // Let's remove the required attribute for default rows to avoid blocking form submission if they don't have all files yet.
                 tr.querySelector('input[type="file"]').removeAttribute('required');
                 tbody.appendChild(tr);
             });
         }
 
+        // --- STAGING CONFIGURATIONS DYNAMIC UI ---
+        let stageRowCounter = 0;
+        let editStageRowCounter = 0;
+
+        function createStageRow(stage = '', hours = '', status = 'Active', formType = 'add') {
+            const counter = formType === 'add' ? ++stageRowCounter : ++editStageRowCounter;
+            const inputPrefix = formType === 'add' ? 'stages' : 'stages';
+            const rowId = `${formType}_stage_row_${counter}`;
+
+            const options = [
+                { value: 'PPL Ground', text: 'PPL Ground' },
+                { value: 'PPL Flight', text: 'PPL Flight' },
+                { value: 'CPL Ground', text: 'CPL Ground' },
+                { value: 'IR Ground', text: 'IR Ground' },
+                { value: 'IR Flight', text: 'IR Flight' },
+                { value: 'ME Ground', text: 'ME Ground' }
+            ];
+
+            let selectHtml = `<select class="form-select form-select-sm" name="${inputPrefix}[${counter}][stage]" required>`;
+            selectHtml += `<option value="" disabled ${stage === '' ? 'selected' : ''}>Select stage</option>`;
+            options.forEach(opt => {
+                selectHtml += `<option value="${opt.value}" ${stage === opt.value ? 'selected' : ''}>${opt.text}</option>`;
+            });
+            selectHtml += `</select>`;
+
+            const statusHtml = `
+                <select class="form-select form-select-sm" name="${inputPrefix}[${counter}][status]" required>
+                    <option value="In Progress" ${status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                    <option value="Completed" ${status === 'Completed' ? 'selected' : ''}>Completed</option>
+                </select>
+            `;
+
+            const tr = document.createElement('tr');
+            tr.id = rowId;
+            tr.innerHTML = `
+                <td>${selectHtml}</td>
+                <td>
+                    <input type="number" class="form-control form-control-sm" name="${inputPrefix}[${counter}][required_hours]" min="1" required value="${hours}">
+                </td>
+                <td>${statusHtml}</td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-stage-row-btn" data-row-id="${rowId}">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            `;
+
+            return tr;
+        }
+
+        function resetAddStagingTable() {
+            const tbody = document.getElementById('stagingTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            stageRowCounter = 0;
+
+            // Default starting stage configuration
+            tbody.appendChild(createStageRow('PPL Ground', '40', 'In Progress', 'add'));
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             resetAddAttachmentsTable();
+            resetAddStagingTable();
 
             const addBtn = document.getElementById('addAttachmentRowBtn');
             const editAddBtn = document.getElementById('editAddAttachmentRowBtn');
+            const addStageBtn = document.getElementById('addStageRowBtn');
+            const editAddStageBtn = document.getElementById('editAddStageRowBtn');
+
             const tbody = document.getElementById('attachmentsTableBody');
             const editTbody = document.getElementById('editAttachmentsTableBody');
+            const stagingTbody = document.getElementById('stagingTableBody');
+            const editStagingTbody = document.getElementById('editStagesTableBody');
+
             const form = document.getElementById('addStudentForm');
 
+            // Attach handlers
             if (addBtn && tbody) {
                 addBtn.addEventListener('click', function() {
                     tbody.appendChild(createAttachmentRow('', '', '', 'add'));
@@ -725,11 +824,24 @@
                 });
             }
 
-            // Document type change to show/hide custom name input helper
+            if (addStageBtn && stagingTbody) {
+                addStageBtn.addEventListener('click', function() {
+                    stagingTbody.appendChild(createStageRow('', '', 'Active', 'add'));
+                });
+            }
+
+            if (editAddStageBtn && editStagingTbody) {
+                editAddStageBtn.addEventListener('click', function() {
+                    editStagingTbody.appendChild(createStageRow('', '', 'Active', 'edit'));
+                });
+            }
+
+            // Custom type hide/show toggles
             function handleDocTypeChange(e) {
                 if (e.target.classList.contains('document-type-select')) {
                     const select = e.target;
-                    const customContainer = select.closest('td').querySelector('.custom-document-type-container');
+                    const customContainer = select.closest('td').querySelector(
+                        '.custom-document-type-container');
                     const customInput = customContainer.querySelector('.custom-document-type-input');
 
                     if (select.value === 'Other') {
@@ -744,9 +856,20 @@
                 }
             }
 
-            // Row removal helper
+            // Removing lines handlers
             function handleRowRemoval(e) {
                 const btn = e.target.closest('.remove-row-btn');
+                if (btn) {
+                    const rowId = btn.getAttribute('data-row-id');
+                    const row = document.getElementById(rowId);
+                    if (row) {
+                        row.remove();
+                    }
+                }
+            }
+
+            function handleStageRowRemoval(e) {
+                const btn = e.target.closest('.remove-stage-row-btn');
                 if (btn) {
                     const rowId = btn.getAttribute('data-row-id');
                     const row = document.getElementById(rowId);
@@ -766,9 +889,18 @@
                 editTbody.addEventListener('click', handleRowRemoval);
             }
 
+            if (stagingTbody) {
+                stagingTbody.addEventListener('click', handleStageRowRemoval);
+            }
+
+            if (editStagingTbody) {
+                editStagingTbody.addEventListener('click', handleStageRowRemoval);
+            }
+
             if (form) {
                 form.addEventListener('reset', function() {
                     setTimeout(resetAddAttachmentsTable, 0);
+                    setTimeout(resetAddStagingTable, 0);
                 });
             }
         });
@@ -784,8 +916,31 @@
             $('#viewStudentDob').text(btn.data('dob'));
             $('#viewStudentEnrollment').text(btn.data('enrollment'));
             $('#viewStudentProvider').text(btn.data('provider'));
-            $('#viewStudentStage').text(btn.data('stage'));
-            $('#viewStudentHours').text(btn.data('hours') + ' hrs');
+
+            // Populate stages list
+            const stagesList = $('#viewStudentStagesList');
+            stagesList.empty();
+
+            let stages = [];
+            try {
+                stages = btn.data('stages');
+            } catch(e) {}
+
+            if (stages && stages.length > 0) {
+                stages.forEach(stg => {
+                    stagesList.append(`
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-0 fw-semibold">${stg.stage}</h6>
+                                <p class="mb-0 text-muted small">Required Hours: ${stg.required_hours} hrs</p>
+                            </div>
+                            <span class="badge bg-primary rounded-pill px-3">${stg.status}</span>
+                        </div>
+                    `);
+                });
+            } else {
+                stagesList.append('<div class="text-muted small py-2">No stages configurations found.</div>');
+            }
 
             const licensesList = $('#viewStudentLicensesList');
             licensesList.empty();
@@ -820,6 +975,7 @@
 
         // ================= EDIT STUDENT DETAILS =================
         let deletedLicenses = [];
+        let deletedStages = [];
 
         $(document).on('click', '.btn-edit-student', function() {
             const btn = $(this);
@@ -838,14 +994,67 @@
             $('#editDateOfBirth').val(btn.data('dob'));
             $('#editEnrollmentDate').val(btn.data('enrollment'));
             $('#editFlyingSchool').val(btn.data('flying-id'));
-            $('#editStage').val(btn.data('stage'));
-            $('#editRequiredHours').val(btn.data('hours'));
 
-            // Clear new attachments rows and deleted files array
+            // Clear arrays and dynamic table containers
             editRowCounter = 0;
+            editStageRowCounter = 0;
             deletedLicenses = [];
+            deletedStages = [];
+            
+            $('#editStagesTableBody').empty();
             $('#editAttachmentsTableBody').empty();
+            
             $('#deleted_licenses_container').empty();
+            $('#deleted_stages_container').empty();
+
+            // Populate existing staging records
+            const existingStagesTbody = $('#editExistingStagesTableBody');
+            existingStagesTbody.empty();
+
+            let stages = [];
+            try {
+                stages = btn.data('stages');
+            } catch(e) {}
+
+            if (stages && stages.length > 0) {
+                stages.forEach((stg, index) => {
+                    const options = [
+                        'PPL Ground', 'PPL Flight', 'CPL Ground', 'IR Ground', 'IR Flight', 'ME Ground'
+                    ];
+                    let selectHtml = `<select class="form-select form-select-sm" name="existing_stages[${index}][stage]" required>`;
+                    options.forEach(opt => {
+                        selectHtml += `<option value="${opt}" ${stg.stage === opt ? 'selected' : ''}>${opt}</option>`;
+                    });
+                    selectHtml += `</select>`;
+
+                    const statusHtml = `
+                        <select class="form-select form-select-sm" name="existing_stages[${index}][status]" required>
+                            <option value="In Progress" ${stg.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                            <option value="Completed" ${stg.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                        </select>
+                    `;
+
+                    existingStagesTbody.append(`
+                        <tr data-stage-id="${stg.id}">
+                            <td>
+                                <input type="hidden" name="existing_stages[${index}][id]" value="${stg.id}">
+                                ${selectHtml}
+                            </td>
+                            <td>
+                                <input type="number" class="form-control form-control-sm" name="existing_stages[${index}][required_hours]" min="1" required value="${stg.required_hours}">
+                            </td>
+                            <td>${statusHtml}</td>
+                            <td class="text-center">
+                                <button type="button" class="btn btn-sm btn-outline-danger btn-remove-existing-stage" data-stage-id="${stg.id}">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `);
+                });
+            } else {
+                existingStagesTbody.append('<tr><td colspan="4" class="text-center text-muted py-2">No stages found.</td></tr>');
+            }
 
             // Populate existing licenses
             const existingTbody = $('#editExistingLicensesTableBody');
@@ -883,6 +1092,23 @@
             }
 
             $('#editStudentModal').modal('show');
+        });
+
+        // Handle existing stage removal inside Edit modal
+        $(document).on('click', '.btn-remove-existing-stage', function() {
+            const btn = $(this);
+            const stageId = btn.data('stage-id');
+            deletedStages.push(stageId);
+
+            $('#deleted_stages_container').append(`
+                <input type="hidden" name="deleted_stages[]" value="${stageId}">
+            `);
+
+            btn.closest('tr').remove();
+
+            if ($('#editExistingStagesTableBody').children().length === 0) {
+                $('#editExistingStagesTableBody').append('<tr><td colspan="4" class="text-center text-muted py-2">No stages found.</td></tr>');
+            }
         });
 
         // Handle existing license removal inside Edit modal

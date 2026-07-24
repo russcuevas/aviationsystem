@@ -20,9 +20,7 @@ class Student extends Model
         'phone',
         'date_of_birth',
         'enrollment_date',
-        'flying_id',
-        'stage',
-        'required_hours'
+        'flying_id'
     ];
 
     protected $casts = [

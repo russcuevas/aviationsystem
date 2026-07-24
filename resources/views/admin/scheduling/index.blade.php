@@ -44,7 +44,7 @@
             <h2>Scheduling Management</h2>
             <p>Assign schedules and detect conflicts for students, instructors, and aircraft.</p>
             <div class="page-breadcrumb"><i class="bi bi-grid-1x2-fill"></i>Overview<i
-                    class="bi bi-chevron-right"></i><span>Scheduling</span></div>
+                    class="bi bi-chevron-right"></i><span>Overview</span></div>
         </div>
 
         @if (session('success'))
@@ -86,10 +86,11 @@
                         <tr>
                             <th>Date</th>
                             <th>Student</th>
+                            <th>Stage</th>
+                            <th>Lesson Type</th>
                             <th>Instructor</th>
                             <th>Aircraft</th>
                             <th>Time Slot</th>
-                            <th>Lesson Type</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -100,13 +101,21 @@
                                 <td data-order="{{ $schedule->date }}">{{ date('M j, Y', strtotime($schedule->date)) }}
                                 </td>
                                 <td>{{ $schedule->student_name }}</td>
+                                <td>
+                                    <span
+                                        class="badge bg-secondary-subtle text-secondary border border-secondary-subtle"
+                                        style="font-size: 0.72rem;">
+                                        {{ $schedule->stage_name }}
+                                    </span>
+                                </td>
+                                <td>{{ $schedule->lesson_type }}</td>
+
                                 <td>{{ $schedule->instructor_name }}</td>
                                 <td>
                                     <span class="school-code">{{ $schedule->aircraft_reg }}</span>
                                 </td>
                                 <td>{{ date('h:i A', strtotime($schedule->start_time)) }} <br> to <br>
                                     {{ date('h:i A', strtotime($schedule->end_time)) }}</td>
-                                <td>{{ $schedule->lesson_type }}</td>
                                 <td>
                                     <span
                                         class="school-status status-{{ strtolower($schedule->status) }}">{{ $schedule->status }}</span>
@@ -118,6 +127,7 @@
                                             data-start="{{ $schedule->start_time }}"
                                             data-end="{{ $schedule->end_time }}"
                                             data-student-id="{{ $schedule->student_id }}"
+                                            data-stage-id="{{ $schedule->stage_id }}"
                                             data-instructor-id="{{ $schedule->instructor_id }}"
                                             data-aircraft-id="{{ $schedule->aircraft_id }}"
                                             data-lesson-type="{{ $schedule->lesson_type }}"
@@ -166,18 +176,28 @@
                                     required>
                             </div>
 
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <label for="scheduleStudent" class="form-label">Student</label>
                                 <select class="form-select" id="scheduleStudent" name="scheduleStudent" required>
                                     <option value="" selected disabled>Select student</option>
                                     @foreach ($students as $student)
-                                        <option value="{{ $student->id }}">{{ $student->first_name }}
+                                        <option value="{{ $student->id }}"
+                                            data-stages="{{ json_encode($student->stages) }}">
+                                            {{ $student->first_name }}
                                             {{ $student->middle_name ? $student->middle_name . ' ' : '' }}{{ $student->last_name }}
                                         </option>
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
+                                <label for="scheduleStage" class="form-label">Stage</label>
+                                <select class="form-select" id="scheduleStage" name="scheduleStage" required
+                                    disabled>
+                                    <option value="" selected disabled>Select student first</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
                                 <label for="scheduleInstructor" class="form-label">Instructor</label>
                                 <select class="form-select" id="scheduleInstructor" name="scheduleInstructor"
                                     required>
@@ -189,13 +209,14 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <label for="scheduleAircraft" class="form-label">Aircraft</label>
                                 <select class="form-select" id="scheduleAircraft" name="scheduleAircraft" required>
                                     <option value="" selected disabled>Select aircraft</option>
                                     @foreach ($aircrafts as $aircraft)
                                         <option value="{{ $aircraft->id }}">{{ $aircraft->registration }}
-                                            ({{ $aircraft->model }})</option>
+                                            ({{ $aircraft->model }})
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
@@ -252,18 +273,28 @@
                                     required>
                             </div>
 
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <label for="editScheduleStudent" class="form-label">Student</label>
                                 <select class="form-select" id="editScheduleStudent" name="scheduleStudent" required>
                                     <option value="" disabled>Select student</option>
                                     @foreach ($students as $student)
-                                        <option value="{{ $student->id }}">{{ $student->first_name }}
+                                        <option value="{{ $student->id }}"
+                                            data-stages="{{ json_encode($student->stages) }}">
+                                            {{ $student->first_name }}
                                             {{ $student->middle_name ? $student->middle_name . ' ' : '' }}{{ $student->last_name }}
                                         </option>
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
+                                <label for="editScheduleStage" class="form-label">Stage</label>
+                                <select class="form-select" id="editScheduleStage" name="scheduleStage" required
+                                    disabled>
+                                    <option value="" disabled>Select student first</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
                                 <label for="editScheduleInstructor" class="form-label">Instructor</label>
                                 <select class="form-select" id="editScheduleInstructor" name="scheduleInstructor"
                                     required>
@@ -275,14 +306,15 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <label for="editScheduleAircraft" class="form-label">Aircraft</label>
                                 <select class="form-select" id="editScheduleAircraft" name="scheduleAircraft"
                                     required>
                                     <option value="" disabled>Select aircraft</option>
                                     @foreach ($aircrafts as $aircraft)
                                         <option value="{{ $aircraft->id }}">{{ $aircraft->registration }}
-                                            ({{ $aircraft->model }})</option>
+                                            ({{ $aircraft->model }})
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
@@ -341,12 +373,59 @@
                 ],
                 autoWidth: false,
                 columnDefs: [{
-                    targets: [7],
+                    targets: [8],
                     orderable: false,
                     searchable: false
                 }],
             });
         }
+
+        // --- STUDENT SELECTION STAGES POPULATION (ADD MODAL) ---
+        $('#scheduleStudent').on('change', function() {
+            const selectedOption = $(this).find('option:selected');
+            let stages = [];
+            try {
+                stages = selectedOption.data('stages');
+            } catch (e) {}
+
+            const stageSelect = $('#scheduleStage');
+            stageSelect.empty();
+
+            if (stages && stages.length > 0) {
+                stageSelect.prop('disabled', false);
+                stageSelect.append('<option value="" selected disabled>Select stage</option>');
+                stages.forEach(stg => {
+                    stageSelect.append(`<option value="${stg.id}">${stg.stage} (${stg.status})</option>`);
+                });
+            } else {
+                stageSelect.prop('disabled', true);
+                stageSelect.append(
+                    '<option value="" selected disabled>No stages configured for this student</option>');
+            }
+        });
+
+        // --- STUDENT SELECTION STAGES POPULATION (EDIT MODAL) ---
+        $('#editScheduleStudent').on('change', function() {
+            const selectedOption = $(this).find('option:selected');
+            let stages = [];
+            try {
+                stages = selectedOption.data('stages');
+            } catch (e) {}
+
+            const stageSelect = $('#editScheduleStage');
+            stageSelect.empty();
+
+            if (stages && stages.length > 0) {
+                stageSelect.prop('disabled', false);
+                stageSelect.append('<option value="" disabled>Select stage</option>');
+                stages.forEach(stg => {
+                    stageSelect.append(`<option value="${stg.id}">${stg.stage} (${stg.status})</option>`);
+                });
+            } else {
+                stageSelect.prop('disabled', true);
+                stageSelect.append('<option value="" disabled>No stages configured for this student</option>');
+            }
+        });
 
         // --- EDIT BUTTON HANDLER ---
         $(document).on('click', '.btn-edit-schedule', function() {
@@ -361,7 +440,14 @@
             $('#editScheduleDate').val(btn.data('date'));
             $('#editScheduleStart').val(startTime);
             $('#editScheduleEnd').val(endTime);
-            $('#editScheduleStudent').val(btn.data('student-id'));
+
+            // Set student and trigger change event to populate stages
+            const studentId = btn.data('student-id');
+            $('#editScheduleStudent').val(studentId).trigger('change');
+
+            // Set stage value
+            $('#editScheduleStage').val(btn.data('stage-id'));
+
             $('#editScheduleInstructor').val(btn.data('instructor-id'));
             $('#editScheduleAircraft').val(btn.data('aircraft-id'));
             $('#editLessonType').val(btn.data('lesson-type'));

@@ -12,6 +12,22 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Seed Training Provider
+        $providerId = \Illuminate\Support\Facades\DB::table('training_providers')->updateOrInsert(
+            ['email' => 'naap@gmail.com'],
+            [
+                'id' => 3,
+                'name' => 'NAAP',
+                'code' => 'NAAP-01',
+                'address' => 'Piccio Garden',
+                'phone' => '09495748301',
+                'accreditation_course' => 'PPL',
+                'atoc_attachment' => '[]',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        );
+
         // Seed SuperAdmin
         \Illuminate\Support\Facades\DB::table('super_admins')->updateOrInsert(
             ['email' => 'superadmin@naap.com'],
@@ -26,20 +42,17 @@ class DatabaseSeeder extends Seeder
         );
 
         // Seed Admin (referencing training provider id 3)
-        $provider = \Illuminate\Support\Facades\DB::table('training_providers')->first();
-        if ($provider) {
-            \Illuminate\Support\Facades\DB::table('admins')->updateOrInsert(
-                ['email' => 'admin@naap.com'],
-                [
-                    'first_name' => 'Russel',
-                    'middle_name' => 'S',
-                    'last_name' => 'Admin',
-                    'flight_id' => $provider->id,
-                    'password' => \Illuminate\Support\Facades\Hash::make('123456789'),
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]
-            );
-        }
+        \Illuminate\Support\Facades\DB::table('admins')->updateOrInsert(
+            ['email' => 'admin@naap.com'],
+            [
+                'first_name' => 'Russel',
+                'middle_name' => 'S',
+                'last_name' => 'Admin',
+                'flight_id' => 3,
+                'password' => \Illuminate\Support\Facades\Hash::make('123456789'),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        );
     }
 }

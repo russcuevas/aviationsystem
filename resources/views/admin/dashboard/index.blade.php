@@ -35,7 +35,7 @@
                 <div class="stat-card">
                     <div class="stat-icon green"><i class="bi bi-mortarboard"></i></div>
                     <div class="stat-body">
-                        <div class="stat-value">1,240</div>
+                        <div class="stat-value">{{ number_format($studentsCount) }}</div>
                         <div class="stat-label">Students</div>
                     </div>
                 </div>
@@ -44,7 +44,7 @@
                 <div class="stat-card">
                     <div class="stat-icon purple"><i class="bi bi-person-video3"></i></div>
                     <div class="stat-body">
-                        <div class="stat-value">84</div>
+                        <div class="stat-value">{{ number_format($instructorsCount) }}</div>
                         <div class="stat-label">Instructors</div>
                     </div>
                 </div>
@@ -53,7 +53,7 @@
                 <div class="stat-card">
                     <div class="stat-icon amber"><i class="bi bi-airplane"></i></div>
                     <div class="stat-body">
-                        <div class="stat-value">15</div>
+                        <div class="stat-value">{{ number_format($aircraftsCount) }}</div>
                         <div class="stat-label">Aircraft</div>
                     </div>
                 </div>
@@ -62,7 +62,7 @@
                 <div class="stat-card">
                     <div class="stat-icon amber"><i class="bi bi-stopwatch"></i></div>
                     <div class="stat-body">
-                        <div class="stat-value">42</div>
+                        <div class="stat-value">{{ number_format($todaysFlightsCount) }}</div>
                         <div class="stat-label">Today's Flight</div>
                     </div>
                 </div>
@@ -107,28 +107,78 @@
     <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
     <script src="{{ asset('script.js') }}"></script>
     <script>
-        const trainingTableElement = document.getElementById('trainingTable');
-        let trainingDataTable;
-
-        function initTrainingDataTable() {
-            if (!trainingTableElement || !window.jQuery || !window.jQuery.fn.DataTable) {
+        // Redefine renderCharts to use dynamic database data
+        window.renderCharts = function() {
+            if (typeof Chart === 'undefined') {
                 return;
             }
 
-            if (trainingDataTable) {
-                trainingDataTable.destroy();
+            destroyCharts();
+            const colors = getThemeChartColors();
+
+            const ctxStage = document.getElementById('trainingStageChart');
+            const ctxAircraft = document.getElementById('flightHoursChart');
+
+            // --- UPCOMING SCHEDULES BY LESSON TYPE CHART ---
+            const scheduleLabels = {!! json_encode(array_column($schedulesStats, 'lesson_type')) !!};
+            const scheduleCounts = {!! json_encode(array_column($schedulesStats, 'count')) !!};
+
+            if (ctxStage) {
+                charts.push(new Chart(ctxStage, {
+                    type: 'bar',
+                    data: {
+                        labels: scheduleLabels.length ? scheduleLabels : ['Cross-Country', 'Solo Flying'],
+                        datasets: [{
+                            label: 'Number of Students',
+                            data: scheduleCounts.length ? scheduleCounts : [0, 0],
+                            backgroundColor: colors.cobalt,
+                            borderRadius: 8,
+                            borderSkipped: false,
+                            maxBarThickness: 44
+                        }]
+                    },
+                    options: {
+                        ...baseChartOptions(colors),
+                        plugins: {
+                            ...baseChartOptions(colors).plugins,
+                            legend: { display: false }
+                        }
+                    }
+                }));
             }
 
-            trainingDataTable = window.jQuery(trainingTableElement).DataTable({
-                pageLength: 10,
-                order: [
-                    [0, 'asc']
-                ],
-                autoWidth: false,
-            });
-        }
+            // --- AIRCRAFT STATUS (FLIGHT HOURS) CHART ---
+            const aircraftRaw = {!! json_encode($aircraftStats) !!};
+            const aircraftLabels = aircraftRaw.map(ac => `${ac.registration} (${ac.model})`);
+            const aircraftHours = aircraftRaw.map(ac => ac.total_hours);
 
-        initTrainingDataTable();
+            if (ctxAircraft) {
+                charts.push(new Chart(ctxAircraft, {
+                    type: 'bar',
+                    data: {
+                        labels: aircraftLabels.length ? aircraftLabels : ['No Aircraft'],
+                        datasets: [{
+                            label: 'Total Hours',
+                            data: aircraftHours.length ? aircraftHours : [0],
+                            backgroundColor: colors.cobalt,
+                            borderRadius: 8,
+                            borderSkipped: false,
+                            maxBarThickness: 44
+                        }]
+                    },
+                    options: {
+                        ...baseChartOptions(colors),
+                        plugins: {
+                            ...baseChartOptions(colors).plugins,
+                            legend: { display: false }
+                        }
+                    }
+                }));
+            }
+        };
+
+        // Initialize/Render charts immediately with the new dynamic logic
+        renderCharts();
     </script>
 </body>
 

@@ -22,8 +22,6 @@ return new class extends Migration
             $table->date('date_of_birth');
             $table->date('enrollment_date');
             $table->foreignId('flying_id')->constrained('training_providers')->onDelete('cascade');
-            $table->string('stage');
-            $table->integer('required_hours');
             $table->timestamps();
         });
     }

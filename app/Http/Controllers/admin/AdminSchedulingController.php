@@ -19,15 +19,17 @@ class AdminSchedulingController extends Controller
         $provider = DB::table('training_providers')->where('id', $flightId)->first();
         $providerName = $provider ? $provider->name : 'Aviation Academy';
 
-        // Get schedules joined with students, instructors, and aircrafts belonging to this flight school
+        // Get schedules joined with students, instructors, aircrafts, and staging configurations
         $schedules = DB::table('schedules')
             ->join('students', 'schedules.student_id', '=', 'students.id')
+            ->join('students_staging', 'schedules.stage_id', '=', 'students_staging.id')
             ->join('instructors', 'schedules.instructor_id', '=', 'instructors.id')
             ->join('aircrafts', 'schedules.aircraft_id', '=', 'aircrafts.id')
             ->where('students.flying_id', $flightId)
             ->select(
                 'schedules.*',
                 DB::raw("CONCAT(students.first_name, ' ', COALESCE(students.middle_name, ''), ' ', students.last_name) as student_name"),
+                'students_staging.stage as stage_name',
                 DB::raw("CONCAT(instructors.first_name, ' ', COALESCE(instructors.middle_name, ''), ' ', instructors.last_name) as instructor_name"),
                 'aircrafts.registration as aircraft_reg'
             )
@@ -35,8 +37,14 @@ class AdminSchedulingController extends Controller
             ->orderBy('schedules.start_time', 'asc')
             ->get();
 
-        // Get dropdown lists filtered by flight provider
+        // Get dropdown lists filtered by flight provider, and load active/completed stages for each student
         $students = DB::table('students')->where('flying_id', $flightId)->orderBy('first_name')->get();
+        $studentStages = DB::table('students_staging')->orderBy('created_at', 'asc')->get();
+        
+        foreach ($students as $student) {
+            $student->stages = $studentStages->where('student_id', $student->id)->values()->toArray();
+        }
+
         $instructors = DB::table('instructors')->where('flying_id', $flightId)->orderBy('first_name')->get();
         $aircrafts = DB::table('aircrafts')->where('flying_id', $flightId)->orderBy('registration')->get();
 
@@ -56,6 +64,7 @@ class AdminSchedulingController extends Controller
             'scheduleStart' => 'required',
             'scheduleEnd' => 'required',
             'scheduleStudent' => 'required|integer|exists:students,id',
+            'scheduleStage' => 'required|integer|exists:students_staging,id',
             'scheduleInstructor' => 'required|integer|exists:instructors,id',
             'scheduleAircraft' => 'required|integer|exists:aircrafts,id',
             'lessonType' => 'required|string|max:255',
@@ -67,10 +76,11 @@ class AdminSchedulingController extends Controller
             'start_time' => $request->scheduleStart,
             'end_time' => $request->scheduleEnd,
             'student_id' => $request->scheduleStudent,
+            'stage_id' => $request->scheduleStage,
             'instructor_id' => $request->scheduleInstructor,
             'aircraft_id' => $request->scheduleAircraft,
             'lesson_type' => $request->lessonType,
-            'status' => 'Scheduled', // automatic Scheduled as requested
+            'status' => 'Scheduled', // automatic Scheduled
             'remarks' => $request->scheduleRemarks,
             'created_at' => now(),
             'updated_at' => now(),
@@ -86,6 +96,7 @@ class AdminSchedulingController extends Controller
             'scheduleStart' => 'required',
             'scheduleEnd' => 'required',
             'scheduleStudent' => 'required|integer|exists:students,id',
+            'scheduleStage' => 'required|integer|exists:students_staging,id',
             'scheduleInstructor' => 'required|integer|exists:instructors,id',
             'scheduleAircraft' => 'required|integer|exists:aircrafts,id',
             'lessonType' => 'required|string|max:255',
@@ -98,6 +109,7 @@ class AdminSchedulingController extends Controller
             'start_time' => $request->scheduleStart,
             'end_time' => $request->scheduleEnd,
             'student_id' => $request->scheduleStudent,
+            'stage_id' => $request->scheduleStage,
             'instructor_id' => $request->scheduleInstructor,
             'aircraft_id' => $request->scheduleAircraft,
             'lesson_type' => $request->lessonType,
