@@ -17,7 +17,9 @@
                 href="{{ route('instructor.scheduling.page') }}"><i
                     class="bi bi-calendar2-check nav-icon"></i><span>Schedule
                     Viewing</span></a>
-            <a class="nav-link" href="#"><i class="bi bi-journal-plus nav-icon"></i><span>Aircraft
+            <a class="nav-link {{ request()->routeIs('instructor.aircraft.logbooks.page') ? 'active' : '' }}"
+                href="{{ route('instructor.aircraft.logbooks.page') }}"><i
+                    class="bi bi-journal-plus nav-icon"></i><span>Aircraft
                     Logbook Entry</span></a>
             <a class="nav-link" href="#"><i class="bi bi-graph-up-arrow nav-icon"></i><span>Student
                     Progress Update</span></a>

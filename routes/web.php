@@ -7,6 +7,7 @@ use App\Http\Controllers\admin\AdminGradeSheetsController;
 use App\Http\Controllers\admin\AdminSchedulingController;
 use App\Http\Controllers\admin\AdminStudentProgressController;
 use App\Http\Controllers\auth\AuthController;
+use App\Http\Controllers\instructor\InstructorAircraftLogbooksController;
 use App\Http\Controllers\superadmin\SuperadminAircraftController;
 use App\Http\Controllers\superadmin\SuperadminAircraftLogBooksController;
 use App\Http\Controllers\superadmin\SuperadminDashboardController;
@@ -94,4 +95,7 @@ Route::middleware(['instructor.auth'])->group(function () {
     Route::get('/instructor/dashboard', [InstructorDashboardController::class, 'InstructorDashboardPage'])->name('instructor.dashboard.page');
 
     Route::get('/instructor/scheduling', [InstructorSchedulingController::class, 'InstructorSchedulingPage'])->name('instructor.scheduling.page');
+
+    Route::get('/instructor/aircraft-logbooks', [InstructorAircraftLogbooksController::class, 'InstructorAircraftLogbooksPage'])->name('instructor.aircraft.logbooks.page');
+    Route::post('/instructor/aircraft-logbooks', [InstructorAircraftLogbooksController::class, 'store'])->name('instructor.aircraft.logbooks.store');
 });

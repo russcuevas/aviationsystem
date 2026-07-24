@@ -43,38 +43,45 @@
                 <table class="data-table" id="adminLogbookTable">
                     <thead>
                         <tr>
+                            <th>Date & Time</th>
                             <th>Aircraft</th>
-                            <th>Date and Time</th>
                             <th>Student</th>
                             <th>Instructor</th>
-                            <th>Block off start</th>
-                            <th>Take off</th>
-                            <th>Landing</th>
-                            <th>Block on off</th>
-                            <th>Block time</th>
-                            <th>Flight time</th>
-                            <th>Fuel Used (gal)</th>
+                            <th>Block Off / On</th>
+                            <th>Take Off / Landing</th>
+                            <th>Block Time</th>
+                            <th>Flight Time</th>
+                            <th>Fuel (gal)</th>
                             <th>Technical Issues</th>
                             <th>Mechanics</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>RP-C1721</td>
-                            <td data-order="2026-04-02">02/04/2026</td>
-                            <td>Capt. Ramon Villanueva</td>
-                            <td>1.5</td>
-                            <td>RPLL</td>
-                            <td>RPLL</td>
-                            <td>22</td>
-                            <td><span class="school-status status-active">None</span></td>
-                            <td>Dual circuit training and landing drills.</td>
-                            <td>2</td>
-                            <td>3</td>
-                            <td>1</td>
-                            <td>1</td>
-                        </tr>
-
+                        @foreach ($logbooks as $log)
+                            <tr>
+                                <td data-order="{{ $log->date_time }}">
+                                    {{ \Carbon\Carbon::parse($log->date_time)->format('M d, Y h:i A') }}
+                                </td>
+                                <td class="fw-semibold">{{ $log->aircraft }}</td>
+                                <td>{{ $log->student_name }}</td>
+                                <td>{{ $log->instructor_name }}</td>
+                                <td class="text-nowrap"><span
+                                        class="badge bg-light text-dark border px-2 py-1">{{ $log->block_off_start }} -
+                                        {{ $log->block_on_off }}</span></td>
+                                <td class="text-nowrap"><span
+                                        class="badge bg-light text-dark border px-2 py-1">{{ $log->take_off }} -
+                                        {{ $log->landing }}</span></td>
+                                <td><span
+                                        class="badge bg-light text-dark border px-2 py-1">{{ $log->block_time }}</span>
+                                </td>
+                                <td><span
+                                        class="badge bg-light text-dark border px-2 py-1">{{ $log->flight_time }}</span>
+                                </td>
+                                <td>{{ $log->fuel_used_gal }}</td>
+                                <td>{{ $log->technical_issues ?? 'N/A' }}</td>
+                                <td>{{ $log->mechanics ?? 'N/A' }}</td>
+                            </tr>
+                        @endforeach
                     </tbody>
                 </table>
             </div>
@@ -91,7 +98,7 @@
             window.jQuery(adminLogbookTable).DataTable({
                 pageLength: 10,
                 order: [
-                    [1, 'desc']
+                    [0, 'desc']
                 ],
                 autoWidth: false
             });
