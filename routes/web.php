@@ -2,11 +2,13 @@
 
 use App\Http\Controllers\auth\AuthController;
 use App\Http\Controllers\superadmin\SuperadminAircraftController;
+use App\Http\Controllers\superadmin\SuperadminAircraftLogBooksController;
 use App\Http\Controllers\superadmin\SuperadminDashboardController;
 use App\Http\Controllers\superadmin\SuperadminFlightHoursController;
 use App\Http\Controllers\superadmin\SuperadminFlightSchoolController;
 use App\Http\Controllers\superadmin\SuperadminGradeSheetsController;
 use App\Http\Controllers\superadmin\SuperadminInstructorController;
+use App\Http\Controllers\superadmin\SuperadminReportsController;
 use App\Http\Controllers\superadmin\SuperadminStudentController;
 use Illuminate\Support\Facades\Route;
 
@@ -43,3 +45,7 @@ Route::get('/superadmin/aircraft', [SuperadminAircraftController::class, 'Supera
 Route::get('/superadmin/flight-hours', [SuperadminFlightHoursController::class, 'SuperadminFlightHoursPage'])->name('superadmin.flight.hours.page');
 
 Route::get('/superadmin/grade-sheets', [SuperadminGradeSheetsController::class, 'SuperadminGradeSheetsPage'])->name('superadmin.grade.sheets.page');
+
+Route::get('/superadmin/aircraft-logbook', [SuperadminAircraftLogBooksController::class, 'SuperadminAircraftLogBooksPage'])->name('superadmin.aircraft.logbook.page');
+
+Route::get('/superadmin/reports', [SuperadminReportsController::class, 'SuperadminReportsPage'])->name('superadmin.reports.page');

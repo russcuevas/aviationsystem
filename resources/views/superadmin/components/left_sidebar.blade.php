@@ -38,19 +38,14 @@
                 <i class="bi bi-journal-text nav-icon"></i>
                 <span>Grade Sheets</span>
             </a>
-            <a class="nav-link" href="logbooks.html">
+            <a class="nav-link" href="{{ route('superadmin.aircraft.logbook.page') }}">
                 <i class="bi bi-journal-bookmark nav-icon"></i>
                 <span>Logbooks</span>
             </a>
-            <a class="nav-link" href="reports.html">
+            <a class="nav-link" href="{{ route('superadmin.reports.page') }}">
                 <i class="bi bi-file-earmark-bar-graph nav-icon"></i>
                 <span>Reports</span>
             </a>
-            <a class="nav-link" href="user_management.html">
-                <i class="bi bi-person-gear nav-icon"></i>
-                <span>User Management</span>
-            </a>
         </nav>
-
     </div>
 </aside>

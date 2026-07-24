@@ -14,51 +14,61 @@
 </head>
 
 <body>
+
     <!-- ================= SIDEBAR ================= -->
     @include('superadmin.components.left_sidebar')
 
     <!-- ================= TOPBAR ================= -->
     @include('superadmin.components.topbar')
 
+
     <main class="main-content">
         <div class="page-header">
-            <h2>Grade Sheet Validation</h2>
-            <p>Validate grade sheets and training records for consistency.</p>
+            <h2>Aircraft Logbooks</h2>
+            <p>Read-only audit and validation view for aircraft logs.</p>
             <div class="page-breadcrumb"><i class="bi bi-grid-1x2-fill"></i>Overview<i
-                    class="bi bi-chevron-right"></i><span>Grade Sheets</span></div>
+                    class="bi bi-chevron-right"></i><span>Logbooks</span></div>
         </div>
 
         <div class="panel">
             <div class="panel-header">
                 <div>
-                    <p class="panel-title">Grade Sheet Review Queue</p>
-                    <p class="panel-subtitle">Flag inconsistencies for further investigation.</p>
+                    <p class="panel-title">Logbook Audit Queue</p>
+                    <p class="panel-subtitle">Review entries and flag inconsistencies.</p>
                 </div>
             </div>
             <div style="overflow-x:auto;">
-                <table class="data-table" id="gradeSheetsTable">
+                <table class="data-table" id="logbooksTable">
                     <thead>
                         <tr>
-                            <th>Sheet ID</th>
-                            <th>Student</th>
+                            <th>Logbook ID</th>
+                            <th>Aircraft</th>
                             <th>Training Provider</th>
-                            <th>Module</th>
-                            <th>Evaluator</th>
-                            <th>Status</th>
-                            <th>Flag</th>
+                            <th>Last Entry</th>
+                            <th>Recorded By</th>
+                            <th>Validation</th>
+                            <th>Inconsistency</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><span class="school-code">GS-2026-011</span></td>
-                            <td>Juan Dela Cruz</td>
+                            <td><span class="school-code">LB-2026-101</span></td>
+                            <td>RP-C1721</td>
                             <td>PhilSCA Villamor</td>
-                            <td>Navigation</td>
+                            <td data-order="2026-04-02">Apr 2, 2026</td>
                             <td>Capt. Ramon Villanueva</td>
                             <td><span class="school-status status-active">Validated</span></td>
-                            <td><span class="school-status status-available">Clear</span></td>
+                            <td><span class="school-status status-available">None</span></td>
                         </tr>
-
+                        <tr>
+                            <td><span class="school-code">LB-2026-108</span></td>
+                            <td>RP-DA401</td>
+                            <td>PhilSCA Villamor</td>
+                            <td data-order="2026-04-01">Apr 1, 2026</td>
+                            <td>Engr. Carlos Santos</td>
+                            <td><span class="school-status status-onleave">For Review</span></td>
+                            <td><span class="school-status status-maintenance">Flagged</span></td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -70,12 +80,12 @@
     <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
     <script src="{{ asset('style.css') }}"></script>
     <script>
-        const gradeSheetsTableEl = document.getElementById('gradeSheetsTable');
-        if (gradeSheetsTableEl && window.jQuery && window.jQuery.fn.DataTable) {
-            window.jQuery(gradeSheetsTableEl).DataTable({
+        const logbooksTableEl = document.getElementById('logbooksTable');
+        if (logbooksTableEl && window.jQuery && window.jQuery.fn.DataTable) {
+            window.jQuery(logbooksTableEl).DataTable({
                 pageLength: 10,
                 order: [
-                    [0, 'desc']
+                    [3, 'desc']
                 ],
                 autoWidth: false
             });
