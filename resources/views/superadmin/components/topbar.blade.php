@@ -23,7 +23,7 @@
                     <i class="bi bi-person"></i>
                     Profile
                 </button>
-                <button class="user-menu-item logout" type="button">
+                <button class="user-menu-item logout" type="button" onclick="window.location.href='{{ route('logout') }}'">
                     <i class="bi bi-box-arrow-right"></i>
                     Logout
                 </button>

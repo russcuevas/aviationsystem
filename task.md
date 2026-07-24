@@ -1,0 +1,21 @@
+# Tasks
+
+- `[x]` Create migration for `students` table
+- `[x]` Create migration for `students_license` table
+- `[x]` Run database migrations
+- `[x]` Define student routes in `routes/web.php`
+- `[x]` Implement student CRUD actions in `SuperadminStudentController.php` using `DB::` query builder
+- `[x]` Update `index.blade.php` views under `superadmin/students/` with dynamic listings, modals, and traditional form handlers
+- `[x]` Verify student registry functionality and clean cascades
+- `[x]` Create migration for `aircrafts` table
+- `[x]` Create migration for `aircrafts_documents` table
+- `[x]` Run aircraft database migrations
+- `[x]` Define aircraft routes in `routes/web.php`
+- `[x]` Implement aircraft CRUD actions in `SuperadminAircraftController.php` using `DB::` query builder
+- `[x]` Update `index.blade.php` views under `superadmin/aircraft/` with dynamic listings, wide modals, and traditional form handlers
+- `[x]` Verify aircraft registry functionality and clean cascades
+- `[x]` Create migrations and models for Admins and SuperAdmins
+- `[x]` Implement Database Seeder with password "123456789"
+- `[x]` Build custom AuthController login/logout actions
+- `[x]` Implement and register SuperAdminAuth and AdminAuth Middlewares
+- `[x]` Group routing under role-based middlewares

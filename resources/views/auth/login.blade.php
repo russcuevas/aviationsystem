@@ -290,13 +290,28 @@
                     <p>Sign in to continue to your dashboard.</p>
                 </div>
 
-                <form id="loginForm" novalidate>
+                @if($errors->any())
+                    <div class="alert alert-danger py-2 px-3 shadow-sm border-0 mb-3" role="alert" style="border-radius: 10px; font-size: 0.82rem;">
+                        <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                        {{ $errors->first() }}
+                    </div>
+                @endif
+
+                @if(session('success'))
+                    <div class="alert alert-success py-2 px-3 shadow-sm border-0 mb-3" role="alert" style="border-radius: 10px; font-size: 0.82rem;">
+                        <i class="bi bi-check-circle-fill me-1"></i>
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                <form id="loginForm" action="{{ route('login') }}" method="POST">
+                    @csrf
                     <div class="mb-3">
                         <label class="form-label" for="email">Email Address</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                            <input type="email" class="form-control" id="email" placeholder="name@naap.ph"
-                                required>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="name@naap.ph"
+                                required value="{{ old('email') }}">
                         </div>
                     </div>
 
@@ -304,7 +319,7 @@
                         <label class="form-label" for="password">Password</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                            <input type="password" class="form-control" id="password" placeholder="Enter your password"
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password"
                                 required>
                             <button class="input-group-text" type="button" id="togglePassword"
                                 aria-label="Show password">
@@ -328,10 +343,7 @@
     </div>
 
     <script>
-        const loginForm = document.getElementById('loginForm');
-        const emailEl = document.getElementById('email');
         const passwordEl = document.getElementById('password');
-        const rememberMeEl = document.getElementById('rememberMe');
         const togglePassword = document.getElementById('togglePassword');
         const togglePasswordIcon = document.getElementById('togglePasswordIcon');
 
@@ -339,19 +351,6 @@
             const show = passwordEl.type === 'password';
             passwordEl.type = show ? 'text' : 'password';
             togglePasswordIcon.className = show ? 'bi bi-eye-slash' : 'bi bi-eye';
-        });
-
-
-        loginForm.addEventListener('submit', function(event) {
-            event.preventDefault();
-
-            if (!loginForm.checkValidity()) {
-                loginForm.reportValidity();
-                return;
-            }
-
-            const storage = rememberMeEl.checked ? localStorage : sessionStorage;
-            storage.setItem('naap-email', emailEl.value);
         });
     </script>
 </body>
