@@ -4,7 +4,6 @@ namespace App\Http\Controllers\superadmin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
 use App\Models\TrainingProvider;
 
 class SuperadminFlightSchoolController extends Controller

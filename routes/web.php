@@ -41,8 +41,14 @@ Route::post('/superadmin/flight-school/{id}/update', [SuperadminFlightSchoolCont
 Route::delete('/superadmin/flight-school/{id}', [SuperadminFlightSchoolController::class, 'destroy'])->name('superadmin.flight.school.destroy');
 
 Route::get('/superadmin/students', [SuperadminStudentController::class, 'SuperadminStudentPage'])->name('superadmin.student.page');
+Route::post('/superadmin/students', [SuperadminStudentController::class, 'store'])->name('superadmin.student.store');
+Route::post('/superadmin/students/{id}/update', [SuperadminStudentController::class, 'update'])->name('superadmin.student.update');
+Route::delete('/superadmin/students/{id}', [SuperadminStudentController::class, 'destroy'])->name('superadmin.student.destroy');
 
 Route::get('/superadmin/instructors', [SuperadminInstructorController::class, 'SuperadminInstructorPage'])->name('superadmin.instructor.page');
+Route::post('/superadmin/instructors', [SuperadminInstructorController::class, 'store'])->name('superadmin.instructor.store');
+Route::post('/superadmin/instructors/{id}/update', [SuperadminInstructorController::class, 'update'])->name('superadmin.instructor.update');
+Route::delete('/superadmin/instructors/{id}', [SuperadminInstructorController::class, 'destroy'])->name('superadmin.instructor.destroy');
 
 Route::get('/superadmin/aircraft', [SuperadminAircraftController::class, 'SuperadminAircraftPage'])->name('superadmin.aircraft.page');
 
