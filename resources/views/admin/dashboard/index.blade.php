@@ -20,6 +20,9 @@
 
     @include('admin.components.topbar')
     <main class="main-content">
+        <span class="badge bg-primary px-3 py-2 mb-3" style="font-size: 0.9rem; font-weight: 600; border-radius: 8px; background-color: var(--cobalt) !important;">
+            <i class="bi bi-geo-alt-fill me-1"></i>{{ $providerName }}
+        </span>
         <div class="page-header">
             <h2>Admin Dashboard</h2>
             <p>Daily operations overview for scheduling, resources, and student performance.</p>

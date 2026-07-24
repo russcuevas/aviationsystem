@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\admin\AdminDashboardController;
+use App\Http\Controllers\admin\AdminSchedulingController;
 use App\Http\Controllers\auth\AuthController;
 use App\Http\Controllers\superadmin\SuperadminAircraftController;
 use App\Http\Controllers\superadmin\SuperadminAircraftLogBooksController;
@@ -67,4 +68,9 @@ Route::middleware(['superadmin.auth'])->group(function () {
 // ADMIN ROUTES
 Route::middleware(['admin.auth'])->group(function () {
     Route::get('/admin/dashboard', [AdminDashboardController::class, 'AdminDashboardPage'])->name('admin.dashboard.page');
+
+    Route::get('/admin/scheduling', [AdminSchedulingController::class, 'AdminSchedulingPage'])->name('admin.scheduling.page');
+    Route::post('/admin/scheduling', [AdminSchedulingController::class, 'store'])->name('admin.scheduling.store');
+    Route::post('/admin/scheduling/{id}/update', [AdminSchedulingController::class, 'update'])->name('admin.scheduling.update');
+    Route::delete('/admin/scheduling/{id}', [AdminSchedulingController::class, 'destroy'])->name('admin.scheduling.destroy');
 });
