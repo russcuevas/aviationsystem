@@ -18,6 +18,7 @@ use App\Http\Controllers\superadmin\SuperadminInstructorController;
 use App\Http\Controllers\superadmin\SuperadminReportsController;
 use App\Http\Controllers\superadmin\SuperadminStudentController;
 use App\Http\Controllers\instructor\InstructorDashboardController;
+use App\Http\Controllers\instructor\InstructorFlightHoursEncodingController;
 use App\Http\Controllers\instructor\InstructorSchedulingController;
 use Illuminate\Support\Facades\Route;
 
@@ -98,4 +99,7 @@ Route::middleware(['instructor.auth'])->group(function () {
 
     Route::get('/instructor/aircraft-logbooks', [InstructorAircraftLogbooksController::class, 'InstructorAircraftLogbooksPage'])->name('instructor.aircraft.logbooks.page');
     Route::post('/instructor/aircraft-logbooks', [InstructorAircraftLogbooksController::class, 'store'])->name('instructor.aircraft.logbooks.store');
+
+    Route::get('/instructor/flight-hours-encoding', [InstructorFlightHoursEncodingController::class, 'InstructorFlightHoursPage'])->name('instructor.flight.hours.encoding.page');
+    Route::post('/instructor/flight-hours-encoding', [InstructorFlightHoursEncodingController::class, 'store'])->name('instructor.flight.hours.encoding.store');
 });

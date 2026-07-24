@@ -23,7 +23,8 @@
                     Logbook Entry</span></a>
             <a class="nav-link" href="#"><i class="bi bi-graph-up-arrow nav-icon"></i><span>Student
                     Progress Update</span></a>
-            <a class="nav-link" href="#"><i class="bi bi-stopwatch nav-icon"></i><span>Flight Hours
+            <a class="nav-link {{ request()->routeIs('instructor.flight.hours.encoding.page') ? 'active' : '' }}"
+                href="{{ route('instructor.flight.hours.encoding.page') }}"><i class="bi bi-stopwatch nav-icon"></i><span>Flight Hours
                     Encoding</span></a>
             <a class="nav-link" href="#"><i class="bi bi-journal-text nav-icon"></i><span>Grade
                     Sheet Submission</span></a>
