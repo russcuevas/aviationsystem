@@ -12,6 +12,7 @@ use App\Http\Controllers\superadmin\SuperadminAircraftController;
 use App\Http\Controllers\superadmin\SuperadminAircraftLogBooksController;
 use App\Http\Controllers\superadmin\SuperadminDashboardController;
 use App\Http\Controllers\superadmin\SuperadminFlightHoursController;
+use App\Http\Controllers\admin\AdminReportsController;
 use App\Http\Controllers\superadmin\SuperadminFlightSchoolController;
 use App\Http\Controllers\superadmin\SuperadminGradeSheetsController;
 use App\Http\Controllers\superadmin\SuperadminInstructorController;
@@ -19,6 +20,7 @@ use App\Http\Controllers\superadmin\SuperadminReportsController;
 use App\Http\Controllers\superadmin\SuperadminStudentController;
 use App\Http\Controllers\instructor\InstructorDashboardController;
 use App\Http\Controllers\instructor\InstructorFlightHoursEncodingController;
+use App\Http\Controllers\instructor\InstructorGradeSheetController;
 use App\Http\Controllers\instructor\InstructorSchedulingController;
 use App\Http\Controllers\instructor\InstructorStudentProgressController;
 use Illuminate\Support\Facades\Route;
@@ -91,6 +93,9 @@ Route::middleware(['admin.auth'])->group(function () {
     Route::post('/admin/flight-hours/{id}/status', [AdminFlightHoursController::class, 'updateStatus'])->name('admin.flight.hours.update.status');
 
     Route::get('/admin/grade-sheets', [AdminGradeSheetsController::class, 'AdminGradeSheetsPage'])->name('admin.grade.sheets.page');
+    Route::post('/admin/grade-sheets/{id}/status', [AdminGradeSheetsController::class, 'updateStatus'])->name('admin.grade.sheets.status.update');
+
+    Route::get('/admin/reports', [AdminReportsController::class, 'AdminReportsPage'])->name('admin.reports.page');
 });
 
 // INSTRUCTOR ROUTES
@@ -107,4 +112,7 @@ Route::middleware(['instructor.auth'])->group(function () {
 
     Route::get('/instructor/student-progress', [InstructorStudentProgressController::class, 'InstructorStudentProgressPage'])->name('instructor.student.progress.page');
     Route::post('/instructor/student-progress/{id}/update', [InstructorStudentProgressController::class, 'updateProgress'])->name('instructor.student.progress.update');
+
+    Route::get('/instructor/grade-sheet', [InstructorGradeSheetController::class, 'InstructorGradeSheetPage'])->name('instructor.grade.sheet.page');
+    Route::post('/instructor/grade-sheet', [InstructorGradeSheetController::class, 'store'])->name('instructor.grade.sheet.store');
 });
