@@ -85,7 +85,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                 @forelse($todaysSchedules as $sched)
+                                 @foreach($todaysSchedules as $sched)
                                 <tr>
                                     <td>{{ \Carbon\Carbon::parse($sched->start_time)->format('h:i A') }} - {{ \Carbon\Carbon::parse($sched->end_time)->format('h:i A') }}</td>
                                     <td class="fw-semibold">{{ $sched->student_name }}</td>
@@ -101,11 +101,7 @@
                                         @endif
                                     </td>
                                 </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="5" class="text-center text-muted py-4">No flights scheduled for today.</td>
-                                </tr>
-                                @endforelse
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -131,18 +127,14 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($assignedStudents as $st)
+                                @foreach($assignedStudents as $st)
                                 <tr>
                                     <td class="fw-semibold">{{ $st->student_name }}</td>
                                     <td>{{ $st->current_lesson }}</td>
                                     <td data-order="{{ $st->next_flight_date }} {{ $st->next_flight_time }}">{{ \Carbon\Carbon::parse($st->next_flight_date)->format('M d, Y') }} {{ \Carbon\Carbon::parse($st->next_flight_time)->format('h:i A') }}</td>
                                     <td>{{ $st->aircraft_reg }}</td>
                                 </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="4" class="text-center text-muted py-4">No assigned students found.</td>
-                                </tr>
-                                @endforelse
+                                @endforeach
                             </tbody>
                         </table>
                     </div>

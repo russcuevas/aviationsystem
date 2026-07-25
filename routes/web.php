@@ -87,6 +87,7 @@ Route::middleware(['admin.auth'])->group(function () {
     Route::get('/admin/student-progress', [AdminStudentProgressController::class, 'AdminStudentProgressPage'])->name('admin.student.progress.page');
 
     Route::get('/admin/flight-hours', [AdminFlightHoursController::class, 'AdminFlightHoursPage'])->name('admin.flight.hours.page');
+    Route::post('/admin/flight-hours/{id}/status', [AdminFlightHoursController::class, 'updateStatus'])->name('admin.flight.hours.update.status');
 
     Route::get('/admin/grade-sheets', [AdminGradeSheetsController::class, 'AdminGradeSheetsPage'])->name('admin.grade.sheets.page');
 });

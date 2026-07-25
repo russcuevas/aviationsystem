@@ -54,7 +54,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($schedules as $sched)
+                        @foreach($schedules as $sched)
                         <tr>
                             <td data-order="{{ $sched->date }}">{{ \Carbon\Carbon::parse($sched->date)->format('M d, Y') }}</td>
                             <td>{{ \Carbon\Carbon::parse($sched->start_time)->format('h:i A') }} - {{ \Carbon\Carbon::parse($sched->end_time)->format('h:i A') }}</td>
@@ -72,11 +72,7 @@
                                 @endif
                             </td>
                         </tr>
-                        @empty
-                        <tr>
-                            <td colspan="7" class="text-center text-muted py-4">No flight schedules assigned to you yet.</td>
-                        </tr>
-                        @endforelse
+                        @endforeach
                     </tbody>
                 </table>
             </div>

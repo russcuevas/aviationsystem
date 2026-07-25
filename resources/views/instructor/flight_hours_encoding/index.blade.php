@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NAAP Instructor</title>
+    <title>NAAP Instructor - Flight Hours Encoding</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
@@ -19,6 +19,24 @@
     @include('instructor.components.topbar')
 
     <main class="main-content">
+        @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        @if ($errors->any())
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
         @if (isset($providerName))
             <span class="badge bg-primary px-3 py-2 mb-3"
                 style="font-size: 0.9rem; font-weight: 600; border-radius: 8px; background-color: var(--cobalt) !important;">
@@ -46,31 +64,51 @@
                 <table class="data-table" id="instructorHoursTable">
                     <thead>
                         <tr>
-                            <th>Date</th>
-                            <th>Hours</th>
+                            <th>Log ID</th>
                             <th>Student</th>
                             <th>Aircraft</th>
-                            <th>Flight Type</th>
+                            <th>Dual Inst.</th>
+                            <th>PIC Time</th>
+                            <th>Solo Time</th>
+                            <th>Inst. Flight</th>
+                            <th>Total Time</th>
+                            <th>Status</th>
                             <th>Remarks</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td data-order="2026-04-03">Apr 3, 2026</td>
-                            <td>1.4 hrs</td>
-                            <td>Juan Dela Cruz</td>
-                            <td>RP-C1721</td>
-                            <td>Pattern Training</td>
-                            <td>Takeoff and landing pattern drills.</td>
-                        </tr>
-                        <tr>
-                            <td data-order="2026-04-02">Apr 2, 2026</td>
-                            <td>1.8 hrs</td>
-                            <td>Maria Reyes</td>
-                            <td>RP-PA281</td>
-                            <td>Cross Country</td>
-                            <td>Navigation and diversion checkpoint validation.</td>
-                        </tr>
+                        @foreach ($flightHours as $hour)
+                            <tr>
+                                <td><span class="fw-semibold text-primary">{{ $hour->log_id }}</span></td>
+                                <td>{{ $hour->student ? $hour->student->first_name . ' ' . $hour->student->last_name : 'N/A' }}
+                                </td>
+                                <td>{{ $hour->aircraft ? $hour->aircraft->registration : 'N/A' }}</td>
+                                <td>{{ $hour->dual_instruction_time !== null ? number_format($hour->dual_instruction_time, 1) . ' hrs' : '-' }}
+                                </td>
+                                <td>{{ $hour->pic_time !== null ? number_format($hour->pic_time, 1) . ' hrs' : '-' }}
+                                </td>
+                                <td>{{ $hour->solo_time !== null ? number_format($hour->solo_time, 1) . ' hrs' : '-' }}
+                                </td>
+                                <td>{{ $hour->instrument_flight_time !== null ? number_format($hour->instrument_flight_time, 1) . ' hrs' : '-' }}
+                                </td>
+                                <td><strong>{{ number_format($hour->total_time, 1) }} hrs</strong></td>
+                                <td>
+                                    @if ($hour->status === 'pending review')
+                                        <span class="badge bg-warning text-dark px-2 py-1"><i
+                                                class="bi bi-clock-history me-1"></i>pending review</span>
+                                    @elseif ($hour->status === 'approved')
+                                        <span class="badge bg-success px-2 py-1"><i
+                                                class="bi bi-check-circle me-1"></i>approved</span>
+                                    @elseif ($hour->status === 'cancelled')
+                                        <span class="badge bg-danger px-2 py-1"><i
+                                                class="bi bi-x-circle me-1"></i>cancelled</span>
+                                    @else
+                                        <span class="badge bg-secondary px-2 py-1">{{ $hour->status }}</span>
+                                    @endif
+                                </td>
+                                <td>{{ $hour->remarks ?? 'N/A' }}</td>
+                            </tr>
+                        @endforeach
                     </tbody>
                 </table>
             </div>
@@ -84,46 +122,65 @@
                     <h5 class="modal-title" id="logHoursModalLabel">Log Flight Hours</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="logHoursForm">
+                <form id="logHoursForm" action="{{ route('instructor.flight.hours.encoding.store') }}" method="POST">
+                    @csrf
                     <div class="modal-body">
                         <div class="row g-3">
-                            <div class="col-md-4">
-                                <label for="hoursDate" class="form-label">Date</label>
-                                <input type="date" class="form-control" id="hoursDate" name="hoursDate" required>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="hoursValue" class="form-label">Hours</label>
-                                <input type="number" class="form-control" id="hoursValue" name="hoursValue"
-                                    min="0.1" step="0.1" required>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="hoursStudent" class="form-label">Student</label>
-                                <select class="form-select" id="hoursStudent" name="hoursStudent" required>
+                            <div class="col-md-6">
+                                <label for="student_id" class="form-label fw-medium">Student <span
+                                        class="text-danger">*</span></label>
+                                <select class="form-select" id="student_id" name="student_id" required>
                                     <option value="" selected disabled>Select student</option>
-                                    <option value="Juan Dela Cruz">Juan Dela Cruz</option>
-                                    <option value="Maria Reyes">Maria Reyes</option>
+                                    @foreach ($students as $student)
+                                        <option value="{{ $student->id }}">{{ $student->first_name }}
+                                            {{ $student->last_name }}</option>
+                                    @endforeach
                                 </select>
                             </div>
 
                             <div class="col-md-6">
-                                <label for="hoursAircraft" class="form-label">Aircraft</label>
-                                <select class="form-select" id="hoursAircraft" name="hoursAircraft" required>
+                                <label for="aircraft_id" class="form-label fw-medium">Aircraft <span
+                                        class="text-danger">*</span></label>
+                                <select class="form-select" id="aircraft_id" name="aircraft_id" required>
                                     <option value="" selected disabled>Select aircraft</option>
-                                    <option value="RP-C1721">RP-C1721</option>
-                                    <option value="RP-PA281">RP-PA281</option>
-                                    <option value="RP-C1508">RP-C1508</option>
+                                    @foreach ($aircrafts as $aircraft)
+                                        <option value="{{ $aircraft->id }}">{{ $aircraft->registration }}
+                                            ({{ $aircraft->type }})
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
-                            <div class="col-md-6">
-                                <label for="hoursFlightType" class="form-label">Flight Type</label>
-                                <input type="text" class="form-control" id="hoursFlightType" name="hoursFlightType"
-                                    required>
+
+                            <div class="col-md-3">
+                                <label for="dual_instruction_time" class="form-label fw-medium">Dual Instruction
+                                    (hrs)</label>
+                                <input type="number" class="form-control hour-input" id="dual_instruction_time"
+                                    name="dual_instruction_time" min="0" step="0.1" placeholder="0.0">
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="pic_time" class="form-label fw-medium">PIC Time (hrs)</label>
+                                <input type="number" class="form-control hour-input" id="pic_time" name="pic_time"
+                                    min="0" step="0.1" placeholder="0.0">
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="solo_time" class="form-label fw-medium">Solo Time (hrs)</label>
+                                <input type="number" class="form-control hour-input" id="solo_time"
+                                    name="solo_time" min="0" step="0.1" placeholder="0.0">
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="instrument_flight_time" class="form-label fw-medium">Instrument Flight
+                                    (hrs)</label>
+                                <input type="number" class="form-control hour-input" id="instrument_flight_time"
+                                    name="instrument_flight_time" min="0" step="0.1" placeholder="0.0">
                             </div>
 
                             <div class="col-12">
-                                <label for="hoursRemarks" class="form-label">Remarks</label>
-                                <textarea class="form-control" id="hoursRemarks" name="hoursRemarks" rows="3"
-                                    placeholder="Add notes about the flight session."></textarea>
+                                <label for="remarks" class="form-label fw-medium">Remarks</label>
+                                <textarea class="form-control" id="remarks" name="remarks" rows="3"
+                                    placeholder="Add notes or details about the last lesson session."></textarea>
                             </div>
                         </div>
                     </div>

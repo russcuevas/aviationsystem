@@ -4,14 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NAAP</title>
+    <title>NAAP Superadmin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" href="{{ asset('style.css') }}">
-
 </head>
 
 <body>
@@ -21,11 +20,10 @@
     <!-- ================= TOPBAR ================= -->
     @include('superadmin.components.topbar')
 
-
     <main class="main-content">
         <div class="page-header">
             <h2>Flight Hours</h2>
-            <p>Superadmin view-only monitoring of logged flight hours.</p>
+            <p>Superadmin view-only monitoring of approved and cancelled flight hours.</p>
             <div class="page-breadcrumb">
                 <i class="bi bi-grid-1x2-fill"></i>
                 Overview
@@ -46,78 +44,64 @@
                 <table class="data-table flight-hours-table" id="flightHoursTable">
                     <thead>
                         <tr>
+                            <th>Log ID</th>
                             <th>Date</th>
                             <th>Student</th>
                             <th>Aircraft</th>
-                            <th>Dual Instruction Time</th>
+                            <th>Dual Inst.</th>
                             <th>PIC Time</th>
                             <th>Solo Time</th>
-                            <th>Instrument Flight Time</th>
+                            <th>Inst. Flight</th>
                             <th>Total Time</th>
+                            <th>Status</th>
                             <th>Remarks</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td data-order="2026-04-02"><span class="fh-date">02/04/2026</span></td>
-                            <td>
-                                <div class="fh-student">
-                                    <span class="fh-student-name">Juan Dela Cruz</span>
-                                </div>
-                            </td>
-                            <td><span class="fh-aircraft">RP-C1721</span></td>
-                            <td><span class="fh-hours">1.5 hrs</span></td>
-                            <td><span class="fh-hours">0.0 hrs</span></td>
-                            <td><span class="fh-hours">0.0 hrs</span></td>
-                            <td><span class="fh-hours">0.0 hrs</span></td>
-                            <td><span class="fh-hours">1.5 hrs</span></td>
-                            <td><span class="fh-remarks">Pattern and landing drills</span></td>
-                        </tr>
-                        <tr>
-                            <td data-order="2026-04-01"><span class="fh-date">01/04/2026</span></td>
-                            <td>
-                                <div class="fh-student">
-                                    <span class="fh-student-name">Maria Reyes</span>
-                                </div>
-                            </td>
-                            <td><span class="fh-aircraft">RP-PA281</span></td>
-                            <td><span class="fh-hours">0.0 hrs</span></td>
-                            <td><span class="fh-hours">2.0 hrs</span></td>
-                            <td><span class="fh-hours">2.0 hrs</span></td>
-                            <td><span class="fh-hours">0.0 hrs</span></td>
-                            <td><span class="fh-hours">2.0 hrs</span></td>
-                            <td><span class="fh-remarks">Navigation and waypoint tracking</span></td>
-                        </tr>
-                        <tr>
-                            <td data-order="2026-03-31"><span class="fh-date">31/03/2026</span></td>
-                            <td>
-                                <div class="fh-student">
-                                    <span class="fh-student-name">Carlos Santos</span>
-                                </div>
-                            </td>
-                            <td><span class="fh-aircraft">RP-DA401</span></td>
-                            <td><span class="fh-hours">0.0 hrs</span></td>
-                            <td><span class="fh-hours">1.2 hrs</span></td>
-                            <td><span class="fh-hours">0.0 hrs</span></td>
-                            <td><span class="fh-hours">1.2 hrs</span></td>
-                            <td><span class="fh-hours">1.2 hrs</span></td>
-                            <td><span class="fh-remarks">Partial panel procedure practice</span></td>
-                        </tr>
-                        <tr>
-                            <td data-order="2026-03-30"><span class="fh-date">30/03/2026</span></td>
-                            <td>
-                                <div class="fh-student">
-                                    <span class="fh-student-name">Ana Lim</span>
-                                </div>
-                            </td>
-                            <td><span class="fh-aircraft">RP-C1508</span></td>
-                            <td><span class="fh-hours">0.0 hrs</span></td>
-                            <td><span class="fh-hours">1.7 hrs</span></td>
-                            <td><span class="fh-hours">1.7 hrs</span></td>
-                            <td><span class="fh-hours">0.0 hrs</span></td>
-                            <td><span class="fh-hours">1.7 hrs</span></td>
-                            <td><span class="fh-remarks">Traffic pattern and emergency drills</span></td>
-                        </tr>
+                        @foreach ($flightHours as $hour)
+                            @if (in_array($hour->status, ['approved', 'cancelled']))
+                                <tr>
+                                    <td><span class="fw-semibold text-primary">{{ $hour->log_id }}</span></td>
+                                    <td data-order="{{ $hour->created_at ? $hour->created_at->format('Y-m-d') : '' }}">
+                                        <span
+                                            class="fh-date">{{ $hour->created_at ? $hour->created_at->format('d/m/Y') : '-' }}</span>
+                                    </td>
+                                    <td>
+                                        <div class="fh-student">
+                                            <span
+                                                class="fh-student-name">{{ $hour->student ? $hour->student->first_name . ' ' . $hour->student->last_name : 'N/A' }}</span>
+                                        </div>
+                                    </td>
+                                    <td><span
+                                            class="fh-aircraft">{{ $hour->aircraft ? $hour->aircraft->registration : 'N/A' }}</span>
+                                    </td>
+                                    <td><span
+                                            class="fh-hours">{{ $hour->dual_instruction_time !== null ? number_format($hour->dual_instruction_time, 1) . ' hrs' : '-' }}</span>
+                                    </td>
+                                    <td><span
+                                            class="fh-hours">{{ $hour->pic_time !== null ? number_format($hour->pic_time, 1) . ' hrs' : '-' }}</span>
+                                    </td>
+                                    <td><span
+                                            class="fh-hours">{{ $hour->solo_time !== null ? number_format($hour->solo_time, 1) . ' hrs' : '-' }}</span>
+                                    </td>
+                                    <td><span
+                                            class="fh-hours">{{ $hour->instrument_flight_time !== null ? number_format($hour->instrument_flight_time, 1) . ' hrs' : '-' }}</span>
+                                    </td>
+                                    <td><span class="fh-hours"><strong>{{ number_format($hour->total_time, 1) }}
+                                                hrs</strong></span></td>
+                                    <td>
+                                        @if ($hour->status === 'approved')
+                                            <span class="badge bg-success px-2 py-1"><i class="bi bi-check-circle me-1"></i>approved</span>
+                                        @elseif ($hour->status === 'cancelled')
+                                            <span class="badge bg-danger px-2 py-1"><i class="bi bi-x-circle me-1"></i>cancelled</span>
+                                        @else
+                                            <span class="badge bg-secondary px-2 py-1">{{ $hour->status }}</span>
+                                        @endif
+                                    </td>
+                                    <td><span class="fh-remarks">{{ $hour->remarks ?? '-' }}</span></td>
+                                </tr>
+                            @endif
+                        @endforeach
                     </tbody>
                 </table>
             </div>

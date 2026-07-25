@@ -56,7 +56,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($progressList as $item)
+                        @foreach($progressList as $item)
                             <tr>
                                 <td class="fw-semibold">{{ $item->student_name }}</td>
                                 <td>{{ $item->provider_name }}</td>
@@ -83,13 +83,8 @@
                                         <span class="school-status status-inactive">{{ $item->health }}</span>
                                     @endif
                                 </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="7" class="text-center text-muted py-4">No student progress data recorded
-                                    yet.</td>
-                            </tr>
-                        @endforelse
+                                </tr>
+                        @endforeach
                     </tbody>
                 </table>
             </div>
