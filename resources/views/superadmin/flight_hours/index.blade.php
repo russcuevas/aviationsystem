@@ -23,7 +23,7 @@
     <main class="main-content">
         <div class="page-header">
             <h2>Flight Hours</h2>
-            <p>Superadmin view-only monitoring of approved and cancelled flight hours.</p>
+            <p>Superadmin view-only monitoring of confirmed and cancelled flight hours.</p>
             <div class="page-breadcrumb">
                 <i class="bi bi-grid-1x2-fill"></i>
                 Overview
@@ -47,7 +47,10 @@
                             <th>Log ID</th>
                             <th>Date</th>
                             <th>Student</th>
+                            <th>Instructor</th>
                             <th>Aircraft</th>
+                            <th>Training Stage</th>
+                            <th>Lesson</th>
                             <th>Dual Inst.</th>
                             <th>PIC Time</th>
                             <th>Solo Time</th>
@@ -59,39 +62,29 @@
                     </thead>
                     <tbody>
                         @foreach ($flightHours as $hour)
-                            @if (in_array($hour->status, ['approved', 'cancelled']))
+                            @if (in_array($hour->status, ['confirmed', 'approved', 'cancelled']))
                                 <tr>
                                     <td><span class="fw-semibold text-primary">{{ $hour->log_id }}</span></td>
-                                    <td data-order="{{ $hour->created_at ? $hour->created_at->format('Y-m-d') : '' }}">
-                                        <span
-                                            class="fh-date">{{ $hour->created_at ? $hour->created_at->format('d/m/Y') : '-' }}</span>
+                                    <td data-order="{{ $hour->date ? $hour->date->format('Y-m-d') : ($hour->created_at ? $hour->created_at->format('Y-m-d') : '') }}">
+                                        <span class="fh-date">{{ $hour->date ? $hour->date->format('d/m/Y') : ($hour->created_at ? $hour->created_at->format('d/m/Y') : '-') }}</span>
                                     </td>
                                     <td>
                                         <div class="fh-student">
-                                            <span
-                                                class="fh-student-name">{{ $hour->student ? $hour->student->first_name . ' ' . $hour->student->last_name : 'N/A' }}</span>
+                                            <span class="fh-student-name">{{ $hour->student ? $hour->student->first_name . ' ' . $hour->student->last_name : 'N/A' }}</span>
                                         </div>
                                     </td>
-                                    <td><span
-                                            class="fh-aircraft">{{ $hour->aircraft ? $hour->aircraft->registration : 'N/A' }}</span>
-                                    </td>
-                                    <td><span
-                                            class="fh-hours">{{ $hour->dual_instruction_time !== null ? number_format($hour->dual_instruction_time, 1) . ' hrs' : '-' }}</span>
-                                    </td>
-                                    <td><span
-                                            class="fh-hours">{{ $hour->pic_time !== null ? number_format($hour->pic_time, 1) . ' hrs' : '-' }}</span>
-                                    </td>
-                                    <td><span
-                                            class="fh-hours">{{ $hour->solo_time !== null ? number_format($hour->solo_time, 1) . ' hrs' : '-' }}</span>
-                                    </td>
-                                    <td><span
-                                            class="fh-hours">{{ $hour->instrument_flight_time !== null ? number_format($hour->instrument_flight_time, 1) . ' hrs' : '-' }}</span>
-                                    </td>
-                                    <td><span class="fh-hours"><strong>{{ number_format($hour->total_time, 1) }}
-                                                hrs</strong></span></td>
+                                    <td>{{ $hour->instructor ? $hour->instructor->first_name . ' ' . $hour->instructor->last_name : 'N/A' }}</td>
+                                    <td><span class="fh-aircraft">{{ $hour->aircraft ? $hour->aircraft->registration : 'N/A' }}</span></td>
+                                    <td><span class="badge bg-light text-dark border px-2 py-1">{{ $hour->stage ? $hour->stage->stage : 'N/A' }}</span></td>
+                                    <td>{{ $hour->lesson ?? 'N/A' }}</td>
+                                    <td><span class="fh-hours">{{ $hour->dual_instruction_time !== null ? number_format($hour->dual_instruction_time, 1) . ' hrs' : '-' }}</span></td>
+                                    <td><span class="fh-hours">{{ $hour->pic_time !== null ? number_format($hour->pic_time, 1) . ' hrs' : '-' }}</span></td>
+                                    <td><span class="fh-hours">{{ $hour->solo_time !== null ? number_format($hour->solo_time, 1) . ' hrs' : '-' }}</span></td>
+                                    <td><span class="fh-hours">{{ $hour->instrument_flight_time !== null ? number_format($hour->instrument_flight_time, 1) . ' hrs' : '-' }}</span></td>
+                                    <td><span class="fh-hours"><strong>{{ number_format($hour->total_time, 1) }} hrs</strong></span></td>
                                     <td>
-                                        @if ($hour->status === 'approved')
-                                            <span class="badge bg-success px-2 py-1"><i class="bi bi-check-circle me-1"></i>approved</span>
+                                        @if ($hour->status === 'confirmed' || $hour->status === 'approved')
+                                            <span class="badge bg-success px-2 py-1"><i class="bi bi-check-circle me-1"></i>confirmed</span>
                                         @elseif ($hour->status === 'cancelled')
                                             <span class="badge bg-danger px-2 py-1"><i class="bi bi-x-circle me-1"></i>cancelled</span>
                                         @else
@@ -128,7 +121,7 @@
             flightHoursDataTable = window.jQuery(flightHoursTableElement).DataTable({
                 pageLength: 10,
                 order: [
-                    [0, 'desc']
+                    [1, 'desc']
                 ],
                 autoWidth: false,
             });

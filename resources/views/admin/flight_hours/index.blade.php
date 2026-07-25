@@ -55,7 +55,7 @@
             <div class="panel-header">
                 <div>
                     <p class="panel-title">Validation Queue</p>
-                    <p class="panel-subtitle">Approve or cancel submitted flight-hour logs.</p>
+                    <p class="panel-subtitle">Confirm or cancel submitted flight-hour logs.</p>
                 </div>
             </div>
             <div style="overflow-x:auto;">
@@ -65,7 +65,10 @@
                             <th>Log ID</th>
                             <th>Date</th>
                             <th>Student</th>
+                            <th>Instructor</th>
                             <th>Aircraft</th>
+                            <th>Training Stage</th>
+                            <th>Lesson</th>
                             <th>Dual Inst.</th>
                             <th>PIC Time</th>
                             <th>Solo Time</th>
@@ -80,11 +83,14 @@
                         @foreach ($flightHours as $hour)
                             <tr>
                                 <td><span class="fw-semibold text-primary">{{ $hour->log_id }}</span></td>
-                                <td data-order="{{ $hour->created_at ? $hour->created_at->format('Y-m-d') : '' }}">
-                                    {{ $hour->created_at ? $hour->created_at->format('M d, Y') : '-' }}
+                                <td data-order="{{ $hour->date ? $hour->date->format('Y-m-d') : ($hour->created_at ? $hour->created_at->format('Y-m-d') : '') }}">
+                                    {{ $hour->date ? $hour->date->format('M d, Y') : ($hour->created_at ? $hour->created_at->format('M d, Y') : '-') }}
                                 </td>
                                 <td>{{ $hour->student ? $hour->student->first_name . ' ' . $hour->student->last_name : 'N/A' }}</td>
+                                <td>{{ $hour->instructor ? $hour->instructor->first_name . ' ' . $hour->instructor->last_name : 'N/A' }}</td>
                                 <td>{{ $hour->aircraft ? $hour->aircraft->registration : 'N/A' }}</td>
+                                <td><span class="badge bg-light text-dark border px-2 py-1">{{ $hour->stage ? $hour->stage->stage : 'N/A' }}</span></td>
+                                <td>{{ $hour->lesson ?? 'N/A' }}</td>
                                 <td>{{ $hour->dual_instruction_time !== null ? number_format($hour->dual_instruction_time, 1) . ' hrs' : '-' }}</td>
                                 <td>{{ $hour->pic_time !== null ? number_format($hour->pic_time, 1) . ' hrs' : '-' }}</td>
                                 <td>{{ $hour->solo_time !== null ? number_format($hour->solo_time, 1) . ' hrs' : '-' }}</td>
@@ -93,8 +99,8 @@
                                 <td>
                                     @if ($hour->status === 'pending review')
                                         <span class="badge bg-warning text-dark px-2 py-1"><i class="bi bi-clock-history me-1"></i>pending review</span>
-                                    @elseif ($hour->status === 'approved')
-                                        <span class="badge bg-success px-2 py-1"><i class="bi bi-check-circle me-1"></i>approved</span>
+                                    @elseif ($hour->status === 'confirmed' || $hour->status === 'approved')
+                                        <span class="badge bg-success px-2 py-1"><i class="bi bi-check-circle me-1"></i>confirmed</span>
                                     @elseif ($hour->status === 'cancelled')
                                         <span class="badge bg-danger px-2 py-1"><i class="bi bi-x-circle me-1"></i>cancelled</span>
                                     @else
@@ -105,9 +111,9 @@
                                 <td>
                                     <form action="{{ route('admin.flight.hours.update.status', $hour->id) }}" method="POST" class="d-inline">
                                         @csrf
-                                        @if ($hour->status !== 'approved')
-                                            <button type="submit" name="status" value="approved" class="btn btn-sm btn-success py-1 px-2 me-1" title="Approve">
-                                                <i class="bi bi-check-circle me-1"></i>Approve
+                                        @if ($hour->status !== 'confirmed' && $hour->status !== 'approved')
+                                            <button type="submit" name="status" value="confirmed" class="btn btn-sm btn-success py-1 px-2 me-1" title="Confirm">
+                                                <i class="bi bi-check-circle me-1"></i>Confirm
                                             </button>
                                         @endif
                                         @if ($hour->status !== 'cancelled')

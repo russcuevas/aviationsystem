@@ -65,8 +65,12 @@
                     <thead>
                         <tr>
                             <th>Log ID</th>
+                            <th>Date</th>
                             <th>Student</th>
+                            <th>Instructor</th>
                             <th>Aircraft</th>
+                            <th>Training Stage</th>
+                            <th>Lesson</th>
                             <th>Dual Inst.</th>
                             <th>PIC Time</th>
                             <th>Solo Time</th>
@@ -80,9 +84,19 @@
                         @foreach ($flightHours as $hour)
                             <tr>
                                 <td><span class="fw-semibold text-primary">{{ $hour->log_id }}</span></td>
+                                <td
+                                    data-order="{{ $hour->date ? $hour->date->format('Y-m-d') : ($hour->created_at ? $hour->created_at->format('Y-m-d') : '') }}">
+                                    {{ $hour->date ? $hour->date->format('M d, Y') : ($hour->created_at ? $hour->created_at->format('M d, Y') : '-') }}
+                                </td>
                                 <td>{{ $hour->student ? $hour->student->first_name . ' ' . $hour->student->last_name : 'N/A' }}
                                 </td>
+                                <td>{{ $hour->instructor ? $hour->instructor->first_name . ' ' . $hour->instructor->last_name : 'N/A' }}
+                                </td>
                                 <td>{{ $hour->aircraft ? $hour->aircraft->registration : 'N/A' }}</td>
+                                <td><span
+                                        class="badge bg-light text-dark border px-2 py-1">{{ $hour->stage ? $hour->stage->stage : 'N/A' }}</span>
+                                </td>
+                                <td>{{ $hour->lesson ?? 'N/A' }}</td>
                                 <td>{{ $hour->dual_instruction_time !== null ? number_format($hour->dual_instruction_time, 1) . ' hrs' : '-' }}
                                 </td>
                                 <td>{{ $hour->pic_time !== null ? number_format($hour->pic_time, 1) . ' hrs' : '-' }}
@@ -96,9 +110,9 @@
                                     @if ($hour->status === 'pending review')
                                         <span class="badge bg-warning text-dark px-2 py-1"><i
                                                 class="bi bi-clock-history me-1"></i>pending review</span>
-                                    @elseif ($hour->status === 'approved')
+                                    @elseif ($hour->status === 'confirmed' || $hour->status === 'approved')
                                         <span class="badge bg-success px-2 py-1"><i
-                                                class="bi bi-check-circle me-1"></i>approved</span>
+                                                class="bi bi-check-circle me-1"></i>confirmed</span>
                                     @elseif ($hour->status === 'cancelled')
                                         <span class="badge bg-danger px-2 py-1"><i
                                                 class="bi bi-x-circle me-1"></i>cancelled</span>
@@ -126,19 +140,28 @@
                     @csrf
                     <div class="modal-body">
                         <div class="row g-3">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
+                                <label for="date" class="form-label fw-medium">Date <span
+                                        class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="date" name="date" required
+                                    value="{{ date('Y-m-d') }}">
+                            </div>
+
+                            <div class="col-md-4">
                                 <label for="student_id" class="form-label fw-medium">Student <span
                                         class="text-danger">*</span></label>
                                 <select class="form-select" id="student_id" name="student_id" required>
                                     <option value="" selected disabled>Select student</option>
                                     @foreach ($students as $student)
-                                        <option value="{{ $student->id }}">{{ $student->first_name }}
-                                            {{ $student->last_name }}</option>
+                                        <option value="{{ $student->id }}"
+                                            data-stages="{{ json_encode($student->stages) }}">
+                                            {{ $student->first_name }} {{ $student->last_name }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
 
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label for="aircraft_id" class="form-label fw-medium">Aircraft <span
                                         class="text-danger">*</span></label>
                                 <select class="form-select" id="aircraft_id" name="aircraft_id" required>
@@ -149,6 +172,22 @@
                                         </option>
                                     @endforeach
                                 </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="stage_id" class="form-label fw-medium">Training Stage</label>
+                                <select class="form-select" id="stage_id" name="stage_id" disabled>
+                                    <option value="" selected disabled>Select student first</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="lesson_select" class="form-label fw-medium">Lesson</label>
+                                <select class="form-select" id="lesson_select" name="lesson" disabled>
+                                    <option value="" selected disabled>Select training stage first</option>
+                                </select>
+                                <input type="text" class="form-control mt-2 d-none" id="custom_lesson_input"
+                                    placeholder="Enter custom lesson name">
                             </div>
 
                             <div class="col-md-3">
@@ -180,7 +219,7 @@
                             <div class="col-12">
                                 <label for="remarks" class="form-label fw-medium">Remarks</label>
                                 <textarea class="form-control" id="remarks" name="remarks" rows="3"
-                                    placeholder="Add notes or details about the last lesson session."></textarea>
+                                    placeholder="Add notes or details about the last session."></textarea>
                             </div>
                         </div>
                     </div>
@@ -205,11 +244,85 @@
             window.jQuery(instructorHoursTableEl).DataTable({
                 pageLength: 10,
                 order: [
-                    [0, 'desc']
+                    [1, 'desc']
                 ],
                 autoWidth: false
             });
         }
+
+        let currentStudentStages = [];
+
+        // Dynamic Stage dropdown based on Student selection
+        $('#student_id').on('change', function() {
+            const selectedOption = $(this).find('option:selected');
+            try {
+                currentStudentStages = selectedOption.data('stages') || [];
+            } catch (e) {
+                currentStudentStages = [];
+            }
+
+            const stageSelect = $('#stage_id');
+            const lessonSelect = $('#lesson_select');
+            const customInput = $('#custom_lesson_input');
+
+            stageSelect.empty();
+            lessonSelect.empty().prop('disabled', true).append(
+                '<option value="" selected disabled>Select training stage first</option>');
+            customInput.addClass('d-none').val('');
+
+            if (currentStudentStages && currentStudentStages.length > 0) {
+                stageSelect.prop('disabled', false);
+                stageSelect.append('<option value="" selected disabled>Select stage</option>');
+                currentStudentStages.forEach(stg => {
+                    stageSelect.append(`<option value="${stg.id}">${stg.stage} (${stg.status})</option>`);
+                });
+            } else {
+                stageSelect.prop('disabled', true);
+                stageSelect.append('<option value="" selected disabled>No stages found for this student</option>');
+            }
+        });
+
+        // Dynamic Lesson dropdown based on Stage selection (loads ONLY scheduled lessons for selected student & stage)
+        $('#stage_id').on('change', function() {
+            const selectedStageId = $(this).val();
+            const lessonSelect = $('#lesson_select');
+            const customInput = $('#custom_lesson_input');
+
+            lessonSelect.empty();
+            customInput.addClass('d-none').val('');
+
+            const selectedStageObj = currentStudentStages.find(s => s.id == selectedStageId);
+            let lessons = selectedStageObj && selectedStageObj.lessons ? selectedStageObj.lessons : [];
+
+            if (lessons && lessons.length > 0) {
+                lessonSelect.prop('disabled', false);
+                lessonSelect.append('<option value="" selected disabled>Select scheduled lesson</option>');
+                lessons.forEach(lsn => {
+                    lessonSelect.append(`<option value="${lsn}">${lsn}</option>`);
+                });
+                lessonSelect.append('<option value="__custom__">+ Enter Custom Lesson</option>');
+            } else {
+                lessonSelect.prop('disabled', false);
+                lessonSelect.append(
+                    '<option value="" selected disabled>No scheduled lessons for this stage</option>');
+                lessonSelect.append('<option value="__custom__">+ Enter Custom Lesson</option>');
+            }
+        });
+
+        // Handle Custom Lesson toggle
+        $('#lesson_select').on('change', function() {
+            const val = $(this).val();
+            const customInput = $('#custom_lesson_input');
+            if (val === '__custom__') {
+                customInput.removeClass('d-none').prop('required', true).focus();
+                $(this).removeAttr('name');
+                customInput.attr('name', 'lesson');
+            } else {
+                customInput.addClass('d-none').prop('required', false).val('');
+                customInput.removeAttr('name');
+                $(this).attr('name', 'lesson');
+            }
+        });
     </script>
 </body>
 

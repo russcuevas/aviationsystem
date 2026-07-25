@@ -21,7 +21,7 @@ class AdminFlightHoursController extends Controller
             }
         }
 
-        $query = FlightHour::with(['student', 'aircraft'])->orderBy('id', 'desc');
+        $query = FlightHour::with(['student', 'instructor', 'aircraft', 'stage'])->orderBy('id', 'desc');
 
         if ($flightId) {
             $query->whereHas('student', function ($q) use ($flightId) {
@@ -37,7 +37,7 @@ class AdminFlightHoursController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required|in:approved,cancelled,pending review',
+            'status' => 'required|in:confirmed,approved,cancelled,pending review',
         ]);
 
         $flightHour = FlightHour::findOrFail($id);

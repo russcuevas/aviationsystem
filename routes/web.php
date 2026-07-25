@@ -20,6 +20,7 @@ use App\Http\Controllers\superadmin\SuperadminStudentController;
 use App\Http\Controllers\instructor\InstructorDashboardController;
 use App\Http\Controllers\instructor\InstructorFlightHoursEncodingController;
 use App\Http\Controllers\instructor\InstructorSchedulingController;
+use App\Http\Controllers\instructor\InstructorStudentProgressController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -103,4 +104,7 @@ Route::middleware(['instructor.auth'])->group(function () {
 
     Route::get('/instructor/flight-hours-encoding', [InstructorFlightHoursEncodingController::class, 'InstructorFlightHoursPage'])->name('instructor.flight.hours.encoding.page');
     Route::post('/instructor/flight-hours-encoding', [InstructorFlightHoursEncodingController::class, 'store'])->name('instructor.flight.hours.encoding.store');
+
+    Route::get('/instructor/student-progress', [InstructorStudentProgressController::class, 'InstructorStudentProgressPage'])->name('instructor.student.progress.page');
+    Route::post('/instructor/student-progress/{id}/update', [InstructorStudentProgressController::class, 'updateProgress'])->name('instructor.student.progress.update');
 });

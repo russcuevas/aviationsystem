@@ -24,29 +24,54 @@ class InstructorFlightHoursEncodingController extends Controller
 
         $students = collect();
         $aircrafts = collect();
+        $instructors = collect();
+
         if ($flightId) {
             $students = DB::table('students')->where('flying_id', $flightId)->orderBy('first_name')->get();
             $aircrafts = DB::table('aircrafts')->where('flying_id', $flightId)->orderBy('registration')->get();
+            $instructors = DB::table('instructors')->where('flying_id', $flightId)->orderBy('first_name')->get();
         } else {
             $students = DB::table('students')->orderBy('first_name')->get();
             $aircrafts = DB::table('aircrafts')->orderBy('registration')->get();
+            $instructors = DB::table('instructors')->orderBy('first_name')->get();
         }
 
-        $flightHours = FlightHour::with(['student', 'aircraft'])->orderBy('id', 'desc')->get();
+        $studentIds = $students->pluck('id');
+        $studentStages = DB::table('students_staging')->whereIn('student_id', $studentIds)->orderBy('created_at', 'asc')->get();
+        $schedules = DB::table('schedules')->whereIn('student_id', $studentIds)->get();
 
-        return view('instructor.flight_hours_encoding.index', compact('providerName', 'students', 'aircrafts', 'flightHours'));
+        foreach ($students as $student) {
+            $stages = $studentStages->where('student_id', $student->id)->values();
+            foreach ($stages as $stg) {
+                // Get ONLY lessons from scheduling table for this student and selected stage
+                $schedLessons = $schedules->where('student_id', $student->id)
+                    ->where('stage_id', $stg->id)
+                    ->pluck('lesson_type')
+                    ->filter()
+                    ->unique()
+                    ->values()
+                    ->toArray();
+
+                $stg->lessons = array_values($schedLessons);
+            }
+            $student->stages = $stages->toArray();
+        }
+
+        $flightHours = FlightHour::with(['student', 'instructor', 'aircraft', 'stage'])->orderBy('id', 'desc')->get();
+
+        return view('instructor.flight_hours_encoding.index', compact('providerName', 'students', 'aircrafts', 'instructors', 'flightHours'));
     }
 
     public function store(Request $request)
     {
         $instructorId = session('instructor_id');
-        if (!$instructorId) {
-            return redirect()->route('login.page')->withErrors(['login_error' => 'Invalid session context.']);
-        }
 
         $request->validate([
+            'date' => 'required|date',
             'student_id' => 'required|exists:students,id',
             'aircraft_id' => 'required|exists:aircrafts,id',
+            'stage_id' => 'nullable|exists:students_staging,id',
+            'lesson' => 'nullable|string',
             'dual_instruction_time' => 'nullable|numeric|min:0',
             'pic_time' => 'nullable|numeric|min:0',
             'solo_time' => 'nullable|numeric|min:0',
@@ -61,8 +86,12 @@ class InstructorFlightHoursEncodingController extends Controller
         $totalTime = $dual + $pic + $solo + $inst;
 
         FlightHour::create([
+            'date' => $request->date,
             'student_id' => $request->student_id,
+            'instructor_id' => $instructorId ?? $request->instructor_id,
             'aircraft_id' => $request->aircraft_id,
+            'stage_id' => $request->stage_id,
+            'lesson' => $request->lesson,
             'dual_instruction_time' => $request->dual_instruction_time,
             'pic_time' => $request->pic_time,
             'solo_time' => $request->solo_time,

@@ -13,8 +13,12 @@ class FlightHour extends Model
 
     protected $fillable = [
         'log_id',
+        'date',
         'student_id',
+        'instructor_id',
         'aircraft_id',
+        'stage_id',
+        'lesson',
         'dual_instruction_time',
         'pic_time',
         'solo_time',
@@ -22,6 +26,10 @@ class FlightHour extends Model
         'total_time',
         'status',
         'remarks',
+    ];
+
+    protected $casts = [
+        'date' => 'date',
     ];
 
     protected static function boot()
@@ -56,8 +64,18 @@ class FlightHour extends Model
         return $this->belongsTo(Student::class, 'student_id');
     }
 
+    public function instructor()
+    {
+        return $this->belongsTo(Instructor::class, 'instructor_id');
+    }
+
     public function aircraft()
     {
         return $this->belongsTo(Aircraft::class, 'aircraft_id');
+    }
+
+    public function stage()
+    {
+        return $this->belongsTo(StudentStaging::class, 'stage_id');
     }
 }

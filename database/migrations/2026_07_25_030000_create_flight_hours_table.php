@@ -14,8 +14,12 @@ return new class extends Migration
         Schema::create('flight_hours', function (Blueprint $table) {
             $table->id();
             $table->string('log_id')->unique();
+            $table->date('date')->nullable();
             $table->foreignId('student_id')->constrained('students')->onDelete('cascade');
+            $table->foreignId('instructor_id')->nullable()->constrained('instructors')->onDelete('cascade');
             $table->foreignId('aircraft_id')->constrained('aircrafts')->onDelete('cascade');
+            $table->foreignId('stage_id')->nullable()->constrained('students_staging')->onDelete('set null');
+            $table->string('lesson')->nullable();
             $table->decimal('dual_instruction_time', 8, 2)->nullable();
             $table->decimal('pic_time', 8, 2)->nullable();
             $table->decimal('solo_time', 8, 2)->nullable();

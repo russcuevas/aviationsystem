@@ -10,8 +10,8 @@ class SuperadminFlightHoursController extends Controller
 {
     public function SuperadminFlightHoursPage()
     {
-        $flightHours = FlightHour::with(['student', 'aircraft'])
-            ->whereIn('status', ['approved', 'cancelled'])
+        $flightHours = FlightHour::with(['student', 'instructor', 'aircraft', 'stage'])
+            ->whereIn('status', ['confirmed', 'approved', 'cancelled'])
             ->orderBy('id', 'desc')
             ->get();
 
