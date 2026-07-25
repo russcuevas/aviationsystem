@@ -56,7 +56,6 @@ class InstructorDashboardController extends Controller
             });
         })->sum('total_time');
 
-        // If no date-specific hours in current month, fallback to total encoded flight hours for this instructor
         if ($encodedMonthlyHours == 0) {
             $fhFallback = DB::table('flight_hours');
             if ($instructorId) {
@@ -131,13 +130,49 @@ class InstructorDashboardController extends Controller
 
         $assignedStudents = $assignedStudentsQuery->get()->unique('student_id');
 
+        // Fetch Aircraft Logbooks & Technical Issues for Mechanic Dashboard
+        $logbooksQuery = DB::table('aircrafts_logbook')
+            ->leftJoin('students', 'aircrafts_logbook.student_id', '=', 'students.id')
+            ->leftJoin('instructors', 'aircrafts_logbook.instructor_id', '=', 'instructors.id')
+            ->select(
+                'aircrafts_logbook.*',
+                DB::raw("CONCAT(students.first_name, ' ', COALESCE(students.middle_name, ''), ' ', students.last_name) as student_name"),
+                DB::raw("CONCAT(instructors.first_name, ' ', COALESCE(instructors.middle_name, ''), ' ', instructors.last_name) as instructor_name")
+            )
+            ->orderBy('aircrafts_logbook.date_time', 'desc');
+
+        if ($instructorId) {
+            $logbooksQuery->where('aircrafts_logbook.instructor_id', $instructorId);
+        }
+
+        $logbooks = $logbooksQuery->get();
+
         return view('instructor.dashboard.index', compact(
             'providerName',
             'assignedStudentsCount',
             'todaysFlightsCount',
             'monthlyHours',
             'todaysSchedules',
-            'assignedStudents'
+            'assignedStudents',
+            'logbooks'
         ));
+    }
+
+    public function updateMaintenance(Request $request, $id)
+    {
+        $request->validate([
+            'technical_issues' => 'nullable|string',
+            'mechanics' => 'nullable|string',
+        ]);
+
+        DB::table('aircrafts_logbook')
+            ->where('id', $id)
+            ->update([
+                'technical_issues' => $request->technical_issues,
+                'mechanics' => $request->mechanics,
+                'updated_at' => now(),
+            ]);
+
+        return redirect()->back()->with('success', 'Technical issue & mechanic corrective action updated successfully.');
     }
 }

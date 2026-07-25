@@ -101,6 +101,7 @@ Route::middleware(['admin.auth'])->group(function () {
 // INSTRUCTOR ROUTES
 Route::middleware(['instructor.auth'])->group(function () {
     Route::get('/instructor/dashboard', [InstructorDashboardController::class, 'InstructorDashboardPage'])->name('instructor.dashboard.page');
+    Route::post('/instructor/dashboard/maintenance/{id}', [InstructorDashboardController::class, 'updateMaintenance'])->name('instructor.dashboard.maintenance.update');
 
     Route::get('/instructor/scheduling', [InstructorSchedulingController::class, 'InstructorSchedulingPage'])->name('instructor.scheduling.page');
 
