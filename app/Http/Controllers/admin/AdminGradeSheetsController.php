@@ -79,8 +79,110 @@ class AdminGradeSheetsController extends Controller
                         'updated_at' => now(),
                     ]);
             }
+
+            // Check if all stage lessons have been accepted and update stage status to 'Completed'
+            $this->checkAndUpdateStageCompletion($studentId);
         }
 
         return redirect()->back()->with('success', "Grade sheet {$sheet->sheet_id} status updated to 'Accepted' and related lesson schedules tagged as Completed.");
+    }
+
+    private function checkAndUpdateStageCompletion($studentId)
+    {
+        $studentStages = DB::table('students_staging')->where('student_id', $studentId)->get();
+        if ($studentStages->isEmpty()) {
+            return;
+        }
+
+        $acceptedGradeSheets = GradeSheet::where('student_id', $studentId)
+            ->where('status', 'Accepted')
+            ->get();
+
+        $acceptedLessons = [];
+        foreach ($acceptedGradeSheets as $gs) {
+            $lg = is_array($gs->lesson_grades) ? $gs->lesson_grades : json_decode($gs->lesson_grades, true);
+            if ($lg) {
+                foreach ($lg as $item) {
+                    if (!empty($item['lesson'])) {
+                        $acceptedLessons[] = trim($item['lesson']);
+                    }
+                }
+            }
+        }
+        $acceptedLessons = array_unique($acceptedLessons);
+
+        $defaultLessons = [
+            'Stage 1' => [
+                'Lesson 1: Aircraft Orientation & Normal Procedures',
+                'Lesson 2: Slow Flight, Stalls & Steep Turns',
+                'Lesson 3: Traffic Pattern & Touch-and-Go Drills',
+                'Lesson 4: Emergency Procedures & Forced Landings',
+                'Lesson 5: First Solo Flight Evaluation',
+            ],
+            'Stage 2' => [
+                'Lesson 6: Cross-Country Navigation Planning',
+                'Lesson 7: Dual Cross-Country Flight',
+                'Lesson 8: Solo Cross-Country Flight',
+                'Lesson 9: Instrument & Night Navigation',
+            ],
+            'Stage 3' => [
+                'Lesson 10: Instrument Flight & Partial Panel',
+                'Lesson 11: Complex Maneuvers & Emergency Drills',
+                'Lesson 12: Practical Test / Mock Checkride',
+            ]
+        ];
+
+        foreach ($studentStages as $stg) {
+            $schedLessons = DB::table('schedules')
+                ->where('student_id', $studentId)
+                ->where('stage_id', $stg->id)
+                ->pluck('lesson_type')
+                ->filter()
+                ->unique()
+                ->toArray();
+
+            if (empty($schedLessons)) {
+                $presets = [];
+                foreach ($defaultLessons as $key => $items) {
+                    if (stripos($stg->stage, $key) !== false || stripos($key, $stg->stage) !== false) {
+                        $presets = $items;
+                        break;
+                    }
+                }
+                if (empty($presets)) {
+                    $presets = [
+                        'Lesson 1: Aircraft Orientation',
+                        'Lesson 2: Flight Maneuvers & Traffic Pattern',
+                        'Lesson 3: Cross-Country Navigation',
+                        'Lesson 4: Solo & Checkride Preparation'
+                    ];
+                }
+                $schedLessons = $presets;
+            }
+
+            $allCompleted = true;
+            foreach ($schedLessons as $reqLesson) {
+                if (!in_array(trim($reqLesson), $acceptedLessons)) {
+                    $allCompleted = false;
+                    break;
+                }
+            }
+
+            if ($allCompleted && count($schedLessons) > 0) {
+                DB::table('students_staging')
+                    ->where('id', $stg->id)
+                    ->update([
+                        'status' => 'Completed',
+                        'updated_at' => now(),
+                    ]);
+            } else {
+                DB::table('students_staging')
+                    ->where('id', $stg->id)
+                    ->update([
+                        'status' => 'In progress',
+                        'updated_at' => now(),
+                    ]);
+            }
+        }
     }
 }

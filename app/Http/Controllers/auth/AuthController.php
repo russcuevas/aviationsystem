@@ -61,6 +61,20 @@ class AuthController extends Controller
             return redirect()->route('instructor.dashboard.page');
         }
 
+        // 4. Check Student
+        $student = DB::table('students')->where('email', $request->email)->first();
+        if ($student && Hash::check($request->password, $student->password)) {
+            $fullName = trim($student->first_name . ' ' . ($student->middle_name ? $student->middle_name . ' ' : '') . $student->last_name);
+            $request->session()->put([
+                'student_logged_in' => true,
+                'student_id' => $student->id,
+                'student_name' => $fullName,
+                'student_email' => $student->email,
+                'flight_id' => $student->flying_id,
+            ]);
+            return redirect()->route('student.dashboard.page');
+        }
+
         return redirect()->back()->withInput()->withErrors([
             'login_error' => 'Invalid email address or password.'
         ]);
@@ -81,6 +95,10 @@ class AuthController extends Controller
             'instructor_id',
             'instructor_name',
             'instructor_email',
+            'student_logged_in',
+            'student_id',
+            'student_name',
+            'student_email',
             'flight_id',
         ]);
 

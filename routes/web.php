@@ -23,6 +23,7 @@ use App\Http\Controllers\instructor\InstructorFlightHoursEncodingController;
 use App\Http\Controllers\instructor\InstructorGradeSheetController;
 use App\Http\Controllers\instructor\InstructorSchedulingController;
 use App\Http\Controllers\instructor\InstructorStudentProgressController;
+use App\Http\Controllers\student\StudentDashboardController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -117,3 +118,9 @@ Route::middleware(['instructor.auth'])->group(function () {
     Route::get('/instructor/grade-sheet', [InstructorGradeSheetController::class, 'InstructorGradeSheetPage'])->name('instructor.grade.sheet.page');
     Route::post('/instructor/grade-sheet', [InstructorGradeSheetController::class, 'store'])->name('instructor.grade.sheet.store');
 });
+
+// STUDENT ROUTES
+Route::middleware(['student.auth'])->group(function () {
+    Route::get('/student/dashboard', [StudentDashboardController::class, 'StudentDashboardPage'])->name('student.dashboard.page');
+});
+

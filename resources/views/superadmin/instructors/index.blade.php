@@ -510,9 +510,7 @@
             });
 
             if (type !== '' && !isMatched) {
-                selectHtml += `<option value="Other" selected>Other / Custom Document</option>`;
-            } else if (type === '') {
-                selectHtml += `<option value="Other">Other / Custom Document</option>`;
+                selectHtml = selectHtml.replace('value="Other"', 'value="Other" selected');
             }
             selectHtml += `</select>`;
 
@@ -561,19 +559,6 @@
             if (!tbody) return;
             tbody.innerHTML = '';
             addRowCounter = 0;
-
-            const defaultLicenses = [
-                { type: 'Medical Certificate' },
-                { type: 'NTC License' },
-                { type: 'Pilot License' },
-                { type: 'ELP Certificate' }
-            ];
-
-            defaultLicenses.forEach(license => {
-                const tr = createAttachmentRow(license.type, '', '', 'add');
-                tr.querySelector('input[type="file"]').removeAttribute('required');
-                tbody.appendChild(tr);
-            });
         }
 
         document.addEventListener('DOMContentLoaded', function() {

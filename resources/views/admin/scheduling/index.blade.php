@@ -84,59 +84,63 @@
                 <table class="data-table" id="scheduleTable">
                     <thead>
                         <tr>
-                            <th>Date</th>
-                            <th>Student</th>
-                            <th>Stage</th>
-                            <th>Lesson Type</th>
-                            <th>Instructor</th>
-                            <th>Aircraft</th>
-                            <th>Time Slot</th>
-                            <th>Status</th>
+                            <th>Student ID</th>
+                            <th>Student Name</th>
+                            <th>Assigned Stages</th>
+                            <th>Total Flight Schedules</th>
+                            <th>Stage Completion Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($schedules as $schedule)
-                            <tr data-id="{{ $schedule->id }}">
-                                <td data-order="{{ $schedule->date }}">{{ date('M j, Y', strtotime($schedule->date)) }}
-                                </td>
-                                <td>{{ $schedule->student_name }}</td>
+                        @foreach ($students as $student)
+                            @php
+                                $totalStages = count($student->stages_breakdown ?? []);
+                                $completedStages = 0;
+                                foreach ($student->stages_breakdown ?? [] as $stgItem) {
+                                    if (($stgItem['status'] ?? '') === 'Completed') {
+                                        $completedStages++;
+                                    }
+                                }
+                            @endphp
+                            <tr data-id="{{ $student->id }}">
                                 <td>
-                                    <span
-                                        class="badge bg-secondary-subtle text-secondary border border-secondary-subtle"
-                                        style="font-size: 0.72rem;">
-                                        {{ $schedule->stage_name }}
+                                    <span class="school-code">STU-{{ sprintf('%03d', $student->id) }}</span>
+                                </td>
+                                <td class="fw-bold text-dark">{{ $student->first_name }} {{ $student->middle_name ? $student->middle_name . ' ' : '' }}{{ $student->last_name }}</td>
+                                <td>
+                                    @forelse($student->stages_breakdown ?? [] as $stgItem)
+                                        <span class="badge bg-light text-dark border me-1">{{ $stgItem['stage'] }}</span>
+                                    @empty
+                                        <span class="text-muted small">No stage assigned</span>
+                                    @endforelse
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary-subtle text-primary border px-2 py-1" style="font-size: 0.8rem;">
+                                        <i class="bi bi-calendar-event me-1"></i>{{ $student->schedules_count ?? 0 }} Flights Scheduled
                                     </span>
                                 </td>
-                                <td>{{ $schedule->lesson_type }}</td>
-
-                                <td>{{ $schedule->instructor_name }}</td>
                                 <td>
-                                    <span class="school-code">{{ $schedule->aircraft_reg }}</span>
-                                </td>
-                                <td>{{ date('h:i A', strtotime($schedule->start_time)) }} <br> to <br>
-                                    {{ date('h:i A', strtotime($schedule->end_time)) }}</td>
-                                <td>
-                                    <span
-                                        class="school-status status-{{ strtolower($schedule->status) }}">{{ $schedule->status }}</span>
+                                    @if($totalStages > 0 && $completedStages === $totalStages)
+                                        <span class="school-status status-completed"><i class="bi bi-check-circle-fill me-1"></i>Completed ({{ $completedStages }}/{{ $totalStages }})</span>
+                                    @elseif($completedStages > 0)
+                                        <span class="school-status status-scheduled"><i class="bi bi-hourglass-split me-1"></i>In Progress ({{ $completedStages }}/{{ $totalStages }})</span>
+                                    @else
+                                        <span class="school-status status-scheduled"><i class="bi bi-clock me-1"></i>In Progress (0/{{ $totalStages }})</span>
+                                    @endif
                                 </td>
                                 <td>
                                     <div class="d-flex gap-2">
-                                        <button class="btn btn-sm btn-outline-warning btn-edit-schedule"
-                                            data-id="{{ $schedule->id }}" data-date="{{ $schedule->date }}"
-                                            data-start="{{ $schedule->start_time }}"
-                                            data-end="{{ $schedule->end_time }}"
-                                            data-student-id="{{ $schedule->student_id }}"
-                                            data-stage-id="{{ $schedule->stage_id }}"
-                                            data-instructor-id="{{ $schedule->instructor_id }}"
-                                            data-aircraft-id="{{ $schedule->aircraft_id }}"
-                                            data-lesson-type="{{ $schedule->lesson_type }}"
-                                            data-status="{{ $schedule->status }}"
-                                            data-remarks="{{ $schedule->remarks }}" title="Edit"><i
-                                                class="bi bi-pencil"></i></button>
-                                        <button class="btn btn-sm btn-outline-danger btn-delete-schedule"
-                                            data-id="{{ $schedule->id }}" title="Delete"><i
-                                                class="bi bi-trash"></i></button>
+                                        <button class="btn btn-sm btn-primary btn-view-student-breakdown"
+                                            data-student-name="{{ $student->first_name }} {{ $student->last_name }}"
+                                            data-schedules-count="{{ $student->schedules_count ?? 0 }}"
+                                            data-breakdown='@json($student->stages_breakdown ?? [])'>
+                                            <i class="bi bi-eye me-1"></i> View Breakdown
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-success" type="button" data-bs-toggle="modal" data-bs-target="#newScheduleModal"
+                                            onclick="$('#scheduleStudent').val({{ $student->id }}).trigger('change');">
+                                            <i class="bi bi-plus-lg me-1"></i> Add Schedule
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -373,7 +377,7 @@
                 ],
                 autoWidth: false,
                 columnDefs: [{
-                    targets: [8],
+                    targets: [5],
                     orderable: false,
                     searchable: false
                 }],
@@ -451,20 +455,128 @@
             $('#editScheduleInstructor').val(btn.data('instructor-id'));
             $('#editScheduleAircraft').val(btn.data('aircraft-id'));
             $('#editLessonType').val(btn.data('lesson-type'));
-            $('#editScheduleStatus').val(btn.data('status'));
             $('#editScheduleRemarks').val(btn.data('remarks'));
 
             $('#editScheduleModal').modal('show');
         });
+    </script>
 
-        // --- DELETE BUTTON HANDLER ---
-        $(document).on('click', '.btn-delete-schedule', function() {
-            const id = $(this).data('id');
-            if (confirm('Are you sure you want to delete this schedule? This action cannot be undone.')) {
-                const form = document.getElementById('globalDeleteForm');
-                form.action = `/admin/scheduling/${id}`;
-                form.submit();
+    <!-- Student Breakdown Modal -->
+    <div class="modal fade" id="studentBreakdownModal" tabindex="-1" aria-labelledby="studentBreakdownModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="studentBreakdownModalLabel">
+                        <i class="bi bi-person-lines-fill text-primary me-2"></i>
+                        Student Progress & Schedule Breakdown
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded border mb-4">
+                        <div>
+                            <span class="text-muted small uppercase fw-semibold">Student Name</span>
+                            <h5 class="fw-bold mb-0 text-primary" id="modalStudentName">-</h5>
+                        </div>
+                        <div>
+                            <span class="text-muted small uppercase fw-semibold">Total Schedules</span>
+                            <h6 class="fw-bold mb-0 text-dark" id="modalTotalSchedules">0 Flight Sessions</h6>
+                        </div>
+                    </div>
+
+                    <div id="modalStagesContainer" class="vstack gap-3"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- STUDENT BREAKDOWN MODAL HANDLER ---
+        $(document).on('click', '.btn-view-student-breakdown', function() {
+            const btn = $(this);
+            const studentName = btn.data('student-name');
+            const totalSchedules = btn.data('schedules-count');
+            let breakdown = [];
+            try {
+                breakdown = btn.data('breakdown') || [];
+            } catch (e) {
+                breakdown = [];
             }
+
+            $('#modalStudentName').text(studentName);
+            $('#modalTotalSchedules').text(`${totalSchedules} Scheduled Session(s)`);
+
+            const container = $('#modalStagesContainer');
+            container.empty();
+
+            if (Array.isArray(breakdown) && breakdown.length > 0) {
+                breakdown.forEach((stg) => {
+                    const stgStatus = stg.status || 'In progress';
+                    const stgStatusClass = stgStatus === 'Completed' ? 'bg-success' : 'bg-warning text-dark';
+
+                    let lessonsRowsHtml = '';
+                    if (stg.lessons && stg.lessons.length > 0) {
+                        stg.lessons.forEach(lsn => {
+                            let badgeHtml = '<span class="badge bg-secondary">Pending</span>';
+                            if (lsn.status === 'Completed') {
+                                badgeHtml = '<span class="badge bg-success"><i class="bi bi-check-circle-fill me-1"></i>Completed</span>';
+                            } else if (lsn.status === 'Scheduled') {
+                                badgeHtml = '<span class="badge bg-primary"><i class="bi bi-calendar-event me-1"></i>Scheduled</span>';
+                            } else if (lsn.status) {
+                                badgeHtml = `<span class="badge bg-info text-dark">${lsn.status}</span>`;
+                            }
+
+                            const schedDetails = lsn.date ? `${lsn.date} (${lsn.time || ''}) - ${lsn.instructor || 'N/A'} [${lsn.aircraft || 'N/A'}]` : '<span class="text-muted fs-7">Not scheduled yet</span>';
+
+                            lessonsRowsHtml += `
+                                <tr>
+                                    <td class="fw-semibold text-dark">${lsn.lesson_name}</td>
+                                    <td class="text-center">${badgeHtml}</td>
+                                    <td class="small text-secondary">${schedDetails}</td>
+                                </tr>
+                            `;
+                        });
+                    } else {
+                        lessonsRowsHtml = '<tr><td colspan="3" class="text-center text-muted py-3"><i class="bi bi-info-circle me-1"></i> No scheduled or graded lessons for this stage yet.</td></tr>';
+                    }
+
+                    const cardHtml = `
+                        <div class="card border shadow-sm rounded-3">
+                            <div class="card-header bg-white d-flex align-items-center justify-content-between py-2">
+                                <div class="fw-bold text-dark">
+                                    <i class="bi bi-diagram-3-fill text-primary me-2"></i> ${stg.stage}
+                                </div>
+                                <div>
+                                    <span class="badge bg-light text-dark border me-2"><i class="bi bi-clock me-1"></i>Req: ${stg.required_hours} hrs</span>
+                                    <span class="badge ${stgStatusClass}">${stgStatus}</span>
+                                </div>
+                            </div>
+                            <div class="card-body p-0" style="overflow-x:auto;">
+                                <table class="table table-hover align-middle mb-0" style="font-size:0.88rem;">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Lesson</th>
+                                            <th class="text-center" style="width: 120px;">Status</th>
+                                            <th>Schedule Details</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${lessonsRowsHtml}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    `;
+                    container.append(cardHtml);
+                });
+            } else {
+                container.append('<div class="alert alert-secondary text-center">No stage or schedule details found.</div>');
+            }
+
+            $('#studentBreakdownModal').modal('show');
         });
     </script>
 </body>

@@ -173,6 +173,12 @@
                                 </td>
                                 <td>
                                     <div class="d-flex gap-2">
+                                        <button class="btn btn-sm btn-outline-info btn-view-superadmin-breakdown"
+                                            data-student-name="{{ $student->first_name }} {{ $student->last_name }}"
+                                            data-breakdown='@json($student->stages_breakdown ?? [])'
+                                            title="View Progress Breakdown">
+                                            <i class="bi bi-list-check me-1"></i> Breakdown
+                                        </button>
                                         <button class="btn btn-sm btn-outline-primary btn-view-student"
                                             data-first-name="{{ $student->first_name }}"
                                             data-middle-name="{{ $student->middle_name }}"
@@ -668,9 +674,7 @@
             });
 
             if (type !== '' && !isMatched) {
-                selectHtml += `<option value="Other" selected>Other / Custom Document</option>`;
-            } else if (type === '') {
-                selectHtml += `<option value="Other">Other / Custom Document</option>`;
+                selectHtml = selectHtml.replace('value="Other"', 'value="Other" selected');
             }
             selectHtml += `</select>`;
 
@@ -719,20 +723,6 @@
             if (!tbody) return;
             tbody.innerHTML = '';
             rowCounter = 0;
-
-            const defaultLicenses = [{
-                    type: 'Student Pilot License (SPL)'
-                },
-                {
-                    type: 'Medical Certificate (Class 2)'
-                }
-            ];
-
-            defaultLicenses.forEach(license => {
-                const tr = createAttachmentRow(license.type, '', '', 'add');
-                tr.querySelector('input[type="file"]').removeAttribute('required');
-                tbody.appendChild(tr);
-            });
         }
 
         // --- STAGING CONFIGURATIONS DYNAMIC UI ---
@@ -790,9 +780,6 @@
             if (!tbody) return;
             tbody.innerHTML = '';
             stageRowCounter = 0;
-
-            // Default starting stage configuration
-            tbody.appendChild(createStageRow('PPL Ground', '40', 'In Progress', 'add'));
         }
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -1143,6 +1130,120 @@
             }
         });
     </script>
+
+    <!-- Superadmin Student Breakdown Modal -->
+    <div class="modal fade" id="superadminStudentBreakdownModal" tabindex="-1" aria-labelledby="superadminStudentBreakdownModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="superadminStudentBreakdownModalLabel">
+                        <i class="bi bi-person-lines-fill text-primary me-2"></i>
+                        Student Stage & Lesson Progress Breakdown
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded border mb-4">
+                        <div>
+                            <span class="text-muted small uppercase fw-semibold">Student Name</span>
+                            <h5 class="fw-bold mb-0 text-primary" id="saModalStudentName">-</h5>
+                        </div>
+                    </div>
+
+                    <div id="saModalStagesContainer" class="vstack gap-3"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- SUPERADMIN STUDENT BREAKDOWN MODAL HANDLER ---
+        $(document).on('click', '.btn-view-superadmin-breakdown', function() {
+            const btn = $(this);
+            const studentName = btn.data('student-name');
+            let breakdown = [];
+            try {
+                breakdown = btn.data('breakdown') || [];
+            } catch (e) {
+                breakdown = [];
+            }
+
+            $('#saModalStudentName').text(studentName);
+
+            const container = $('#saModalStagesContainer');
+            container.empty();
+
+            if (Array.isArray(breakdown) && breakdown.length > 0) {
+                breakdown.forEach((stg) => {
+                    const stgStatus = stg.status || 'In progress';
+                    const stgStatusClass = stgStatus === 'Completed' ? 'bg-success' : 'bg-warning text-dark';
+
+                    let lessonsRowsHtml = '';
+                    if (stg.lessons && stg.lessons.length > 0) {
+                        stg.lessons.forEach(lsn => {
+                            let badgeHtml = '<span class="badge bg-secondary">Pending</span>';
+                            if (lsn.status === 'Completed') {
+                                badgeHtml = '<span class="badge bg-success"><i class="bi bi-check-circle-fill me-1"></i>Completed</span>';
+                            } else if (lsn.status === 'Scheduled') {
+                                badgeHtml = '<span class="badge bg-primary"><i class="bi bi-calendar-event me-1"></i>Scheduled</span>';
+                            } else if (lsn.status) {
+                                badgeHtml = `<span class="badge bg-info text-dark">${lsn.status}</span>`;
+                            }
+
+                            const schedDetails = lsn.date ? `Scheduled on ${lsn.date}` : '<span class="text-muted fs-7">Not scheduled yet</span>';
+
+                            lessonsRowsHtml += `
+                                <tr>
+                                    <td class="fw-semibold text-dark">${lsn.lesson_name}</td>
+                                    <td class="text-center">${badgeHtml}</td>
+                                    <td class="small text-secondary">${schedDetails}</td>
+                                </tr>
+                            `;
+                        });
+                    } else {
+                        lessonsRowsHtml = '<tr><td colspan="3" class="text-center text-muted py-3"><i class="bi bi-info-circle me-1"></i> No scheduled or graded lessons for this stage yet.</td></tr>';
+                    }
+
+                    const cardHtml = `
+                        <div class="card border shadow-sm rounded-3">
+                            <div class="card-header bg-white d-flex align-items-center justify-content-between py-2">
+                                <div class="fw-bold text-dark">
+                                    <i class="bi bi-diagram-3-fill text-primary me-2"></i> ${stg.stage}
+                                </div>
+                                <div>
+                                    <span class="badge bg-light text-dark border me-2"><i class="bi bi-clock me-1"></i>Req: ${stg.required_hours} hrs</span>
+                                    <span class="badge ${stgStatusClass}">${stgStatus}</span>
+                                </div>
+                            </div>
+                            <div class="card-body p-0" style="overflow-x:auto;">
+                                <table class="table table-hover align-middle mb-0" style="font-size:0.88rem;">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Lesson</th>
+                                            <th class="text-center" style="width: 120px;">Status</th>
+                                            <th>Schedule Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${lessonsRowsHtml}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    `;
+                    container.append(cardHtml);
+                });
+            } else {
+                container.append('<div class="alert alert-secondary text-center">No stage or lesson breakdown available for this student.</div>');
+            }
+
+            $('#superadminStudentBreakdownModal').modal('show');
+        });
+    </script>
 </body>
 
 </html>
+

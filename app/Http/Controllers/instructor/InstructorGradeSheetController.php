@@ -54,7 +54,30 @@ class InstructorGradeSheetController extends Controller
             ]
         ];
 
+        $existingGradeSheets = DB::table('grade_sheets')
+            ->whereIn('student_id', $studentIds)
+            ->get();
+
         foreach ($students as $student) {
+            $studentGs = $existingGradeSheets->where('student_id', $student->id);
+            $submittedLessonsMap = [];
+            foreach ($studentGs as $gs) {
+                $lg = is_array($gs->lesson_grades) ? $gs->lesson_grades : json_decode($gs->lesson_grades, true);
+                if ($lg) {
+                    foreach ($lg as $item) {
+                        if (!empty($item['lesson'])) {
+                            $submittedLessonsMap[trim($item['lesson'])] = [
+                                'lesson' => trim($item['lesson']),
+                                'status' => $gs->status,
+                                'score' => $item['score'] ?? null,
+                                'grade' => $item['grade'] ?? null,
+                            ];
+                        }
+                    }
+                }
+            }
+            $student->submitted_lessons = $submittedLessonsMap;
+
             $stages = $studentStages->where('student_id', $student->id)->values();
             foreach ($stages as $stg) {
                 $schedLessons = $schedules->where('student_id', $student->id)

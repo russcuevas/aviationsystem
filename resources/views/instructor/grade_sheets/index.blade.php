@@ -192,7 +192,7 @@
                                 <select class="form-select" id="student_id" name="student_id" required>
                                     <option value="" selected disabled>Choose student...</option>
                                     @foreach ($students as $student)
-                                        <option value="{{ $student->id }}" data-stages="{{ json_encode($student->stages) }}">
+                                        <option value="{{ $student->id }}" data-stages="{{ json_encode($student->stages) }}" data-submitted-lessons="{{ json_encode($student->submitted_lessons ?? []) }}">
                                             {{ $student->first_name }} {{ $student->last_name }}
                                         </option>
                                     @endforeach
@@ -321,8 +321,6 @@
             });
         }
 
-        let currentStudentStages = [];
-
         // Helper: Convert score to letter grade
         function getLetterGrade(score) {
             if (isNaN(score) || score === '' || score === null) return 'N/A';
@@ -345,13 +343,18 @@
             return 'bg-secondary';
         }
 
+        let currentStudentStages = [];
+        let currentSubmittedLessons = {};
+
         // 1. Student dropdown change -> load Stages
         $('#student_id').on('change', function() {
             const selectedOption = $(this).find('option:selected');
             try {
                 currentStudentStages = selectedOption.data('stages') || [];
+                currentSubmittedLessons = selectedOption.data('submitted-lessons') || {};
             } catch (e) {
                 currentStudentStages = [];
+                currentSubmittedLessons = {};
             }
 
             const stageSelect = $('#stage_id');
@@ -404,38 +407,88 @@
 
             if (lessonsToRender && lessonsToRender.length > 0) {
                 $('#lessons_section').removeClass('d-none');
-                $('#btnSubmitGrade').prop('disabled', false);
+
+                let unsubmittedCount = 0;
 
                 lessonsToRender.forEach((item, idx) => {
                     const lsn = item.lesson_name;
                     const stgName = item.stage_name;
-                    const rowHtml = `
-                        <div class="row align-items-center g-2 p-2 border rounded bg-white shadow-sm">
-                            <div class="col-md-4 col-12">
-                                <span class="badge bg-light text-dark border me-1">${stgName}</span>
-                                <label class="fw-semibold mb-0 text-dark small"><i class="bi bi-journal-text me-1 text-primary"></i> ${lsn}</label>
-                                <input type="hidden" name="lesson_stages[${lsn}]" value="${stgName}">
-                            </div>
-                            <div class="col-md-3 col-6">
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text" title="Time Out"><i class="bi bi-clock"></i></span>
-                                    <input type="time" class="form-control" name="lesson_timeouts[${lsn}]" title="Time Out for this lesson">
+                    const cleanLsn = (lsn || '').trim();
+                    const submittedInfo = currentSubmittedLessons[cleanLsn] || currentSubmittedLessons[lsn];
+
+                    if (submittedInfo) {
+                        const prevScore = submittedInfo.score !== null ? submittedInfo.score : '-';
+                        const prevGrade = submittedInfo.grade || getLetterGrade(prevScore);
+                        const badgeClass = getGradeBadgeClass(prevGrade);
+                        const statusText = submittedInfo.status === 'Accepted' ? 'Accepted' : (submittedInfo.status || 'Submitted');
+                        const statusBadgeClass = submittedInfo.status === 'Accepted' ? 'bg-success' : 'bg-info text-dark';
+
+                        const rowHtml = `
+                            <div class="row align-items-center g-2 p-2 border rounded bg-light shadow-sm opacity-75">
+                                <div class="col-md-4 col-12">
+                                    <span class="badge bg-light text-dark border me-1">${stgName}</span>
+                                    <label class="fw-semibold mb-0 text-dark small"><i class="bi bi-journal-text me-1 text-primary"></i> ${lsn}</label>
+                                    <span class="badge ${statusBadgeClass} ms-1" style="font-size:0.75rem;"><i class="bi bi-check-circle-fill me-1"></i>${statusText}</span>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text" title="Time Out"><i class="bi bi-clock"></i></span>
+                                        <input type="time" class="form-control" disabled title="Already submitted">
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" class="form-control text-center fw-bold" value="${prevScore}" disabled placeholder="0 - 100">
+                                        <span class="input-group-text">/ 100</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-12 text-end">
+                                    <span class="badge ${badgeClass} px-3 py-2" style="font-size:0.85rem;">${prevGrade}</span>
                                 </div>
                             </div>
-                            <div class="col-md-3 col-6">
-                                <div class="input-group input-group-sm">
-                                    <input type="number" class="form-control lesson-score-input" 
-                                           name="scores[${lsn}]" min="0" max="100" step="0.5" placeholder="0 - 100">
-                                    <span class="input-group-text">/ 100</span>
+                        `;
+                        container.append(rowHtml);
+                    } else {
+                        unsubmittedCount++;
+                        const rowHtml = `
+                            <div class="row align-items-center g-2 p-2 border rounded bg-white shadow-sm">
+                                <div class="col-md-4 col-12">
+                                    <span class="badge bg-light text-dark border me-1">${stgName}</span>
+                                    <label class="fw-semibold mb-0 text-dark small"><i class="bi bi-journal-text me-1 text-primary"></i> ${lsn}</label>
+                                    <input type="hidden" name="lesson_stages[${lsn}]" value="${stgName}">
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text" title="Time Out"><i class="bi bi-clock"></i></span>
+                                        <input type="time" class="form-control" name="lesson_timeouts[${lsn}]" title="Time Out for this lesson">
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <div class="input-group input-group-sm">
+                                        <input type="number" class="form-control lesson-score-input" 
+                                               name="scores[${lsn}]" min="0" max="100" step="0.5" placeholder="0 - 100">
+                                        <span class="input-group-text">/ 100</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-12 text-end">
+                                    <span class="badge bg-secondary px-3 py-2 lesson-letter-badge" style="font-size:0.85rem;">N/A</span>
                                 </div>
                             </div>
-                            <div class="col-md-2 col-12 text-end">
-                                <span class="badge bg-secondary px-3 py-2 lesson-letter-badge" style="font-size:0.85rem;">N/A</span>
-                            </div>
-                        </div>
-                    `;
-                    container.append(rowHtml);
+                        `;
+                        container.append(rowHtml);
+                    }
                 });
+
+                if (unsubmittedCount === 0) {
+                    container.prepend(`
+                        <div class="alert alert-info py-2 px-3 small mb-2 border-0 bg-info-subtle text-info-emphasis rounded-3">
+                            <i class="bi bi-check-all me-1"></i> All lessons in this stage have already been submitted for this student.
+                        </div>
+                    `);
+                    $('#btnSubmitGrade').prop('disabled', true);
+                } else {
+                    $('#btnSubmitGrade').prop('disabled', false);
+                }
 
                 recalculateTotalGrade();
             } else {
