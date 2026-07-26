@@ -106,11 +106,31 @@ class InstructorSchedulingController extends Controller
                         ];
                     }
 
+                    $stageStatus = $stg->status;
+                    if (!empty($lessonsList)) {
+                        $hasUncompleted = false;
+                        foreach ($lessonsList as $lsn) {
+                            if ($lsn['status'] !== 'Completed') {
+                                $hasUncompleted = true;
+                                break;
+                            }
+                        }
+                        if ($hasUncompleted) {
+                            $stageStatus = 'In Progress';
+                            if ($stg->status === 'Completed') {
+                                DB::table('students_staging')->where('id', $stg->id)->update([
+                                    'status' => 'In Progress',
+                                    'updated_at' => now()
+                                ]);
+                            }
+                        }
+                    }
+
                     $stagesBreakdown[] = [
                         'id' => $stg->id,
                         'stage' => $stg->stage,
                         'required_hours' => $stg->required_hours,
-                        'status' => $stg->status,
+                        'status' => $stageStatus,
                         'lessons' => $lessonsList,
                     ];
                 }

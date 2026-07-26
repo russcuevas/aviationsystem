@@ -37,12 +37,12 @@ class AdminSchedulingController extends Controller
             ->orderBy('schedules.start_time', 'asc')
             ->get();
 
-        $students = DB::table('students')->where('flying_id', $flightId)->orderBy('first_name')->get();
-        $studentIds = $students->pluck('id');
+        $allStudents = DB::table('students')->where('flying_id', $flightId)->orderBy('first_name')->get();
+        $studentIds = $allStudents->pluck('id');
         $studentStages = DB::table('students_staging')->whereIn('student_id', $studentIds)->orderBy('created_at', 'asc')->get();
         $gradeSheets = DB::table('grade_sheets')->whereIn('student_id', $studentIds)->get();
 
-        foreach ($students as $student) {
+        foreach ($allStudents as $student) {
             $stgs = $studentStages->where('student_id', $student->id)->values();
             $student->stages = $stgs->toArray();
             $studentScheds = $schedules->where('student_id', $student->id)->values();
@@ -105,11 +105,31 @@ class AdminSchedulingController extends Controller
                     ];
                 }
 
+                $stageStatus = $stg->status;
+                if (!empty($lessonsList)) {
+                    $hasUncompleted = false;
+                    foreach ($lessonsList as $lsn) {
+                        if ($lsn['status'] !== 'Completed') {
+                            $hasUncompleted = true;
+                            break;
+                        }
+                    }
+                    if ($hasUncompleted) {
+                        $stageStatus = 'In Progress';
+                        if ($stg->status === 'Completed') {
+                            DB::table('students_staging')->where('id', $stg->id)->update([
+                                'status' => 'In Progress',
+                                'updated_at' => now()
+                            ]);
+                        }
+                    }
+                }
+
                 $stagesBreakdown[] = [
                     'id' => $stg->id,
                     'stage' => $stg->stage,
                     'required_hours' => $stg->required_hours,
-                    'status' => $stg->status,
+                    'status' => $stageStatus,
                     'lessons' => $lessonsList,
                 ];
             }
@@ -119,6 +139,11 @@ class AdminSchedulingController extends Controller
             $student->schedules_list = $studentScheds->toArray();
         }
 
+        // Only display students who have existing scheduled lessons in the main scheduling board table
+        $students = $allStudents->filter(function ($student) {
+            return $student->schedules_count > 0;
+        })->values();
+
         $instructors = DB::table('instructors')->where('flying_id', $flightId)->orderBy('first_name')->get();
         $aircrafts = DB::table('aircrafts')->where('flying_id', $flightId)->orderBy('registration')->get();
 
@@ -126,6 +151,7 @@ class AdminSchedulingController extends Controller
             'providerName',
             'schedules',
             'students',
+            'allStudents',
             'instructors',
             'aircrafts'
         ));
@@ -160,6 +186,14 @@ class AdminSchedulingController extends Controller
             'updated_at' => now(),
         ]);
 
+        // Revert stage status to In Progress as a new lesson/schedule has been added to this stage
+        DB::table('students_staging')
+            ->where('id', $request->scheduleStage)
+            ->update([
+                'status' => 'In Progress',
+                'updated_at' => now(),
+            ]);
+
         return redirect()->back()->with('success', 'Flight schedule saved successfully.');
     }
 
@@ -191,6 +225,16 @@ class AdminSchedulingController extends Controller
             'remarks' => $request->scheduleRemarks,
             'updated_at' => now(),
         ]);
+
+        // If the schedule status is not Completed, set stage to In Progress
+        if ($request->scheduleStatus !== 'Completed') {
+            DB::table('students_staging')
+                ->where('id', $request->scheduleStage)
+                ->update([
+                    'status' => 'In Progress',
+                    'updated_at' => now(),
+                ]);
+        }
 
         return redirect()->back()->with('success', 'Flight schedule updated successfully.');
     }

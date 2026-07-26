@@ -92,7 +92,7 @@
                             <th>School</th>
                             <th>Lessons</th>
                             <th>Flight Hours</th>
-                            <th>Grade</th>
+                            <th>Average Grade</th>
                             <th>Status</th>
                             <th>Progress Level</th>
                         </tr>

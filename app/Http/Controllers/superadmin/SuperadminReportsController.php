@@ -92,18 +92,27 @@ class SuperadminReportsController extends Controller
             $requiredHours = $stStages->first() ? (float)$stStages->first()->required_hours : 250;
             $requiredHoursFormatted = (floor($requiredHours) == $requiredHours) ? (int)$requiredHours : number_format($requiredHours, 1);
 
-            // Overall Grade display
-            $overallGrade = $latestSheet ? $latestSheet->overall_grade : 'N/A';
-            $overallScore = $latestSheet ? number_format($latestSheet->total_score, 1) : null;
+            // Average Grade display computed across all student grade sheets
+            $avgScore = $stSheets->isNotEmpty() ? round($stSheets->avg('total_score'), 1) : null;
+            $avgGrade = 'N/A';
+            if ($avgScore !== null) {
+                if ($avgScore >= 95) $avgGrade = 'A+';
+                elseif ($avgScore >= 90) $avgGrade = 'A';
+                elseif ($avgScore >= 85) $avgGrade = 'B+';
+                elseif ($avgScore >= 80) $avgGrade = 'B';
+                elseif ($avgScore >= 75) $avgGrade = 'C+';
+                elseif ($avgScore >= 70) $avgGrade = 'C';
+                else $avgGrade = 'F';
+            }
 
             // Status display
             $statusStr = $latestSheet ? $latestSheet->status : ($stStages->first() ? $stStages->first()->status : 'Active');
 
             // Progress Level determination
             $pct = $requiredHours > 0 ? min(100, round(($totalHours / $requiredHours) * 100)) : 0;
-            if ($pct >= 85 || ($latestSheet && $latestSheet->overall_grade === 'A+')) {
+            if ($pct >= 85 || ($avgGrade !== 'N/A' && in_array($avgGrade, ['A+', 'A']))) {
                 $progressLevel = 'Near Completion';
-            } elseif ($pct >= 50 || ($latestSheet && in_array($latestSheet->overall_grade, ['A', 'B+', 'B']))) {
+            } elseif ($pct >= 50 || ($avgGrade !== 'N/A' && in_array($avgGrade, ['B+', 'B']))) {
                 $progressLevel = 'On Track';
             } elseif ($pct >= 25) {
                 $progressLevel = 'Behind';
@@ -116,8 +125,8 @@ class SuperadminReportsController extends Controller
                 'provider_name' => $student->provider_name ?? 'Aviation Academy',
                 'modules' => $totalEvaluatedLessons > 0 ? "{$totalEvaluatedLessons} lessons" : '0 lessons',
                 'flight_hours' => $requiredHoursFormatted . ' hrs',
-                'grade' => $overallGrade,
-                'score' => $overallScore,
+                'grade' => $avgGrade,
+                'score' => $avgScore ? number_format($avgScore, 1) : null,
                 'status' => $statusStr,
                 'progress_level' => $progressLevel,
             ];

@@ -184,7 +184,7 @@
                                 <label for="scheduleStudent" class="form-label">Student</label>
                                 <select class="form-select" id="scheduleStudent" name="scheduleStudent" required>
                                     <option value="" selected disabled>Select student</option>
-                                    @foreach ($students as $student)
+                                    @foreach ($allStudents as $student)
                                         <option value="{{ $student->id }}"
                                             data-stages="{{ json_encode($student->stages) }}">
                                             {{ $student->first_name }}
@@ -281,7 +281,7 @@
                                 <label for="editScheduleStudent" class="form-label">Student</label>
                                 <select class="form-select" id="editScheduleStudent" name="scheduleStudent" required>
                                     <option value="" disabled>Select student</option>
-                                    @foreach ($students as $student)
+                                    @foreach ($allStudents as $student)
                                         <option value="{{ $student->id }}"
                                             data-stages="{{ json_encode($student->stages) }}">
                                             {{ $student->first_name }}

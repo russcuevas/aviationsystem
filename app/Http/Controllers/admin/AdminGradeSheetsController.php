@@ -82,9 +82,28 @@ class AdminGradeSheetsController extends Controller
 
             // Check if all stage lessons have been accepted and update stage status to 'Completed'
             $this->checkAndUpdateStageCompletion($studentId);
+        } elseif ($request->status === 'Rejected') {
+            $studentId = $sheet->student_id;
+            $lessonGrades = is_array($sheet->lesson_grades) ? $sheet->lesson_grades : json_decode($sheet->lesson_grades, true);
+
+            if ($lessonGrades && count($lessonGrades) > 0) {
+                foreach ($lessonGrades as $lg) {
+                    $lessonName = $lg['lesson'] ?? null;
+                    if ($lessonName) {
+                        DB::table('schedules')
+                            ->where('student_id', $studentId)
+                            ->where('lesson_type', $lessonName)
+                            ->where('status', 'Completed (Pending Approval)')
+                            ->update([
+                                'status' => 'Scheduled',
+                                'updated_at' => now(),
+                            ]);
+                    }
+                }
+            }
         }
 
-        return redirect()->back()->with('success', "Grade sheet {$sheet->sheet_id} status updated to 'Accepted' and related lesson schedules tagged as Completed.");
+        return redirect()->back()->with('success', "Grade sheet {$sheet->sheet_id} status updated to '{$request->status}' successfully.");
     }
 
     private function checkAndUpdateStageCompletion($studentId)

@@ -58,6 +58,7 @@
                             <th>Lesson</th>
                             <th>Hours</th>
                             <th>Completion</th>
+                            <th>Grade</th>
                             <th>Remarks</th>
                             <th>Action</th>
                         </tr>
@@ -74,11 +75,24 @@
                                 <td>{{ $sched->calculated_hours ? number_format($sched->calculated_hours, 1) . ' hrs' : '-' }}</td>
                                 <td>
                                     @if ($sched->status === 'Completed')
-                                        <span class="school-status status-active">Completed</span>
+                                        <span class="school-status status-active"><i class="bi bi-check-circle-fill me-1"></i>Completed</span>
+                                    @elseif ($sched->status === 'Completed (Pending Approval)' || $sched->status === 'For Review')
+                                        <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1" style="font-size:0.78rem;">
+                                            <i class="bi bi-hourglass-split me-1"></i>Pending Approval
+                                        </span>
                                     @elseif ($sched->status === 'Scheduled' || $sched->status === 'In Progress')
-                                        <span class="school-status status-onleave">In Progress</span>
+                                        <span class="school-status status-onleave"><i class="bi bi-clock me-1"></i>In Progress</span>
                                     @else
                                         <span class="school-status status-inactive">{{ $sched->status }}</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($sched->existing_score !== null)
+                                        <span class="badge bg-primary-subtle text-primary border px-2 py-1" style="font-size:0.8rem;">
+                                            {{ $sched->existing_score }} ({{ $sched->existing_grade }})
+                                        </span>
+                                    @else
+                                        <span class="text-muted small">-</span>
                                     @endif
                                 </td>
                                 <td>{{ $sched->remarks ?? '-' }}</td>
@@ -89,6 +103,7 @@
                                         data-stage="{{ $sched->stage_name }}"
                                         data-lesson="{{ $sched->lesson_type }}"
                                         data-status="{{ $sched->status }}"
+                                        data-score="{{ $sched->existing_score ?? '' }}"
                                         data-remarks="{{ $sched->remarks }}">
                                         <i class="bi bi-pencil-square me-1"></i> Edit Progress
                                     </button>
@@ -106,7 +121,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editProgressModalLabel">Edit Student Progress</h5>
+                    <h5 class="modal-title" id="editProgressModalLabel">Edit Student Progress & Grade</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form id="editProgressForm" method="POST">
@@ -136,6 +151,15 @@
                         </div>
 
                         <div class="mb-3">
+                            <label for="progressScore" class="form-label fw-medium">Lesson Score / Grade (0 - 100)</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="progressScore" name="score" min="0" max="100" step="0.1" placeholder="e.g. 88.5">
+                                <span class="input-group-text fw-bold text-primary" id="calculatedGradeBadge">Grade: -</span>
+                            </div>
+                            <div class="form-text">Entering a score automatically submits a Grade Sheet for admin review upon completion.</div>
+                        </div>
+
+                        <div class="mb-3">
                             <label for="progressRemarks" class="form-label fw-medium">Instructor Remarks</label>
                             <textarea class="form-control" id="progressRemarks" name="remarks" rows="3"
                                 placeholder="Add notes on performance, feedback, or items to improve."></textarea>
@@ -143,7 +167,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Save Progress</button>
+                        <button type="submit" class="btn btn-primary">Save Progress & Submit Grade</button>
                     </div>
                 </form>
             </div>
@@ -167,6 +191,24 @@
             });
         }
 
+        function getLetterGrade(score) {
+            const s = parseFloat(score);
+            if (isNaN(s)) return '-';
+            if (s >= 95) return 'A+';
+            if (s >= 90) return 'A';
+            if (s >= 85) return 'B+';
+            if (s >= 80) return 'B';
+            if (s >= 75) return 'C+';
+            if (s >= 70) return 'C';
+            return 'F';
+        }
+
+        $('#progressScore').on('input change', function() {
+            const val = $(this).val();
+            const letter = getLetterGrade(val);
+            $('#calculatedGradeBadge').text('Grade: ' + letter);
+        });
+
         $(document).on('click', '.btn-edit-progress', function() {
             const btn = $(this);
             const id = btn.data('id');
@@ -174,6 +216,7 @@
             const stage = btn.data('stage');
             const lesson = btn.data('lesson');
             let status = btn.data('status');
+            const score = btn.data('score');
             const remarks = btn.data('remarks');
 
             if (status === 'Scheduled') {
@@ -185,6 +228,7 @@
             $('#modalStageName').text(stage);
             $('#modalLessonType').text(lesson);
             $('#progressStatus').val(status);
+            $('#progressScore').val(score || '').trigger('change');
             $('#progressRemarks').val(remarks || '');
 
             $('#editProgressModal').modal('show');

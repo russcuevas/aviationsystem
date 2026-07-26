@@ -52,6 +52,12 @@ class AdminStudentProgressController extends Controller
             ->orderBy('end_time', 'desc')
             ->get();
 
+        // Fetch accepted grade sheets for lesson completion verification
+        $gradeSheets = DB::table('grade_sheets')
+            ->whereIn('student_id', $studentIds)
+            ->where('status', 'Accepted')
+            ->get();
+
         $progressList = [];
 
         foreach ($students as $student) {
@@ -59,6 +65,21 @@ class AdminStudentProgressController extends Controller
             $provider = $student->provider_name ?? $providerName;
 
             $studentStages = $stages->where('student_id', $student->student_id);
+
+            // Accepted lessons array for this student
+            $studentGs = $gradeSheets->where('student_id', $student->student_id);
+            $acceptedLessons = [];
+            foreach ($studentGs as $gs) {
+                $lg = is_array($gs->lesson_grades) ? $gs->lesson_grades : json_decode($gs->lesson_grades, true);
+                if ($lg) {
+                    foreach ($lg as $item) {
+                        if (!empty($item['lesson'])) {
+                            $acceptedLessons[] = trim($item['lesson']);
+                        }
+                    }
+                }
+            }
+            $acceptedLessons = array_unique($acceptedLessons);
 
             if ($studentStages->isEmpty()) {
                 $progressList[] = (object)[
@@ -69,6 +90,8 @@ class AdminStudentProgressController extends Controller
                     'completed_hours' => 0,
                     'required_hours' => 0,
                     'total_hours_formatted' => '0 hours',
+                    'completed_lessons' => 0,
+                    'total_lessons' => 0,
                     'progress_pct' => 0,
                     'health' => 'Critical Delay',
                     'stage_status' => 'Pending',
@@ -76,6 +99,30 @@ class AdminStudentProgressController extends Controller
             } else {
                 foreach ($studentStages as $stage) {
                     $stageSchedules = $schedules->where('stage_id', $stage->id);
+
+                    // Collect all unique lessons for this stage (from schedules & grade sheets)
+                    $schedLessons = $stageSchedules->pluck('lesson_type')->filter()->unique()->toArray();
+                    foreach ($studentGs as $gs) {
+                        if ($gs->stage_id == $stage->id || empty($gs->stage_id)) {
+                            $lg = is_array($gs->lesson_grades) ? $gs->lesson_grades : json_decode($gs->lesson_grades, true);
+                            if ($lg) {
+                                foreach ($lg as $item) {
+                                    if (!empty($item['lesson'])) {
+                                        $schedLessons[] = trim($item['lesson']);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    $schedLessons = array_values(array_unique(array_filter($schedLessons)));
+                    $totalLessons = count($schedLessons);
+
+                    $completedLessonsCount = 0;
+                    foreach ($schedLessons as $lsn) {
+                        if (in_array(trim($lsn), $acceptedLessons)) {
+                            $completedLessonsCount++;
+                        }
+                    }
 
                     // Calculate completed lesson hours for this specific training stage
                     $completedMinutes = 0;
@@ -105,19 +152,29 @@ class AdminStudentProgressController extends Controller
                     $completedHours = round($completedMinutes / 60, 1);
                     $requiredHours = (float)$stage->required_hours;
 
-                    $pct = 0;
-                    if ($requiredHours > 0) {
-                        $pct = min(100, round(($completedHours / $requiredHours) * 100));
-                    }
+                    // Progress percentage computation
+                    if (strtolower($stage->status) === 'completed' || ($totalLessons > 0 && $completedLessonsCount >= $totalLessons)) {
+                        $pct = 100;
+                        $stageStatus = 'Completed';
+                        $health = 'On Track';
 
-                    // Health determination based on progress percentage and stage status
-                    if ($stage->status === 'Completed' || $pct >= 100) {
-                        $health = 'On Track';
-                    } elseif ($pct >= 60) {
-                        $health = 'On Track';
-                    } elseif ($pct >= 30) {
-                        $health = 'Behind';
+                        if ($stage->status !== 'Completed') {
+                            DB::table('students_staging')->where('id', $stage->id)->update([
+                                'status' => 'Completed',
+                                'updated_at' => now(),
+                            ]);
+                        }
+                    } elseif ($totalLessons > 0) {
+                        $pct = min(99, round(($completedLessonsCount / $totalLessons) * 100));
+                        $stageStatus = 'In Progress';
+                        $health = $pct >= 60 ? 'On Track' : ($pct >= 30 ? 'Behind' : 'Critical Delay');
+                    } elseif ($requiredHours > 0) {
+                        $pct = min(100, round(($completedHours / $requiredHours) * 100));
+                        $stageStatus = $pct >= 100 ? 'Completed' : 'In Progress';
+                        $health = $pct >= 60 ? 'On Track' : ($pct >= 30 ? 'Behind' : 'Critical Delay');
                     } else {
+                        $pct = 0;
+                        $stageStatus = $stage->status;
                         $health = 'Critical Delay';
                     }
 
@@ -134,9 +191,11 @@ class AdminStudentProgressController extends Controller
                         'completed_hours' => $completedHours,
                         'required_hours' => $requiredHours,
                         'total_hours_formatted' => $totalHoursFormatted,
+                        'completed_lessons' => $completedLessonsCount,
+                        'total_lessons' => $totalLessons,
                         'progress_pct' => $pct,
                         'health' => $health,
-                        'stage_status' => $stage->status,
+                        'stage_status' => $stageStatus,
                     ];
                 }
             }

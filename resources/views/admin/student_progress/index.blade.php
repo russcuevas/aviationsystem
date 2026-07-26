@@ -60,19 +60,33 @@
                             <tr>
                                 <td class="fw-semibold">{{ $item->student_name }}</td>
                                 <td>{{ $item->provider_name }}</td>
-                                <td><span
-                                        class="badge bg-light text-dark border px-2 py-1">{{ $item->stage_name }}</span>
+                                <td>
+                                    <div class="fw-semibold text-dark">{{ $item->stage_name }}</div>
+                                    @if(strtolower($item->stage_status) === 'completed' || $item->progress_pct == 100)
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 mt-1" style="font-size: 0.72rem;">
+                                            <i class="bi bi-check-circle-fill me-1"></i>Completed
+                                        </span>
+                                    @else
+                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 mt-1" style="font-size: 0.72rem;">
+                                            <i class="bi bi-hourglass-split me-1"></i>In Progress
+                                        </span>
+                                    @endif
                                 </td>
                                 <td>{{ $item->last_lesson }}</td>
                                 <td>{{ $item->total_hours_formatted }}</td>
                                 <td data-order="{{ $item->progress_pct }}">
                                     <div class="progress-wrap">
                                         <div class="progress-bar-track">
-                                            <div class="progress-bar-fill" style="width:{{ $item->progress_pct }}%">
+                                            <div class="progress-bar-fill {{ $item->progress_pct == 100 ? 'bg-success' : '' }}" style="width:{{ $item->progress_pct }}%">
                                             </div>
                                         </div>
-                                        <span class="progress-pct">{{ $item->progress_pct }}%</span>
+                                        <span class="progress-pct fw-bold">{{ $item->progress_pct }}%</span>
                                     </div>
+                                    @if(isset($item->total_lessons) && $item->total_lessons > 0)
+                                        <div class="small text-muted mt-1" style="font-size: 0.75rem;">
+                                            <i class="bi bi-journal-check me-1"></i>{{ $item->completed_lessons }}/{{ $item->total_lessons }} Lessons
+                                        </div>
+                                    @endif
                                 </td>
                                 <td>
                                     @if ($item->health === 'On Track')

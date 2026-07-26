@@ -52,6 +52,10 @@
                     <div class="stat-body">
                         <div class="stat-value">{{ number_format($totalFlightHours, 1) }}</div>
                         <div class="stat-label">Total Flight Hours</div>
+                        <div class="small text-muted mt-1" style="font-size: 0.72rem;">
+                            {{ number_format($completedFlightHours, 1) }}h completed |
+                            {{ number_format($scheduledFlightHours, 1) }}h scheduled
+                        </div>
                     </div>
                 </div>
             </div>
@@ -59,8 +63,8 @@
                 <div class="stat-card">
                     <div class="stat-icon cobalt"><i class="bi bi-hourglass-split"></i></div>
                     <div class="stat-body">
-                        <div class="stat-value">{{ number_format($hoursRemaining, 1) }}</div>
-                        <div class="stat-label">Hours Remaining</div>
+                        <div class="stat-value">{{ (floor($requiredHours) == $requiredHours) ? (int)$requiredHours : number_format($requiredHours, 1) }}</div>
+                        <div class="stat-label">Required Hours</div>
                     </div>
                 </div>
             </div>
@@ -87,7 +91,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($upcomingSchedules as $sched)
+                                @foreach ($upcomingSchedules as $sched)
                                     <tr>
                                         <td data-order="{{ $sched->date }}">
                                             {{ \Carbon\Carbon::parse($sched->date)->format('M j, Y') }}</td>
@@ -97,12 +101,7 @@
                                         <td>{{ $sched->aircraft_registration ?? 'N/A' }}</td>
                                         <td>{{ $sched->lesson_type }}</td>
                                     </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="5" class="text-center text-muted">No upcoming flight schedules
-                                            found.</td>
-                                    </tr>
-                                @endforelse
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -123,30 +122,44 @@
                                 <tr>
                                     <th>Stage</th>
                                     <th>Status</th>
-                                    <th>Required Hours</th>
+                                    <th>Completion Progress</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($trainingSummary as $stage)
+                                @foreach ($trainingSummary as $stage)
                                     <tr>
-                                        <td>{{ $stage->stage }}</td>
+                                        <td class="fw-semibold text-dark">{{ $stage->stage }}</td>
                                         <td>
                                             @if (strtolower($stage->status) === 'completed')
-                                                <span class="school-status status-active">Completed</span>
+                                                <span class="school-status status-active"><i
+                                                        class="bi bi-check-circle-fill me-1"></i>Completed</span>
                                             @elseif(strtolower($stage->status) === 'in progress')
-                                                <span class="school-status status-onleave">In Progress</span>
+                                                <span class="school-status status-onleave"><i
+                                                        class="bi bi-hourglass-split me-1"></i>In Progress</span>
                                             @else
                                                 <span class="school-status status-inactive">{{ $stage->status }}</span>
                                             @endif
                                         </td>
-                                        <td>{{ $stage->required_hours }} hrs</td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="3" class="text-center text-muted">No training stages recorded.
+                                        <td>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="progress flex-grow-1"
+                                                    style="height: 8px; border-radius: 4px; background-color: rgba(0,0,0,0.08);">
+                                                    <div class="progress-bar {{ $stage->completion_percentage == 100 ? 'bg-success' : 'bg-primary' }}"
+                                                        role="progressbar"
+                                                        style="width: {{ $stage->completion_percentage }}%;"
+                                                        aria-valuenow="{{ $stage->completion_percentage }}"
+                                                        aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                                <span class="fw-bold small">{{ $stage->completion_percentage }}%</span>
+                                            </div>
+                                            <div class="small text-muted mt-1" style="font-size: 0.78rem;">
+                                                <i
+                                                    class="bi bi-journal-check me-1"></i>{{ $stage->completed_lessons }}/{{ $stage->total_lessons }}
+                                                Lessons | {{ $stage->required_hours }} hrs req.
+                                            </div>
                                         </td>
                                     </tr>
-                                @endforelse
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -156,31 +169,40 @@
     </main>
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
     <script src="{{ asset('script.js') }}"></script>
     <script>
-        const studentUpcomingTable = document.getElementById('studentUpcomingTable');
-        if (studentUpcomingTable && window.jQuery && window.jQuery.fn.DataTable) {
-            window.jQuery(studentUpcomingTable).DataTable({
-                pageLength: 10,
-                order: [
-                    [0, 'asc']
-                ],
-                autoWidth: false
-            });
-        }
+        $(document).ready(function() {
+            if ($('#studentUpcomingTable').length && $.fn.DataTable) {
+                $('#studentUpcomingTable').DataTable({
+                    pageLength: 10,
+                    order: [
+                        [0, 'asc']
+                    ],
+                    autoWidth: false,
+                    destroy: true,
+                    language: {
+                        emptyTable: "No upcoming flight schedules found."
+                    }
+                });
+            }
 
-        const studentSummaryTable = document.getElementById('studentSummaryTable');
-        if (studentSummaryTable && window.jQuery && window.jQuery.fn.DataTable) {
-            window.jQuery(studentSummaryTable).DataTable({
-                pageLength: 10,
-                order: [
-                    [0, 'asc']
-                ],
-                autoWidth: false
-            });
-        }
+            if ($('#studentSummaryTable').length && $.fn.DataTable) {
+                $('#studentSummaryTable').DataTable({
+                    pageLength: 10,
+                    order: [
+                        [0, 'asc']
+                    ],
+                    autoWidth: false,
+                    destroy: true,
+                    language: {
+                        emptyTable: "No training stages recorded."
+                    }
+                });
+            }
+        });
     </script>
 </body>
 

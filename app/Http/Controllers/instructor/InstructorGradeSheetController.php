@@ -143,7 +143,7 @@ class InstructorGradeSheetController extends Controller
         $lessonGrades = [];
         $totalScoreSum = 0;
         $count = 0;
-        $latestTimeOut = null;
+        $latestTimeOutDb = null;
 
         foreach ($scores as $lessonKey => $scoreVal) {
             if ($scoreVal !== null && $scoreVal !== '') {
@@ -155,8 +155,13 @@ class InstructorGradeSheetController extends Controller
                 $formattedTimeOut = null;
                 if (!empty($timeOutRaw)) {
                     try {
-                        $formattedTimeOut = date('h:i A', strtotime($timeOutRaw));
-                        $latestTimeOut = $formattedTimeOut;
+                        $timestamp = strtotime($timeOutRaw);
+                        if ($timestamp !== false) {
+                            $formattedTimeOut = date('h:i A', $timestamp);
+                            $latestTimeOutDb = date('H:i:s', $timestamp);
+                        } else {
+                            $formattedTimeOut = $timeOutRaw;
+                        }
                     } catch (\Exception $e) {
                         $formattedTimeOut = $timeOutRaw;
                     }
@@ -180,7 +185,7 @@ class InstructorGradeSheetController extends Controller
 
         GradeSheet::create([
             'date' => $request->date,
-            'time_out' => $latestTimeOut,
+            'time_out' => $latestTimeOutDb,
             'student_id' => $request->student_id,
             'instructor_id' => $instructorId,
             'stage_id' => $stageId,
