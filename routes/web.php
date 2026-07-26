@@ -24,6 +24,7 @@ use App\Http\Controllers\instructor\InstructorGradeSheetController;
 use App\Http\Controllers\instructor\InstructorSchedulingController;
 use App\Http\Controllers\instructor\InstructorStudentProgressController;
 use App\Http\Controllers\student\StudentDashboardController;
+use App\Http\Controllers\student\StudentFlightHoursController;
 use App\Http\Controllers\student\StudentSchedulingController;
 use Illuminate\Support\Facades\Route;
 
@@ -124,5 +125,6 @@ Route::middleware(['instructor.auth'])->group(function () {
 Route::middleware(['student.auth'])->group(function () {
     Route::get('/student/dashboard', [StudentDashboardController::class, 'StudentDashboardPage'])->name('student.dashboard.page');
     Route::get('/student/scheduling', [StudentSchedulingController::class, 'StudentSchedulingPage'])->name('student.scheduling.page');
+    Route::get('/student/flight-hours', [StudentFlightHoursController::class, 'StudentFlightHoursPage'])->name('student.flight.hours.page');
 });
 

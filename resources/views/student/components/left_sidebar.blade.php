@@ -14,7 +14,7 @@
                     class="bi bi-grid-1x2-fill nav-icon"></i><span>Dashboard</span></a>
             <a class="nav-link {{ request()->routeIs('student.scheduling.page') ? 'active' : '' }}" href="{{ route('student.scheduling.page') }}"><i class="bi bi-calendar2-check nav-icon"></i><span>Schedule
                     Viewing</span></a>
-            <a class="nav-link" href="flight_hours.html"><i class="bi bi-stopwatch nav-icon"></i><span>Flight Hours
+            <a class="nav-link {{ request()->routeIs('student.flight.hours.page') ? 'active' : '' }}" href="{{ route('student.flight.hours.page') }}"><i class="bi bi-stopwatch nav-icon"></i><span>Flight Hours
                     Tracking</span></a>
             <a class="nav-link" href="training_progress.html"><i
                     class="bi bi-graph-up-arrow nav-icon"></i><span>Training Progress</span></a>
