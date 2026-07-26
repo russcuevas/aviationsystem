@@ -71,7 +71,14 @@
                                 </td>
                                 <td>{{ $sched->student_name }}</td>
                                 <td><span class="badge bg-light text-dark border px-2 py-1">{{ $sched->stage_name }}</span></td>
-                                <td>{{ $sched->lesson_type }}</td>
+                                <td>
+                                    <div>{{ $sched->lesson_type }}</div>
+                                    @if($sched->route)
+                                        <span class="badge bg-light text-primary border mt-1" style="font-size:0.75rem;">
+                                            <i class="bi bi-geo-alt me-1"></i>{{ $sched->route }}
+                                        </span>
+                                    @endif
+                                </td>
                                 <td>{{ $sched->calculated_hours ? number_format($sched->calculated_hours, 1) . ' hrs' : '-' }}</td>
                                 <td>
                                     @if ($sched->status === 'Completed')

@@ -1193,7 +1193,8 @@
                                 badgeHtml = `<span class="badge bg-info text-dark">${lsn.status}</span>`;
                             }
 
-                            const schedDetails = lsn.date ? `Scheduled on ${lsn.date}` : '<span class="text-muted fs-7">Not scheduled yet</span>';
+                            const routeBadge = lsn.route ? `<span class="badge bg-light text-primary border ms-1"><i class="bi bi-geo-alt me-1"></i>${lsn.route}</span>` : '';
+                            const schedDetails = lsn.date ? `Scheduled on ${lsn.date} ${routeBadge}` : '<span class="text-muted fs-7">Not scheduled yet</span>';
 
                             lessonsRowsHtml += `
                                 <tr>

@@ -231,6 +231,20 @@
                                     required placeholder="e.g. Cross-Country Flight, Solo Flying">
                             </div>
 
+                            <div class="col-md-12">
+                                <label for="scheduleRoute" class="form-label">Flight Route (Departure & Destination)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-geo-alt-fill text-primary"></i></span>
+                                    <input type="text" class="form-control" id="scheduleRoute" name="scheduleRoute"
+                                        placeholder="e.g. MNL to CDO or MNL to CDO - CDO to MNL">
+                                </div>
+                                <div class="form-text text-muted mt-1" style="font-size: 0.8rem;">
+                                    <i class="bi bi-info-circle me-1"></i><strong>Format Examples:</strong><br>
+                                    • One-Way: <code>MNL to CDO</code><br>
+                                    • Roundtrip / Balikan: <code>MNL to CDO - CDO to MNL</code>
+                                </div>
+                            </div>
+
                             <div class="col-12">
                                 <label for="scheduleRemarks" class="form-label">Remarks/Notes</label>
                                 <textarea class="form-control" id="scheduleRemarks" name="scheduleRemarks" rows="3"
@@ -337,6 +351,20 @@
                                 </select>
                             </div>
 
+                            <div class="col-md-12">
+                                <label for="editScheduleRoute" class="form-label">Flight Route (Departure & Destination)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-geo-alt-fill text-primary"></i></span>
+                                    <input type="text" class="form-control" id="editScheduleRoute" name="scheduleRoute"
+                                        placeholder="e.g. MNL to CDO or MNL to CDO - CDO to MNL">
+                                </div>
+                                <div class="form-text text-muted mt-1" style="font-size: 0.8rem;">
+                                    <i class="bi bi-info-circle me-1"></i><strong>Format Examples:</strong><br>
+                                    • One-Way: <code>MNL to CDO</code><br>
+                                    • Roundtrip / Balikan: <code>MNL to CDO - CDO to MNL</code>
+                                </div>
+                            </div>
+
                             <div class="col-12">
                                 <label for="editScheduleRemarks" class="form-label">Remarks/Notes</label>
                                 <textarea class="form-control" id="editScheduleRemarks" name="scheduleRemarks" rows="3"
@@ -431,6 +459,16 @@
             }
         });
 
+        $(document).on('click', '.add-route-preset', function(e) {
+            e.preventDefault();
+            $('#scheduleRoute').val($(this).data('route'));
+        });
+
+        $(document).on('click', '.edit-route-preset', function(e) {
+            e.preventDefault();
+            $('#editScheduleRoute').val($(this).data('route'));
+        });
+
         // --- EDIT BUTTON HANDLER ---
         $(document).on('click', '.btn-edit-schedule', function() {
             const btn = $(this);
@@ -455,6 +493,8 @@
             $('#editScheduleInstructor').val(btn.data('instructor-id'));
             $('#editScheduleAircraft').val(btn.data('aircraft-id'));
             $('#editLessonType').val(btn.data('lesson-type'));
+            $('#editScheduleRoute').val(btn.data('route') || '');
+            $('#editScheduleStatus').val(btn.data('status'));
             $('#editScheduleRemarks').val(btn.data('remarks'));
 
             $('#editScheduleModal').modal('show');
@@ -529,7 +569,8 @@
                                 badgeHtml = `<span class="badge bg-info text-dark">${lsn.status}</span>`;
                             }
 
-                            const schedDetails = lsn.date ? `${lsn.date} (${lsn.time || ''}) - ${lsn.instructor || 'N/A'} [${lsn.aircraft || 'N/A'}]` : '<span class="text-muted fs-7">Not scheduled yet</span>';
+                            const routeBadge = lsn.route ? `<span class="badge bg-light text-primary border ms-1"><i class="bi bi-geo-alt me-1"></i>${lsn.route}</span>` : '';
+                            const schedDetails = lsn.date ? `${lsn.date} (${lsn.time || ''}) - ${lsn.instructor || 'N/A'} [${lsn.aircraft || 'N/A'}] ${routeBadge}` : '<span class="text-muted fs-7">Not scheduled yet</span>';
 
                             lessonsRowsHtml += `
                                 <tr>

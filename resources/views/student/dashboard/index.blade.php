@@ -99,7 +99,14 @@
                                         </td>
                                         <td>{{ $sched->instructor_name ?? 'N/A' }}</td>
                                         <td>{{ $sched->aircraft_registration ?? 'N/A' }}</td>
-                                        <td>{{ $sched->lesson_type }}</td>
+                                        <td>
+                                            <div>{{ $sched->lesson_type }}</div>
+                                            @if($sched->route)
+                                                <span class="badge bg-light text-primary border mt-1" style="font-size:0.75rem;">
+                                                    <i class="bi bi-geo-alt me-1"></i>{{ $sched->route }}
+                                                </span>
+                                            @endif
+                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>

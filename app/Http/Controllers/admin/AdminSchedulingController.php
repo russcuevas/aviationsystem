@@ -102,6 +102,7 @@ class AdminSchedulingController extends Controller
                         'time' => $matchingSched ? (date('h:i A', strtotime($matchingSched->start_time)) . ' - ' . date('h:i A', strtotime($matchingSched->end_time))) : null,
                         'instructor' => $matchingSched->instructor_name ?? null,
                         'aircraft' => $matchingSched->aircraft_reg ?? null,
+                        'route' => $matchingSched->route ?? null,
                     ];
                 }
 
@@ -168,6 +169,7 @@ class AdminSchedulingController extends Controller
             'scheduleInstructor' => 'required|integer|exists:instructors,id',
             'scheduleAircraft' => 'required|integer|exists:aircrafts,id',
             'lessonType' => 'required|string|max:255',
+            'scheduleRoute' => 'nullable|string|max:255',
             'scheduleRemarks' => 'nullable|string',
         ]);
 
@@ -180,6 +182,7 @@ class AdminSchedulingController extends Controller
             'instructor_id' => $request->scheduleInstructor,
             'aircraft_id' => $request->scheduleAircraft,
             'lesson_type' => $request->lessonType,
+            'route' => $request->scheduleRoute,
             'status' => 'Scheduled', // automatic Scheduled
             'remarks' => $request->scheduleRemarks,
             'created_at' => now(),
@@ -208,6 +211,7 @@ class AdminSchedulingController extends Controller
             'scheduleInstructor' => 'required|integer|exists:instructors,id',
             'scheduleAircraft' => 'required|integer|exists:aircrafts,id',
             'lessonType' => 'required|string|max:255',
+            'scheduleRoute' => 'nullable|string|max:255',
             'scheduleStatus' => 'required|string|max:255',
             'scheduleRemarks' => 'nullable|string',
         ]);
@@ -221,6 +225,7 @@ class AdminSchedulingController extends Controller
             'instructor_id' => $request->scheduleInstructor,
             'aircraft_id' => $request->scheduleAircraft,
             'lesson_type' => $request->lessonType,
+            'route' => $request->scheduleRoute,
             'status' => $request->scheduleStatus,
             'remarks' => $request->scheduleRemarks,
             'updated_at' => now(),

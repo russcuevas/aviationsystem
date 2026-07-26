@@ -12,7 +12,7 @@
         <nav class="nav flex-column px-0" style="gap:2px;">
             <a class="nav-link {{ request()->routeIs('student.dashboard.page') ? 'active' : '' }}" href="{{ route('student.dashboard.page') }}"><i
                     class="bi bi-grid-1x2-fill nav-icon"></i><span>Dashboard</span></a>
-            <a class="nav-link" href="scheduling.html"><i class="bi bi-calendar2-check nav-icon"></i><span>Schedule
+            <a class="nav-link {{ request()->routeIs('student.scheduling.page') ? 'active' : '' }}" href="{{ route('student.scheduling.page') }}"><i class="bi bi-calendar2-check nav-icon"></i><span>Schedule
                     Viewing</span></a>
             <a class="nav-link" href="flight_hours.html"><i class="bi bi-stopwatch nav-icon"></i><span>Flight Hours
                     Tracking</span></a>

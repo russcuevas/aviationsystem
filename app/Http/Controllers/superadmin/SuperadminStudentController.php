@@ -83,6 +83,7 @@ class SuperadminStudentController extends Controller
                         'lesson_name' => $cleanLsn,
                         'status' => $status,
                         'date' => $matchingSched ? date('M j, Y', strtotime($matchingSched->date)) : null,
+                        'route' => $matchingSched->route ?? null,
                     ];
                 }
 

@@ -103,6 +103,7 @@ class InstructorSchedulingController extends Controller
                             'date' => $matchingSched ? date('M j, Y', strtotime($matchingSched->date)) : null,
                             'time' => $matchingSched ? (date('h:i A', strtotime($matchingSched->start_time)) . ' - ' . date('h:i A', strtotime($matchingSched->end_time))) : null,
                             'aircraft' => $matchingSched->aircraft_reg ?? null,
+                            'route' => $matchingSched->route ?? null,
                         ];
                     }
 
