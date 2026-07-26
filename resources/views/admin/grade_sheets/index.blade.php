@@ -112,10 +112,10 @@
                                     <span class="badge {{ $badgeClass }} px-2 py-1">{{ $g }}</span>
                                 </td>
                                 <td>
-                                    @if ($sheet->status === 'Accepted' || $sheet->status === 'Approved')
-                                        <span class="school-status status-active"><i class="bi bi-check-circle me-1"></i>Accepted</span>
+                                    @if ($sheet->status === 'Accepted' || $sheet->status === 'Approved' || $sheet->status === 'Finalized')
+                                        <span class="school-status status-active"><i class="bi bi-check-circle me-1"></i>Finalized</span>
                                     @elseif ($sheet->status === 'For Review' || $sheet->status === 'Pending')
-                                        <span class="school-status status-onleave"><i class="bi bi-clock-history me-1"></i>For Review</span>
+                                        <span class="school-status status-inactive"><i class="bi bi-clock-history me-1"></i>Pending</span>
                                     @elseif ($sheet->status === 'Rejected')
                                         <span class="school-status status-inactive"><i class="bi bi-x-circle me-1"></i>Rejected</span>
                                     @else
@@ -148,15 +148,15 @@
                                                     <i class="bi bi-check-lg me-1"></i>Accept
                                                 </button>
                                             </form>
-                                        @endif
 
-                                        <form action="{{ route('admin.grade.sheets.status.update', $sheet->id) }}" method="POST" class="d-inline">
-                                            @csrf
-                                            <input type="hidden" name="status" value="Rejected">
-                                            <button type="submit" class="btn btn-sm btn-outline-danger py-1 px-2 text-nowrap" style="font-size: 0.75rem;" onclick="return confirm('Are you sure you want to reject and delete this grade sheet from the database?')">
-                                                <i class="bi bi-trash me-1"></i>Reject
-                                            </button>
-                                        </form>
+                                            <form action="{{ route('admin.grade.sheets.status.update', $sheet->id) }}" method="POST" class="d-inline">
+                                                @csrf
+                                                <input type="hidden" name="status" value="Rejected">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger py-1 px-2 text-nowrap" style="font-size: 0.75rem;" onclick="return confirm('Are you sure you want to reject and delete this grade sheet from the database?')">
+                                                    <i class="bi bi-trash me-1"></i>Reject
+                                                </button>
+                                            </form>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>

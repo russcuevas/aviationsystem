@@ -76,19 +76,26 @@
                                 <td>{{ $record['instructor'] }}</td>
                                 <td>{{ $record['aircraft'] }}</td>
                                 <td>
-                                    <span class="badge bg-light text-dark border px-2 py-1">{{ $record['stage'] }}</span>
+                                    <span
+                                        class="badge bg-light text-dark border px-2 py-1">{{ $record['stage'] }}</span>
                                 </td>
-                                <td class="fw-semibold text-dark">{{ $record['lesson'] }}</td>
+                                <td class="fw-semibold">{{ $record['lesson'] }}</td>
                                 <td class="fw-bold text-primary">{{ number_format($record['hours'], 1) }} hrs</td>
                                 <td>
                                     @if (strtolower($record['status']) === 'completed' || strtolower($record['status']) === 'validated')
-                                        <span class="school-status status-active"><i class="bi bi-check-circle-fill me-1"></i>Validated</span>
-                                    @elseif (strtolower($record['status']) === 'pending review' || strtolower($record['status']) === 'for review' || strtolower($record['status']) === 'completed (pending approval)')
-                                        <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1" style="font-size:0.78rem;">
+                                        <span class="school-status status-active"><i
+                                                class="bi bi-check-circle-fill me-1"></i>Validated</span>
+                                    @elseif (strtolower($record['status']) === 'pending review' ||
+                                            strtolower($record['status']) === 'for review' ||
+                                            strtolower($record['status']) === 'completed (pending approval)')
+                                        <span
+                                            class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1"
+                                            style="font-size:0.78rem;">
                                             <i class="bi bi-hourglass-split me-1"></i>Pending Validation
                                         </span>
                                     @else
-                                        <span class="school-status status-onleave"><i class="bi bi-clock me-1"></i>{{ $record['status'] }}</span>
+                                        <span class="school-status status-onleave"><i
+                                                class="bi bi-clock me-1"></i>{{ $record['status'] }}</span>
                                     @endif
                                 </td>
                             </tr>

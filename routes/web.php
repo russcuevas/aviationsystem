@@ -25,7 +25,9 @@ use App\Http\Controllers\instructor\InstructorSchedulingController;
 use App\Http\Controllers\instructor\InstructorStudentProgressController;
 use App\Http\Controllers\student\StudentDashboardController;
 use App\Http\Controllers\student\StudentFlightHoursController;
+use App\Http\Controllers\student\StudentGradeController;
 use App\Http\Controllers\student\StudentSchedulingController;
+use App\Http\Controllers\student\StudentTrainingProgressController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -126,5 +128,7 @@ Route::middleware(['student.auth'])->group(function () {
     Route::get('/student/dashboard', [StudentDashboardController::class, 'StudentDashboardPage'])->name('student.dashboard.page');
     Route::get('/student/scheduling', [StudentSchedulingController::class, 'StudentSchedulingPage'])->name('student.scheduling.page');
     Route::get('/student/flight-hours', [StudentFlightHoursController::class, 'StudentFlightHoursPage'])->name('student.flight.hours.page');
+    Route::get('/student/training-progress', [StudentTrainingProgressController::class, 'StudentTrainingProgressPage'])->name('student.training.progress.page');
+    Route::get('/student/grades', [StudentGradeController::class, 'StudentGradesPage'])->name('student.grades.page');
 });
 

@@ -52,7 +52,7 @@
                     <div class="stat-body">
                         <div class="stat-value">{{ number_format($totalFlightHours, 1) }}</div>
                         <div class="stat-label">Total Flight Hours</div>
-                        <div class="small text-muted mt-1" style="font-size: 0.72rem;">
+                        <div class="small  mt-1" style="font-size: 0.72rem;">
                             {{ number_format($completedFlightHours, 1) }}h completed |
                             {{ number_format($scheduledFlightHours, 1) }}h scheduled
                         </div>
@@ -63,7 +63,9 @@
                 <div class="stat-card">
                     <div class="stat-icon cobalt"><i class="bi bi-hourglass-split"></i></div>
                     <div class="stat-body">
-                        <div class="stat-value">{{ (floor($requiredHours) == $requiredHours) ? (int)$requiredHours : number_format($requiredHours, 1) }}</div>
+                        <div class="stat-value">
+                            {{ floor($requiredHours) == $requiredHours ? (int) $requiredHours : number_format($requiredHours, 1) }}
+                        </div>
                         <div class="stat-label">Required Hours</div>
                     </div>
                 </div>
@@ -101,8 +103,9 @@
                                         <td>{{ $sched->aircraft_registration ?? 'N/A' }}</td>
                                         <td>
                                             <div>{{ $sched->lesson_type }}</div>
-                                            @if($sched->route)
-                                                <span class="badge bg-light text-primary border mt-1" style="font-size:0.75rem;">
+                                            @if ($sched->route)
+                                                <span class="badge bg-light text-primary border mt-1"
+                                                    style="font-size:0.75rem;">
                                                     <i class="bi bi-geo-alt me-1"></i>{{ $sched->route }}
                                                 </span>
                                             @endif
@@ -135,7 +138,7 @@
                             <tbody>
                                 @foreach ($trainingSummary as $stage)
                                     <tr>
-                                        <td class="fw-semibold text-dark">{{ $stage->stage }}</td>
+                                        <td class="fw-semibold">{{ $stage->stage }}</td>
                                         <td>
                                             @if (strtolower($stage->status) === 'completed')
                                                 <span class="school-status status-active"><i
@@ -159,7 +162,7 @@
                                                 </div>
                                                 <span class="fw-bold small">{{ $stage->completion_percentage }}%</span>
                                             </div>
-                                            <div class="small text-muted mt-1" style="font-size: 0.78rem;">
+                                            <div class="small  mt-1" style="font-size: 0.78rem;">
                                                 <i
                                                     class="bi bi-journal-check me-1"></i>{{ $stage->completed_lessons }}/{{ $stage->total_lessons }}
                                                 Lessons | {{ $stage->required_hours }} hrs req.

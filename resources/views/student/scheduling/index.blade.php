@@ -70,9 +70,10 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <span class="badge bg-light text-dark border px-2 py-1">{{ $sched->stage_name }}</span>
+                                    <span
+                                        class="badge bg-light text-dark border px-2 py-1">{{ $sched->stage_name }}</span>
                                 </td>
-                                <td class="fw-semibold text-dark">
+                                <td class="fw-semibold">
                                     {{ $sched->lesson_type }}
                                 </td>
                                 <td>
