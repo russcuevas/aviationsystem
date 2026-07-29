@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>NAAP</title>
+    <title>NAAP Superadmin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
@@ -70,10 +70,12 @@
             background-color: rgba(46, 204, 113, 0.15);
             color: #2ecc71;
         }
+
         .status-maintenance {
             background-color: rgba(241, 196, 15, 0.15);
             color: #f1c40f;
         }
+
         .status-unavailable {
             background-color: rgba(231, 76, 60, 0.15);
             color: #e74c3c;
@@ -104,19 +106,21 @@
             </div>
         </div>
 
-        @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show shadow-sm mb-4" role="alert" style="border-radius: var(--radius);">
+        @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show shadow-sm mb-4" role="alert"
+                style="border-radius: var(--radius);">
                 <i class="bi bi-check-circle-fill me-2"></i>
                 {{ session('success') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
 
-        @if($errors->any())
-            <div class="alert alert-danger alert-dismissible fade show shadow-sm mb-4" role="alert" style="border-radius: var(--radius);">
+        @if ($errors->any())
+            <div class="alert alert-danger alert-dismissible fade show shadow-sm mb-4" role="alert"
+                style="border-radius: var(--radius);">
                 <i class="bi bi-exclamation-triangle-fill me-2"></i>
                 <ul class="mb-0 ps-3">
-                    @foreach($errors->all() as $error)
+                    @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
                 </ul>
@@ -152,57 +156,56 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($aircrafts as $aircraft)
-                        <tr data-id="{{ $aircraft->id }}">
-                            <td>
-                                <div class="school-code-wrap">
-                                    <span class="school-code">{{ $aircraft->registration }}</span>
-                                </div>
-                            </td>
-                            <td>{{ $aircraft->type }}</td>
-                            <td>{{ $aircraft->model }}</td>
-                            <td>
-                                <span class="branch-pill">
-                                    <i class="bi bi-geo-alt-fill" style="font-size:0.65rem"></i>
-                                    {{ $aircraft->provider_name }}
-                                </span>
-                            </td>
-                            <td>{{ number_format($aircraft->total_hours, 1) }} hrs</td>
-                            <td>{{ number_format($aircraft->hours_to_overhaul, 1) }} hrs</td>
-                            <td>
-                                <span class="school-status status-{{ strtolower($aircraft->status) }}">{{ $aircraft->status }}</span>
-                            </td>
-                            <td>
-                                <div class="d-flex gap-2">
-                                    <button class="btn btn-sm btn-outline-primary btn-view-aircraft" 
-                                        data-registration="{{ $aircraft->registration }}"
-                                        data-type="{{ $aircraft->type }}"
-                                        data-model="{{ $aircraft->model }}"
-                                        data-total-hours="{{ $aircraft->total_hours }}"
-                                        data-hours-to-overhaul="{{ $aircraft->hours_to_overhaul }}"
-                                        data-provider="{{ $aircraft->provider_name }}"
-                                        data-remarks="{{ $aircraft->remarks }}"
-                                        data-status="{{ $aircraft->status }}"
-                                        data-documents="{{ json_encode($aircraft->documents) }}"
-                                        title="View"><i class="bi bi-eye"></i></button>
-                                    <button class="btn btn-sm btn-outline-warning btn-edit-aircraft" 
-                                        data-id="{{ $aircraft->id }}"
-                                        data-registration="{{ $aircraft->registration }}"
-                                        data-type="{{ $aircraft->type }}"
-                                        data-model="{{ $aircraft->model }}"
-                                        data-total-hours="{{ $aircraft->total_hours }}"
-                                        data-hours-to-overhaul="{{ $aircraft->hours_to_overhaul }}"
-                                        data-flying-id="{{ $aircraft->flying_id }}"
-                                        data-remarks="{{ $aircraft->remarks }}"
-                                        data-status="{{ $aircraft->status }}"
-                                        data-documents="{{ json_encode($aircraft->documents) }}"
-                                        title="Edit"><i class="bi bi-pencil"></i></button>
-                                    <button class="btn btn-sm btn-outline-danger btn-delete-aircraft" 
-                                        data-id="{{ $aircraft->id }}" 
-                                        title="Delete"><i class="bi bi-trash"></i></button>
-                                </div>
-                            </td>
-                        </tr>
+                        @foreach ($aircrafts as $aircraft)
+                            <tr data-id="{{ $aircraft->id }}">
+                                <td>
+                                    <div class="school-code-wrap">
+                                        <span class="school-code">{{ $aircraft->registration }}</span>
+                                    </div>
+                                </td>
+                                <td>{{ $aircraft->type }}</td>
+                                <td>{{ $aircraft->model }}</td>
+                                <td>
+                                    <span class="branch-pill">
+                                        <i class="bi bi-geo-alt-fill" style="font-size:0.65rem"></i>
+                                        {{ $aircraft->provider_name }}
+                                    </span>
+                                </td>
+                                <td>{{ number_format($aircraft->total_hours, 1) }} hrs</td>
+                                <td>{{ number_format($aircraft->hours_to_overhaul, 1) }} hrs</td>
+                                <td>
+                                    <span
+                                        class="school-status status-{{ strtolower($aircraft->status) }}">{{ $aircraft->status }}</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-sm btn-outline-primary btn-view-aircraft"
+                                            data-registration="{{ $aircraft->registration }}"
+                                            data-type="{{ $aircraft->type }}" data-model="{{ $aircraft->model }}"
+                                            data-total-hours="{{ $aircraft->total_hours }}"
+                                            data-hours-to-overhaul="{{ $aircraft->hours_to_overhaul }}"
+                                            data-provider="{{ $aircraft->provider_name }}"
+                                            data-remarks="{{ $aircraft->remarks }}"
+                                            data-status="{{ $aircraft->status }}"
+                                            data-documents="{{ json_encode($aircraft->documents) }}" title="View"><i
+                                                class="bi bi-eye"></i></button>
+                                        <button class="btn btn-sm btn-outline-warning btn-edit-aircraft"
+                                            data-id="{{ $aircraft->id }}"
+                                            data-registration="{{ $aircraft->registration }}"
+                                            data-type="{{ $aircraft->type }}" data-model="{{ $aircraft->model }}"
+                                            data-total-hours="{{ $aircraft->total_hours }}"
+                                            data-hours-to-overhaul="{{ $aircraft->hours_to_overhaul }}"
+                                            data-flying-id="{{ $aircraft->flying_id }}"
+                                            data-remarks="{{ $aircraft->remarks }}"
+                                            data-status="{{ $aircraft->status }}"
+                                            data-documents="{{ json_encode($aircraft->documents) }}" title="Edit"><i
+                                                class="bi bi-pencil"></i></button>
+                                        <button class="btn btn-sm btn-outline-danger btn-delete-aircraft"
+                                            data-id="{{ $aircraft->id }}" title="Delete"><i
+                                                class="bi bi-trash"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
                         @endforeach
                     </tbody>
                 </table>
@@ -212,43 +215,51 @@
     </main>
 
     <!-- Add Aircraft Modal -->
-    <div class="modal fade" id="addAircraftModal" tabindex="-1" aria-labelledby="addAircraftModalLabel" aria-hidden="true">
+    <div class="modal fade" id="addAircraftModal" tabindex="-1" aria-labelledby="addAircraftModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="addAircraftModalLabel">Add Aircraft</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="addAircraftForm" action="{{ route('superadmin.aircraft.store') }}" method="POST" enctype="multipart/form-data">
+                <form id="addAircraftForm" action="{{ route('superadmin.aircraft.store') }}" method="POST"
+                    enctype="multipart/form-data">
                     @csrf
                     <div class="modal-body">
                         <div class="row g-3">
                             <div class="col-md-4">
                                 <label for="registration" class="form-label">Registration</label>
-                                <input type="text" class="form-control" id="registration" name="registration" required placeholder="e.g. RP-C1721">
+                                <input type="text" class="form-control" id="registration" name="registration"
+                                    required placeholder="e.g. RP-C1721">
                             </div>
                             <div class="col-md-4">
                                 <label for="aircraftType" class="form-label">Type</label>
-                                <input type="text" class="form-control" id="aircraftType" name="aircraftType" required placeholder="e.g. Single Engine">
+                                <input type="text" class="form-control" id="aircraftType" name="aircraftType"
+                                    required placeholder="e.g. Single Engine">
                             </div>
                             <div class="col-md-4">
                                 <label for="aircraftModel" class="form-label">Model</label>
-                                <input type="text" class="form-control" id="aircraftModel" name="aircraftModel" required placeholder="e.g. Cessna 172S">
+                                <input type="text" class="form-control" id="aircraftModel" name="aircraftModel"
+                                    required placeholder="e.g. Cessna 172S">
                             </div>
 
                             <div class="col-md-4">
                                 <label for="totalHours" class="form-label">Total Hours</label>
-                                <input type="number" class="form-control" id="totalHours" name="totalHours" min="0" step="0.1" required>
+                                <input type="number" class="form-control" id="totalHours" name="totalHours"
+                                    min="0" step="0.1" required>
                             </div>
                             <div class="col-md-4">
-                                <label for="hoursToOverhaul" class="form-label">Hours to Overhaul (Remaining time)</label>
-                                <input type="number" class="form-control" id="hoursToOverhaul" name="hoursToOverhaul" min="0" step="0.1" required>
+                                <label for="hoursToOverhaul" class="form-label">Hours to Overhaul (Remaining
+                                    time)</label>
+                                <input type="number" class="form-control" id="hoursToOverhaul"
+                                    name="hoursToOverhaul" min="0" step="0.1" required>
                             </div>
                             <div class="col-md-4">
                                 <label for="flyingSchool" class="form-label">Training Provider</label>
                                 <select class="form-select" id="flyingSchool" name="flyingSchool" required>
                                     <option value="" selected disabled>Select training provider</option>
-                                    @foreach($providers as $provider)
+                                    @foreach ($providers as $provider)
                                         <option value="{{ $provider->id }}">{{ $provider->name }}</option>
                                     @endforeach
                                 </select>
@@ -256,7 +267,8 @@
 
                             <div class="col-md-8">
                                 <label for="remarks" class="form-label">Notes / Remarks</label>
-                                <input type="text" class="form-control" id="remarks" name="remarks" placeholder="Add notes about maintenance, restrictions or remarks.">
+                                <input type="text" class="form-control" id="remarks" name="remarks"
+                                    placeholder="Add notes about maintenance, restrictions or remarks.">
                             </div>
                             <div class="col-md-4">
                                 <label for="status" class="form-label">Status</label>
@@ -269,16 +281,20 @@
 
                             <!-- Certificates & Documents Section -->
                             <div class="col-12 mt-4">
-                                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom border-secondary-subtle">
+                                <div
+                                    class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom border-secondary-subtle">
                                     <h6 class="fw-bold mb-0 text-primary attachments-section-title">
-                                        <i class="bi bi-file-earmark-pdf-fill me-1"></i> Aircraft Certificates & Document Expirations
+                                        <i class="bi bi-file-earmark-pdf-fill me-1"></i> Aircraft Certificates &
+                                        Document Expirations
                                     </h6>
-                                    <button type="button" class="btn btn-xs btn-primary d-flex align-items-center" id="addAttachmentRowBtn">
+                                    <button type="button" class="btn btn-xs btn-primary d-flex align-items-center"
+                                        id="addAttachmentRowBtn">
                                         <i class="bi bi-plus-lg me-1"></i> Add Custom Document
                                     </button>
                                 </div>
                                 <div class="table-responsive border rounded bg-light-subtle p-2">
-                                    <table class="table table-sm table-hover align-middle mb-0 attachments-table" id="attachmentsTable" style="font-size: 0.85rem;">
+                                    <table class="table table-sm table-hover align-middle mb-0 attachments-table"
+                                        id="attachmentsTable" style="font-size: 0.85rem;">
                                         <thead>
                                             <tr>
                                                 <th style="width: 30%;">Document Type</th>
@@ -294,13 +310,16 @@
                                     </table>
                                 </div>
                                 <div class="form-text mt-1 text-muted">
-                                    <i class="bi bi-info-circle-fill me-1"></i> Please specify the expiration date and upload a scanned file (PDF, JPG, PNG) for Airworthiness, Registration, Radio, Weight/Balance, and Insurance documents.
+                                    <i class="bi bi-info-circle-fill me-1"></i> Please specify the expiration date and
+                                    upload a scanned file (PDF, JPG, PNG) for Airworthiness, Registration, Radio,
+                                    Weight/Balance, and Insurance documents.
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-outline-secondary"
+                            data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-primary">Save Aircraft</button>
                     </div>
                 </form>
@@ -309,7 +328,8 @@
     </div>
 
     <!-- Edit Aircraft Modal -->
-    <div class="modal fade" id="editAircraftModal" tabindex="-1" aria-labelledby="editAircraftModalLabel" aria-hidden="true">
+    <div class="modal fade" id="editAircraftModal" tabindex="-1" aria-labelledby="editAircraftModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -323,30 +343,36 @@
                         <div class="row g-3">
                             <div class="col-md-4">
                                 <label for="editRegistration" class="form-label">Registration</label>
-                                <input type="text" class="form-control" id="editRegistration" name="registration" required>
+                                <input type="text" class="form-control" id="editRegistration" name="registration"
+                                    required>
                             </div>
                             <div class="col-md-4">
                                 <label for="editAircraftType" class="form-label">Type</label>
-                                <input type="text" class="form-control" id="editAircraftType" name="aircraftType" required>
+                                <input type="text" class="form-control" id="editAircraftType" name="aircraftType"
+                                    required>
                             </div>
                             <div class="col-md-4">
                                 <label for="editAircraftModel" class="form-label">Model</label>
-                                <input type="text" class="form-control" id="editAircraftModel" name="aircraftModel" required>
+                                <input type="text" class="form-control" id="editAircraftModel"
+                                    name="aircraftModel" required>
                             </div>
 
                             <div class="col-md-4">
                                 <label for="editTotalHours" class="form-label">Total Hours</label>
-                                <input type="number" class="form-control" id="editTotalHours" name="totalHours" min="0" step="0.1" required>
+                                <input type="number" class="form-control" id="editTotalHours" name="totalHours"
+                                    min="0" step="0.1" required>
                             </div>
                             <div class="col-md-4">
-                                <label for="editHoursToOverhaul" class="form-label">Hours to Overhaul (Remaining time)</label>
-                                <input type="number" class="form-control" id="editHoursToOverhaul" name="hoursToOverhaul" min="0" step="0.1" required>
+                                <label for="editHoursToOverhaul" class="form-label">Hours to Overhaul (Remaining
+                                    time)</label>
+                                <input type="number" class="form-control" id="editHoursToOverhaul"
+                                    name="hoursToOverhaul" min="0" step="0.1" required>
                             </div>
                             <div class="col-md-4">
                                 <label for="editFlyingSchool" class="form-label">Training Provider</label>
                                 <select class="form-select" id="editFlyingSchool" name="flyingSchool" required>
                                     <option value="" disabled>Select training provider</option>
-                                    @foreach($providers as $provider)
+                                    @foreach ($providers as $provider)
                                         <option value="{{ $provider->id }}">{{ $provider->name }}</option>
                                     @endforeach
                                 </select>
@@ -367,9 +393,11 @@
 
                             <!-- Current Documents Area -->
                             <div class="col-12 mt-3">
-                                <label class="form-label fw-bold text-success"><i class="bi bi-file-earmark-check-fill me-1"></i> Current Documents</label>
+                                <label class="form-label fw-bold text-success"><i
+                                        class="bi bi-file-earmark-check-fill me-1"></i> Current Documents</label>
                                 <div class="table-responsive border rounded bg-light-subtle p-2 mb-3">
-                                    <table class="table table-sm table-hover align-middle mb-0" id="editExistingLicensesTable" style="font-size: 0.85rem;">
+                                    <table class="table table-sm table-hover align-middle mb-0"
+                                        id="editExistingLicensesTable" style="font-size: 0.85rem;">
                                         <thead>
                                             <tr>
                                                 <th>Document Type</th>
@@ -389,16 +417,20 @@
 
                             <!-- New Attachments Area -->
                             <div class="col-12">
-                                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom border-secondary-subtle">
+                                <div
+                                    class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom border-secondary-subtle">
                                     <h6 class="fw-bold mb-0 text-primary attachments-section-title">
-                                        <i class="bi bi-file-earmark-plus-fill me-1"></i> Add New Aircraft Certificates & Document Attachments
+                                        <i class="bi bi-file-earmark-plus-fill me-1"></i> Add New Aircraft Certificates
+                                        & Document Attachments
                                     </h6>
-                                    <button type="button" class="btn btn-xs btn-primary d-flex align-items-center" id="editAddAttachmentRowBtn">
+                                    <button type="button" class="btn btn-xs btn-primary d-flex align-items-center"
+                                        id="editAddAttachmentRowBtn">
                                         <i class="bi bi-plus-lg me-1"></i> Add Custom Document
                                     </button>
                                 </div>
                                 <div class="table-responsive border rounded bg-light-subtle p-2">
-                                    <table class="table table-sm table-hover align-middle mb-0 attachments-table" id="editAttachmentsTable" style="font-size: 0.85rem;">
+                                    <table class="table table-sm table-hover align-middle mb-0 attachments-table"
+                                        id="editAttachmentsTable" style="font-size: 0.85rem;">
                                         <thead>
                                             <tr>
                                                 <th style="width: 30%;">Document Type</th>
@@ -418,7 +450,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-outline-secondary"
+                            data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-primary">Update Aircraft</button>
                     </div>
                 </form>
@@ -427,7 +460,8 @@
     </div>
 
     <!-- View Aircraft Modal -->
-    <div class="modal fade" id="viewAircraftModal" tabindex="-1" aria-labelledby="viewAircraftModalLabel" aria-hidden="true">
+    <div class="modal fade" id="viewAircraftModal" tabindex="-1" aria-labelledby="viewAircraftModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -465,7 +499,8 @@
                             <div id="viewAircraftTotalHours" class="fw-medium"></div>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="fw-bold text-muted small text-uppercase">Hours to Overhaul (Remaining time)</label>
+                            <label class="fw-bold text-muted small text-uppercase">Hours to Overhaul (Remaining
+                                time)</label>
                             <div id="viewAircraftOverhaul" class="fw-medium"></div>
                         </div>
                     </div>
@@ -474,7 +509,8 @@
                         <div id="viewAircraftRemarks" class="p-2 border rounded bg-light-subtle"></div>
                     </div>
                     <div class="mb-3">
-                        <label class="fw-bold text-muted small text-uppercase mb-2">Aircraft Certificates & Document Attachments</label>
+                        <label class="fw-bold text-muted small text-uppercase mb-2">Aircraft Certificates & Document
+                            Attachments</label>
                         <div id="viewAircraftDocumentsList" class="list-group">
                             <!-- Downloadable list populated in JS -->
                         </div>
@@ -701,7 +737,7 @@
             $('#viewAircraftType').text(btn.data('type'));
             $('#viewAircraftModel').text(btn.data('model'));
             $('#viewAircraftProvider').text(btn.data('provider'));
-            
+
             const status = btn.data('status');
             $('#viewAircraftStatus').text(status)
                 .removeClass()
@@ -710,15 +746,15 @@
             $('#viewAircraftTotalHours').text(parseFloat(btn.data('total-hours')).toFixed(1) + ' hrs');
             $('#viewAircraftOverhaul').text(parseFloat(btn.data('hours-to-overhaul')).toFixed(1) + ' hrs');
             $('#viewAircraftRemarks').text(btn.data('remarks') || 'No remarks provided.');
-            
+
             const documentsList = $('#viewAircraftDocumentsList');
             documentsList.empty();
-            
+
             let documents = [];
             try {
                 documents = btn.data('documents');
-            } catch(e) {}
-            
+            } catch (e) {}
+
             if (documents && documents.length > 0) {
                 documents.forEach(doc => {
                     const fileName = doc.attachment.split('/').pop().substring(11);
@@ -735,9 +771,10 @@
                     `);
                 });
             } else {
-                documentsList.append('<div class="text-muted small py-2">No uploaded documents or certificates found.</div>');
+                documentsList.append(
+                    '<div class="text-muted small py-2">No uploaded documents or certificates found.</div>');
             }
-            
+
             $('#viewAircraftModal').modal('show');
         });
 
@@ -747,10 +784,10 @@
         $(document).on('click', '.btn-edit-aircraft', function() {
             const btn = $(this);
             const id = btn.data('id');
-            
+
             // Set action endpoint
             document.getElementById('editAircraftForm').action = `/superadmin/aircraft/${id}/update`;
-            
+
             $('#editAircraftId').val(id);
             $('#editRegistration').val(btn.data('registration'));
             $('#editAircraftType').val(btn.data('type'));
@@ -760,22 +797,22 @@
             $('#editFlyingSchool').val(btn.data('flying-id'));
             $('#editRemarks').val(btn.data('remarks'));
             $('#editStatus').val(btn.data('status'));
-            
+
             // Clear new attachments rows and deleted files array
             editRowCounter = 0;
             deletedLicenses = [];
             $('#editAttachmentsTableBody').empty();
             $('#deleted_licenses_container').empty();
-            
+
             // Populate existing documents
             const existingTbody = $('#editExistingLicensesTableBody');
             existingTbody.empty();
-            
+
             let documents = [];
             try {
                 documents = btn.data('documents');
-            } catch(e) {}
-            
+            } catch (e) {}
+
             if (documents && documents.length > 0) {
                 documents.forEach(doc => {
                     const fileName = doc.attachment.split('/').pop().substring(11);
@@ -798,9 +835,10 @@
                     `);
                 });
             } else {
-                existingTbody.append('<tr><td colspan="5" class="text-center text-muted py-2">No documents found.</td></tr>');
+                existingTbody.append(
+                    '<tr><td colspan="5" class="text-center text-muted py-2">No documents found.</td></tr>');
             }
-            
+
             $('#editAircraftModal').modal('show');
         });
 
@@ -809,24 +847,27 @@
             const btn = $(this);
             const licId = btn.data('lic-id');
             deletedLicenses.push(licId);
-            
+
             // Add hidden input to form
             $('#deleted_licenses_container').append(`
                 <input type="hidden" name="deleted_licenses[]" value="${licId}">
             `);
-            
+
             // Remove the table row
             btn.closest('tr').remove();
-            
+
             if ($('#editExistingLicensesTableBody').children().length === 0) {
-                $('#editExistingLicensesTableBody').append('<tr><td colspan="5" class="text-center text-muted py-2">No documents found.</td></tr>');
+                $('#editExistingLicensesTableBody').append(
+                    '<tr><td colspan="5" class="text-center text-muted py-2">No documents found.</td></tr>');
             }
         });
 
         // ================= DELETE AIRCRAFT =================
         $(document).on('click', '.btn-delete-aircraft', function() {
             const id = $(this).data('id');
-            if (confirm('Are you sure you want to delete this Aircraft record? All documents and uploaded attachments will be permanently deleted.')) {
+            if (confirm(
+                    'Are you sure you want to delete this Aircraft record? All documents and uploaded attachments will be permanently deleted.'
+                    )) {
                 const form = document.getElementById('globalDeleteForm');
                 form.action = `/superadmin/aircraft/${id}`;
                 form.submit();

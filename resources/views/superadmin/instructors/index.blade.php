@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>NAAP</title>
+    <title>NAAP Superadmin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
@@ -90,19 +90,21 @@
             </div>
         </div>
 
-        @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show shadow-sm mb-4" role="alert" style="border-radius: var(--radius);">
+        @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show shadow-sm mb-4" role="alert"
+                style="border-radius: var(--radius);">
                 <i class="bi bi-check-circle-fill me-2"></i>
                 {{ session('success') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
 
-        @if($errors->any())
-            <div class="alert alert-danger alert-dismissible fade show shadow-sm mb-4" role="alert" style="border-radius: var(--radius);">
+        @if ($errors->any())
+            <div class="alert alert-danger alert-dismissible fade show shadow-sm mb-4" role="alert"
+                style="border-radius: var(--radius);">
                 <i class="bi bi-exclamation-triangle-fill me-2"></i>
                 <ul class="mb-0 ps-3">
-                    @foreach($errors->all() as $error)
+                    @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
                 </ul>
@@ -135,48 +137,52 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($instructors as $instructor)
-                        <tr data-id="{{ $instructor->id }}">
-                            <td>
-                                <div class="school-code-wrap">
-                                    <span class="school-code">INS-{{ date('Y', strtotime($instructor->created_at)) }}-{{ sprintf('%03d', $instructor->id) }}</span>
-                                </div>
-                            </td>
-                            <td>{{ $instructor->first_name }} {{ $instructor->middle_name ? $instructor->middle_name . ' ' : '' }}{{ $instructor->last_name }}</td>
-                            <td><a class="school-email" href="mailto:{{ $instructor->email }}">{{ $instructor->email }}</a></td>
-                            <td>
-                                <span class="branch-pill">
-                                    <i class="bi bi-geo-alt-fill" style="font-size:0.65rem"></i>
-                                    {{ $instructor->provider_name }}
-                                </span>
-                            </td>
-                            <td>
-                                <div class="d-flex gap-2">
-                                    <button class="btn btn-sm btn-outline-primary btn-view-instructor" 
-                                        data-first-name="{{ $instructor->first_name }}"
-                                        data-middle-name="{{ $instructor->middle_name }}"
-                                        data-last-name="{{ $instructor->last_name }}"
-                                        data-email="{{ $instructor->email }}"
-                                        data-phone="{{ $instructor->phone }}"
-                                        data-provider="{{ $instructor->provider_name }}"
-                                        data-licenses="{{ json_encode($instructor->licenses) }}"
-                                        title="View"><i class="bi bi-eye"></i></button>
-                                    <button class="btn btn-sm btn-outline-warning btn-edit-instructor" 
-                                        data-id="{{ $instructor->id }}"
-                                        data-first-name="{{ $instructor->first_name }}"
-                                        data-middle-name="{{ $instructor->middle_name }}"
-                                        data-last-name="{{ $instructor->last_name }}"
-                                        data-email="{{ $instructor->email }}"
-                                        data-phone="{{ $instructor->phone }}"
-                                        data-flying-id="{{ $instructor->flying_id }}"
-                                        data-licenses="{{ json_encode($instructor->licenses) }}"
-                                        title="Edit"><i class="bi bi-pencil"></i></button>
-                                    <button class="btn btn-sm btn-outline-danger btn-delete-instructor" 
-                                        data-id="{{ $instructor->id }}" 
-                                        title="Delete"><i class="bi bi-trash"></i></button>
-                                </div>
-                            </td>
-                        </tr>
+                        @foreach ($instructors as $instructor)
+                            <tr data-id="{{ $instructor->id }}">
+                                <td>
+                                    <div class="school-code-wrap">
+                                        <span
+                                            class="school-code">INS-{{ date('Y', strtotime($instructor->created_at)) }}-{{ sprintf('%03d', $instructor->id) }}</span>
+                                    </div>
+                                </td>
+                                <td>{{ $instructor->first_name }}
+                                    {{ $instructor->middle_name ? $instructor->middle_name . ' ' : '' }}{{ $instructor->last_name }}
+                                </td>
+                                <td><a class="school-email"
+                                        href="mailto:{{ $instructor->email }}">{{ $instructor->email }}</a></td>
+                                <td>
+                                    <span class="branch-pill">
+                                        <i class="bi bi-geo-alt-fill" style="font-size:0.65rem"></i>
+                                        {{ $instructor->provider_name }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-sm btn-outline-primary btn-view-instructor"
+                                            data-first-name="{{ $instructor->first_name }}"
+                                            data-middle-name="{{ $instructor->middle_name }}"
+                                            data-last-name="{{ $instructor->last_name }}"
+                                            data-email="{{ $instructor->email }}"
+                                            data-phone="{{ $instructor->phone }}"
+                                            data-provider="{{ $instructor->provider_name }}"
+                                            data-licenses="{{ json_encode($instructor->licenses) }}" title="View"><i
+                                                class="bi bi-eye"></i></button>
+                                        <button class="btn btn-sm btn-outline-warning btn-edit-instructor"
+                                            data-id="{{ $instructor->id }}"
+                                            data-first-name="{{ $instructor->first_name }}"
+                                            data-middle-name="{{ $instructor->middle_name }}"
+                                            data-last-name="{{ $instructor->last_name }}"
+                                            data-email="{{ $instructor->email }}"
+                                            data-phone="{{ $instructor->phone }}"
+                                            data-flying-id="{{ $instructor->flying_id }}"
+                                            data-licenses="{{ json_encode($instructor->licenses) }}" title="Edit"><i
+                                                class="bi bi-pencil"></i></button>
+                                        <button class="btn btn-sm btn-outline-danger btn-delete-instructor"
+                                            data-id="{{ $instructor->id }}" title="Delete"><i
+                                                class="bi bi-trash"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
                         @endforeach
                     </tbody>
                 </table>
@@ -186,14 +192,16 @@
     </main>
 
     <!-- Add Instructor Modal -->
-    <div class="modal fade" id="addInstructorModal" tabindex="-1" aria-labelledby="addInstructorModalLabel" aria-hidden="true">
+    <div class="modal fade" id="addInstructorModal" tabindex="-1" aria-labelledby="addInstructorModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="addInstructorModalLabel">Add Instructor</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="addInstructorForm" action="{{ route('superadmin.instructor.store') }}" method="POST" enctype="multipart/form-data">
+                <form id="addInstructorForm" action="{{ route('superadmin.instructor.store') }}" method="POST"
+                    enctype="multipart/form-data">
                     @csrf
                     <div class="modal-body">
                         <div class="row g-3">
@@ -212,22 +220,25 @@
 
                             <div class="col-md-6">
                                 <label for="instructorEmail" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="instructorEmail" name="instructorEmail" required>
+                                <input type="email" class="form-control" id="instructorEmail"
+                                    name="instructorEmail" required>
                             </div>
                             <div class="col-md-6">
                                 <label for="password" class="form-label">Password</label>
-                                <input type="password" class="form-control" id="password" name="password" required minlength="6" placeholder="Minimum 6 characters">
+                                <input type="password" class="form-control" id="password" name="password" required
+                                    minlength="6" placeholder="Minimum 6 characters">
                             </div>
                             <div class="col-md-6">
                                 <label for="instructorPhone" class="form-label">Phone</label>
-                                <input type="tel" class="form-control" id="instructorPhone" name="instructorPhone" required>
+                                <input type="tel" class="form-control" id="instructorPhone"
+                                    name="instructorPhone" required>
                             </div>
 
                             <div class="col-md-6">
                                 <label for="flyingSchool" class="form-label">Training Provider</label>
                                 <select class="form-select" id="flyingSchool" name="flyingSchool" required>
                                     <option value="" selected disabled>Select training provider</option>
-                                    @foreach($providers as $provider)
+                                    @foreach ($providers as $provider)
                                         <option value="{{ $provider->id }}">{{ $provider->name }}</option>
                                     @endforeach
                                 </select>
@@ -235,16 +246,20 @@
 
                             <!-- Licenses & Attachments Section -->
                             <div class="col-12 mt-4">
-                                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom border-secondary-subtle">
+                                <div
+                                    class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom border-secondary-subtle">
                                     <h6 class="fw-bold mb-0 text-primary attachments-section-title">
-                                        <i class="bi bi-file-earmark-pdf-fill me-1"></i> Licenses & Document Attachments
+                                        <i class="bi bi-file-earmark-pdf-fill me-1"></i> Licenses & Document
+                                        Attachments
                                     </h6>
-                                    <button type="button" class="btn btn-xs btn-primary d-flex align-items-center" id="addAttachmentRowBtn">
+                                    <button type="button" class="btn btn-xs btn-primary d-flex align-items-center"
+                                        id="addAttachmentRowBtn">
                                         <i class="bi bi-plus-lg me-1"></i> Add Custom Document
                                     </button>
                                 </div>
                                 <div class="table-responsive border rounded bg-light-subtle p-2">
-                                    <table class="table table-sm table-hover align-middle mb-0 attachments-table" id="attachmentsTable" style="font-size: 0.85rem;">
+                                    <table class="table table-sm table-hover align-middle mb-0 attachments-table"
+                                        id="attachmentsTable" style="font-size: 0.85rem;">
                                         <thead>
                                             <tr>
                                                 <th style="width: 30%;">License / Document Type</th>
@@ -260,13 +275,15 @@
                                     </table>
                                 </div>
                                 <div class="form-text mt-1 text-muted">
-                                    <i class="bi bi-info-circle-fill me-1"></i> Please specify the expiration date and upload a scanned file (PDF, JPG, PNG) for each license.
+                                    <i class="bi bi-info-circle-fill me-1"></i> Please specify the expiration date and
+                                    upload a scanned file (PDF, JPG, PNG) for each license.
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-outline-secondary"
+                            data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-primary">Save Instructor</button>
                     </div>
                 </form>
@@ -275,7 +292,8 @@
     </div>
 
     <!-- Edit Instructor Modal -->
-    <div class="modal fade" id="editInstructorModal" tabindex="-1" aria-labelledby="editInstructorModalLabel" aria-hidden="true">
+    <div class="modal fade" id="editInstructorModal" tabindex="-1" aria-labelledby="editInstructorModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -289,7 +307,8 @@
                         <div class="row g-3">
                             <div class="col-md-4">
                                 <label for="editFirstName" class="form-label">First Name</label>
-                                <input type="text" class="form-control" id="editFirstName" name="firstName" required>
+                                <input type="text" class="form-control" id="editFirstName" name="firstName"
+                                    required>
                             </div>
                             <div class="col-md-4">
                                 <label for="editMiddleName" class="form-label">Middle Name</label>
@@ -297,27 +316,31 @@
                             </div>
                             <div class="col-md-4">
                                 <label for="editLastName" class="form-label">Last Name</label>
-                                <input type="text" class="form-control" id="editLastName" name="lastName" required>
+                                <input type="text" class="form-control" id="editLastName" name="lastName"
+                                    required>
                             </div>
 
                             <div class="col-md-6">
                                 <label for="editInstructorEmail" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="editInstructorEmail" name="instructorEmail" required>
+                                <input type="email" class="form-control" id="editInstructorEmail"
+                                    name="instructorEmail" required>
                             </div>
                             <div class="col-md-6">
                                 <label for="editPassword" class="form-label">Password</label>
-                                <input type="password" class="form-control" id="editPassword" name="password" placeholder="Leave blank to keep current password" minlength="6">
+                                <input type="password" class="form-control" id="editPassword" name="password"
+                                    placeholder="Leave blank to keep current password" minlength="6">
                             </div>
                             <div class="col-md-6">
                                 <label for="editInstructorPhone" class="form-label">Phone</label>
-                                <input type="tel" class="form-control" id="editInstructorPhone" name="instructorPhone" required>
+                                <input type="tel" class="form-control" id="editInstructorPhone"
+                                    name="instructorPhone" required>
                             </div>
 
                             <div class="col-md-6">
                                 <label for="editFlyingSchool" class="form-label">Training Provider</label>
                                 <select class="form-select" id="editFlyingSchool" name="flyingSchool" required>
                                     <option value="" disabled>Select training provider</option>
-                                    @foreach($providers as $provider)
+                                    @foreach ($providers as $provider)
                                         <option value="{{ $provider->id }}">{{ $provider->name }}</option>
                                     @endforeach
                                 </select>
@@ -325,9 +348,11 @@
 
                             <!-- Current Documents Area -->
                             <div class="col-12 mt-3">
-                                <label class="form-label fw-bold text-success"><i class="bi bi-file-earmark-check-fill me-1"></i> Current Documents</label>
+                                <label class="form-label fw-bold text-success"><i
+                                        class="bi bi-file-earmark-check-fill me-1"></i> Current Documents</label>
                                 <div class="table-responsive border rounded bg-light-subtle p-2 mb-3">
-                                    <table class="table table-sm table-hover align-middle mb-0" id="editExistingLicensesTable" style="font-size: 0.85rem;">
+                                    <table class="table table-sm table-hover align-middle mb-0"
+                                        id="editExistingLicensesTable" style="font-size: 0.85rem;">
                                         <thead>
                                             <tr>
                                                 <th>Document Type</th>
@@ -347,16 +372,20 @@
 
                             <!-- New Attachments Area -->
                             <div class="col-12">
-                                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom border-secondary-subtle">
+                                <div
+                                    class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom border-secondary-subtle">
                                     <h6 class="fw-bold mb-0 text-primary attachments-section-title">
-                                        <i class="bi bi-file-earmark-plus-fill me-1"></i> Add New Licenses & Document Attachments
+                                        <i class="bi bi-file-earmark-plus-fill me-1"></i> Add New Licenses & Document
+                                        Attachments
                                     </h6>
-                                    <button type="button" class="btn btn-xs btn-primary d-flex align-items-center" id="editAddAttachmentRowBtn">
+                                    <button type="button" class="btn btn-xs btn-primary d-flex align-items-center"
+                                        id="editAddAttachmentRowBtn">
                                         <i class="bi bi-plus-lg me-1"></i> Add Custom Document
                                     </button>
                                 </div>
                                 <div class="table-responsive border rounded bg-light-subtle p-2">
-                                    <table class="table table-sm table-hover align-middle mb-0 attachments-table" id="editAttachmentsTable" style="font-size: 0.85rem;">
+                                    <table class="table table-sm table-hover align-middle mb-0 attachments-table"
+                                        id="editAttachmentsTable" style="font-size: 0.85rem;">
                                         <thead>
                                             <tr>
                                                 <th style="width: 30%;">License / Document Type</th>
@@ -376,7 +405,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-outline-secondary"
+                            data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-primary">Update Instructor</button>
                     </div>
                 </form>
@@ -385,7 +415,8 @@
     </div>
 
     <!-- View Instructor Modal -->
-    <div class="modal fade" id="viewInstructorModal" tabindex="-1" aria-labelledby="viewInstructorModalLabel" aria-hidden="true">
+    <div class="modal fade" id="viewInstructorModal" tabindex="-1" aria-labelledby="viewInstructorModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -414,7 +445,8 @@
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label class="fw-bold text-muted small text-uppercase mb-2">License & Document Attachments</label>
+                        <label class="fw-bold text-muted small text-uppercase mb-2">License & Document
+                            Attachments</label>
                         <div id="viewInstructorLicensesList" class="list-group">
                             <!-- Downloadable list populated in JS -->
                         </div>
@@ -633,20 +665,21 @@
         // ================= VIEW INSTRUCTOR DETAILS =================
         $(document).on('click', '.btn-view-instructor', function() {
             const btn = $(this);
-            const fullName = btn.data('first-name') + ' ' + (btn.data('middle-name') ? btn.data('middle-name') + ' ' : '') + btn.data('last-name');
+            const fullName = btn.data('first-name') + ' ' + (btn.data('middle-name') ? btn.data('middle-name') +
+                ' ' : '') + btn.data('last-name');
             $('#viewInstructorName').text(fullName);
             $('#viewInstructorEmail').text(btn.data('email')).attr('href', 'mailto:' + btn.data('email'));
             $('#viewInstructorPhone').text(btn.data('phone'));
             $('#viewInstructorProvider').text(btn.data('provider'));
-            
+
             const licensesList = $('#viewInstructorLicensesList');
             licensesList.empty();
-            
+
             let licenses = [];
             try {
                 licenses = btn.data('licenses');
-            } catch(e) {}
-            
+            } catch (e) {}
+
             if (licenses && licenses.length > 0) {
                 licenses.forEach(lic => {
                     const fileName = lic.attachment.split('/').pop().substring(11);
@@ -663,9 +696,10 @@
                     `);
                 });
             } else {
-                licensesList.append('<div class="text-muted small py-2">No uploaded documents or licenses found.</div>');
+                licensesList.append(
+                    '<div class="text-muted small py-2">No uploaded documents or licenses found.</div>');
             }
-            
+
             $('#viewInstructorModal').modal('show');
         });
 
@@ -675,10 +709,10 @@
         $(document).on('click', '.btn-edit-instructor', function() {
             const btn = $(this);
             const id = btn.data('id');
-            
+
             // Set action endpoint
             document.getElementById('editInstructorForm').action = `/superadmin/instructors/${id}/update`;
-            
+
             $('#editInstructorId').val(id);
             $('#editFirstName').val(btn.data('first-name'));
             $('#editMiddleName').val(btn.data('middle-name'));
@@ -687,22 +721,22 @@
             $('#editPassword').val('');
             $('#editInstructorPhone').val(btn.data('phone'));
             $('#editFlyingSchool').val(btn.data('flying-id'));
-            
+
             // Clear new attachments rows and deleted files array
             editRowCounter = 0;
             deletedLicenses = [];
             $('#editAttachmentsTableBody').empty();
             $('#deleted_licenses_container').empty();
-            
+
             // Populate existing licenses
             const existingTbody = $('#editExistingLicensesTableBody');
             existingTbody.empty();
-            
+
             let licenses = [];
             try {
                 licenses = btn.data('licenses');
-            } catch(e) {}
-            
+            } catch (e) {}
+
             if (licenses && licenses.length > 0) {
                 licenses.forEach(lic => {
                     const fileName = lic.attachment.split('/').pop().substring(11);
@@ -725,9 +759,10 @@
                     `);
                 });
             } else {
-                existingTbody.append('<tr><td colspan="5" class="text-center text-muted py-2">No documents found.</td></tr>');
+                existingTbody.append(
+                    '<tr><td colspan="5" class="text-center text-muted py-2">No documents found.</td></tr>');
             }
-            
+
             $('#editInstructorModal').modal('show');
         });
 
@@ -736,24 +771,27 @@
             const btn = $(this);
             const licId = btn.data('lic-id');
             deletedLicenses.push(licId);
-            
+
             // Add hidden input to form
             $('#deleted_licenses_container').append(`
                 <input type="hidden" name="deleted_licenses[]" value="${licId}">
             `);
-            
+
             // Remove the table row
             btn.closest('tr').remove();
-            
+
             if ($('#editExistingLicensesTableBody').children().length === 0) {
-                $('#editExistingLicensesTableBody').append('<tr><td colspan="5" class="text-center text-muted py-2">No documents found.</td></tr>');
+                $('#editExistingLicensesTableBody').append(
+                    '<tr><td colspan="5" class="text-center text-muted py-2">No documents found.</td></tr>');
             }
         });
 
         // ================= DELETE INSTRUCTOR =================
         $(document).on('click', '.btn-delete-instructor', function() {
             const id = $(this).data('id');
-            if (confirm('Are you sure you want to delete this Instructor record? All licenses and uploaded attachments will be permanently deleted.')) {
+            if (confirm(
+                    'Are you sure you want to delete this Instructor record? All licenses and uploaded attachments will be permanently deleted.'
+                    )) {
                 const form = document.getElementById('globalDeleteForm');
                 form.action = `/superadmin/instructors/${id}`;
                 form.submit();

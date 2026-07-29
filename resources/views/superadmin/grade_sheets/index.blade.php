@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NAAP Superadmin - Grade Sheet Validation</title>
+    <title>NAAP Superadmin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
@@ -54,21 +54,36 @@
                                 <td><span class="fw-semibold text-primary">{{ $st->student_code }}</span></td>
                                 <td class="fw-semibold">{{ $st->student_name }}</td>
                                 <td>
-                                    <span class="badge bg-primary px-2 py-1" style="background-color: var(--cobalt) !important;">
+                                    <span class="badge bg-primary px-2 py-1"
+                                        style="background-color: var(--cobalt) !important;">
                                         {{ $st->provider_name }}
                                     </span>
                                 </td>
                                 <td>
                                     <div class="d-flex align-items-center gap-1 flex-wrap">
-                                        <span class="badge bg-secondary px-2 py-1"><i class="bi bi-folder2-open me-1"></i>{{ $st->total_sheets }} {{ Str::plural('Sheet', $st->total_sheets) }}</span>
-                                        @if($st->accepted_count > 0)
-                                            <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1" style="font-size:0.75rem;"><i class="bi bi-check-circle-fill me-1"></i>{{ $st->accepted_count }} Accepted</span>
+                                        <span class="badge bg-secondary px-2 py-1"><i
+                                                class="bi bi-folder2-open me-1"></i>{{ $st->total_sheets }}
+                                            {{ Str::plural('Sheet', $st->total_sheets) }}</span>
+                                        @if ($st->accepted_count > 0)
+                                            <span
+                                                class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1"
+                                                style="font-size:0.75rem;"><i
+                                                    class="bi bi-check-circle-fill me-1"></i>{{ $st->accepted_count }}
+                                                Accepted</span>
                                         @endif
-                                        @if($st->for_review_count > 0)
-                                            <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1" style="font-size:0.75rem;"><i class="bi bi-hourglass-split me-1"></i>{{ $st->for_review_count }} Review</span>
+                                        @if ($st->for_review_count > 0)
+                                            <span
+                                                class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1"
+                                                style="font-size:0.75rem;"><i
+                                                    class="bi bi-hourglass-split me-1"></i>{{ $st->for_review_count }}
+                                                Review</span>
                                         @endif
-                                        @if($st->rejected_count > 0)
-                                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1" style="font-size:0.75rem;"><i class="bi bi-x-circle-fill me-1"></i>{{ $st->rejected_count }} Rejected</span>
+                                        @if ($st->rejected_count > 0)
+                                            <span
+                                                class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1"
+                                                style="font-size:0.75rem;"><i
+                                                    class="bi bi-x-circle-fill me-1"></i>{{ $st->rejected_count }}
+                                                Rejected</span>
                                         @endif
                                     </div>
                                 </td>
@@ -77,10 +92,15 @@
                                     @php
                                         $g = $st->overall_grade;
                                         $badgeClass = 'bg-secondary';
-                                        if (in_array($g, ['A+', 'A'])) $badgeClass = 'bg-success';
-                                        elseif (in_array($g, ['B+', 'B'])) $badgeClass = 'bg-primary';
-                                        elseif (in_array($g, ['C+', 'C'])) $badgeClass = 'bg-warning text-dark';
-                                        elseif ($g === 'F') $badgeClass = 'bg-danger';
+                                        if (in_array($g, ['A+', 'A'])) {
+                                            $badgeClass = 'bg-success';
+                                        } elseif (in_array($g, ['B+', 'B'])) {
+                                            $badgeClass = 'bg-primary';
+                                        } elseif (in_array($g, ['C+', 'C'])) {
+                                            $badgeClass = 'bg-warning text-dark';
+                                        } elseif ($g === 'F') {
+                                            $badgeClass = 'bg-danger';
+                                        }
                                     @endphp
                                     <span class="badge {{ $badgeClass }} px-2 py-1">{{ $g }}</span>
                                 </td>
@@ -89,7 +109,8 @@
                                         data-student="{{ $st->student_name }}"
                                         data-provider="{{ $st->provider_name }}"
                                         data-sheets="{{ json_encode($st->sheets_list) }}">
-                                        <i class="bi bi-layers-fill me-1"></i> View Grade Sheets ({{ $st->total_sheets }})
+                                        <i class="bi bi-layers-fill me-1"></i> View Grade Sheets
+                                        ({{ $st->total_sheets }})
                                     </button>
                                 </td>
                             </tr>
@@ -101,7 +122,8 @@
     </main>
 
     <!-- Student Grade Sheets List Modal -->
-    <div class="modal fade" id="studentGradeSheetsModal" tabindex="-1" aria-labelledby="studentGradeSheetsModalLabel" aria-hidden="true">
+    <div class="modal fade" id="studentGradeSheetsModal" tabindex="-1" aria-labelledby="studentGradeSheetsModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
@@ -111,14 +133,16 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="d-flex justify-content-between align-items-center mb-3 p-3 bg-light rounded border flex-wrap gap-2">
+                    <div
+                        class="d-flex justify-content-between align-items-center mb-3 p-3 bg-light rounded border flex-wrap gap-2">
                         <div>
                             <div class="text-muted small text-uppercase fw-bold">Student Name</div>
                             <div class="fw-bold text-dark fs-5" id="sgsModalStudentName">-</div>
                         </div>
                         <div>
                             <div class="text-muted small text-uppercase fw-bold">Training Provider</div>
-                            <div><span class="badge bg-primary px-3 py-2" id="sgsModalProviderName" style="background-color: var(--cobalt) !important;">-</span></div>
+                            <div><span class="badge bg-primary px-3 py-2" id="sgsModalProviderName"
+                                    style="background-color: var(--cobalt) !important;">-</span></div>
                         </div>
                     </div>
 
@@ -151,15 +175,18 @@
     </div>
 
     <!-- View Breakdown Modal -->
-    <div class="modal fade" id="viewBreakdownModal" tabindex="-1" aria-labelledby="viewBreakdownModalLabel" aria-hidden="true">
+    <div class="modal fade" id="viewBreakdownModal" tabindex="-1" aria-labelledby="viewBreakdownModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title fw-bold" id="viewBreakdownModalLabel"><i class="bi bi-file-text text-primary me-2"></i>Grade Sheet Audit Breakdown</h5>
+                    <h5 class="modal-title fw-bold" id="viewBreakdownModalLabel"><i
+                            class="bi bi-file-text text-primary me-2"></i>Grade Sheet Audit Breakdown</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="d-flex justify-content-between align-items-center mb-3 p-3 bg-light rounded border flex-wrap gap-2">
+                    <div
+                        class="d-flex justify-content-between align-items-center mb-3 p-3 bg-light rounded border flex-wrap gap-2">
                         <div>
                             <div class="text-muted small">Sheet ID</div>
                             <div class="fw-bold text-primary" id="bdSheetId">-</div>
@@ -170,7 +197,8 @@
                         </div>
                         <div>
                             <div class="text-muted small">Training Provider</div>
-                            <div><span class="badge bg-primary px-2 py-1" id="bdProviderName" style="background-color: var(--cobalt) !important;">-</span></div>
+                            <div><span class="badge bg-primary px-2 py-1" id="bdProviderName"
+                                    style="background-color: var(--cobalt) !important;">-</span></div>
                         </div>
                     </div>
 
@@ -189,7 +217,8 @@
                         </div>
                     </div>
 
-                    <div class="p-3 mb-3 bg-primary-subtle text-primary border border-primary-subtle rounded d-flex justify-content-between align-items-center">
+                    <div
+                        class="p-3 mb-3 bg-primary-subtle text-primary border border-primary-subtle rounded d-flex justify-content-between align-items-center">
                         <div>
                             <span class="fw-semibold">Evaluation Score:</span>
                             <span class="fs-5 ms-1 fw-bold" id="bdAvgScore">-</span> / 100
@@ -286,9 +315,11 @@
                 sheets.forEach((s) => {
                     let statusBadge = `<span class="school-status status-inactive">${s.status}</span>`;
                     if (['Accepted', 'Approved'].includes(s.status)) {
-                        statusBadge = `<span class="school-status status-active"><i class="bi bi-check-circle me-1"></i>Accepted</span>`;
+                        statusBadge =
+                            `<span class="school-status status-active"><i class="bi bi-check-circle me-1"></i>Accepted</span>`;
                     } else if (['For Review', 'Pending'].includes(s.status)) {
-                        statusBadge = `<span class="school-status status-onleave"><i class="bi bi-clock-history me-1"></i>For Review</span>`;
+                        statusBadge =
+                            `<span class="school-status status-onleave"><i class="bi bi-clock-history me-1"></i>For Review</span>`;
                     }
 
                     const badgeClass = getGradeBadgeClass(s.overall_grade);
@@ -322,7 +353,9 @@
                     `);
                 });
             } else {
-                tbody.append('<tr><td colspan="9" class="text-center text-muted">No grade sheets found for this student.</td></tr>');
+                tbody.append(
+                    '<tr><td colspan="9" class="text-center text-muted">No grade sheets found for this student.</td></tr>'
+                    );
             }
 
             $('#studentGradeSheetsModal').modal('show');
@@ -336,7 +369,7 @@
             $('#bdInstructorName').text(btn.data('instructor'));
             $('#bdStageName').text(btn.data('stage'));
             $('#bdAvgScore').text(btn.data('avg'));
-            
+
             const grade = btn.data('grade');
             const badgeClass = btn.data('badge');
             $('#bdOverallBadge').text(grade).attr('class', `badge ms-1 ${badgeClass}`);
@@ -349,8 +382,11 @@
                 lessons.forEach((ls, i) => {
                     const lGrade = ls.grade || getLetterGrade(ls.score);
                     const lClass = getGradeBadgeClass(lGrade);
-                    const stgBadge = ls.stage ? `<span class="badge bg-light text-dark border">${ls.stage}</span>` : '-';
-                    const timeOutBadge = ls.time_out ? `<span class="badge bg-light text-dark border px-2 py-1"><i class="bi bi-clock me-1"></i>${ls.time_out}</span>` : '-';
+                    const stgBadge = ls.stage ?
+                        `<span class="badge bg-light text-dark border">${ls.stage}</span>` : '-';
+                    const timeOutBadge = ls.time_out ?
+                        `<span class="badge bg-light text-dark border px-2 py-1"><i class="bi bi-clock me-1"></i>${ls.time_out}</span>` :
+                        '-';
                     tbody.append(`
                         <tr>
                             <td>${i + 1}</td>
@@ -363,7 +399,8 @@
                     `);
                 });
             } else {
-                tbody.append('<tr><td colspan="6" class="text-center text-muted">No lesson details available.</td></tr>');
+                tbody.append(
+                    '<tr><td colspan="6" class="text-center text-muted">No lesson details available.</td></tr>');
             }
 
             const remarks = btn.data('remarks');

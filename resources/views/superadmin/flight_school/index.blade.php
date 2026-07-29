@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>NAAP</title>
+    <title>NAAP Superadmin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
@@ -38,19 +38,21 @@
             </div>
         </div>
 
-        @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show shadow-sm mb-4" role="alert" style="border-radius: var(--radius);">
+        @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show shadow-sm mb-4" role="alert"
+                style="border-radius: var(--radius);">
                 <i class="bi bi-check-circle-fill me-2"></i>
                 {{ session('success') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
 
-        @if($errors->any())
-            <div class="alert alert-danger alert-dismissible fade show shadow-sm mb-4" role="alert" style="border-radius: var(--radius);">
+        @if ($errors->any())
+            <div class="alert alert-danger alert-dismissible fade show shadow-sm mb-4" role="alert"
+                style="border-radius: var(--radius);">
                 <i class="bi bi-exclamation-triangle-fill me-2"></i>
                 <ul class="mb-0 ps-3">
-                    @foreach($errors->all() as $error)
+                    @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
                 </ul>
@@ -84,58 +86,53 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($providers as $provider)
-                        <tr data-id="{{ $provider->id }}">
-                            <td>
-                                <div class="school-code-wrap">
-                                    <span class="school-code">{{ $provider->code }}</span>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="school-name-wrap">
-                                    <span class="school-name">{{ $provider->name }}</span>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="school-address">
-                                    <i class="bi bi-geo-alt-fill"></i>
-                                    <span>{{ $provider->address }}</span>
-                                </div>
-                            </td>
-                            <td>
-                                <a class="school-email"
-                                    href="mailto:{{ $provider->email }}">{{ $provider->email }}</a>
-                            </td>
-                            <td>
-                                {{ $provider->accreditation_course }}
-                            </td>
-                            <td>
-                                <div class="d-flex gap-2">
-                                    <button class="btn btn-sm btn-outline-primary btn-view-provider" 
-                                        data-name="{{ $provider->name }}"
-                                        data-code="{{ $provider->code }}"
-                                        data-address="{{ $provider->address }}"
-                                        data-email="{{ $provider->email }}"
-                                        data-phone="{{ $provider->phone }}"
-                                        data-course="{{ $provider->accreditation_course }}"
-                                        data-attachments="{{ json_encode($provider->atoc_attachment ?? []) }}"
-                                        title="View"><i class="bi bi-eye"></i></button>
-                                    <button class="btn btn-sm btn-outline-warning btn-edit-provider" 
-                                        data-id="{{ $provider->id }}"
-                                        data-name="{{ $provider->name }}"
-                                        data-code="{{ $provider->code }}"
-                                        data-address="{{ $provider->address }}"
-                                        data-email="{{ $provider->email }}"
-                                        data-phone="{{ $provider->phone }}"
-                                        data-course="{{ $provider->accreditation_course }}"
-                                        data-attachments="{{ json_encode($provider->atoc_attachment ?? []) }}"
-                                        title="Edit"><i class="bi bi-pencil"></i></button>
-                                    <button class="btn btn-sm btn-outline-danger btn-delete-provider" 
-                                        data-id="{{ $provider->id }}" 
-                                        title="Delete"><i class="bi bi-trash"></i></button>
-                                </div>
-                            </td>
-                        </tr>
+                        @foreach ($providers as $provider)
+                            <tr data-id="{{ $provider->id }}">
+                                <td>
+                                    <div class="school-code-wrap">
+                                        <span class="school-code">{{ $provider->code }}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="school-name-wrap">
+                                        <span class="school-name">{{ $provider->name }}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="school-address">
+                                        <i class="bi bi-geo-alt-fill"></i>
+                                        <span>{{ $provider->address }}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <a class="school-email"
+                                        href="mailto:{{ $provider->email }}">{{ $provider->email }}</a>
+                                </td>
+                                <td>
+                                    {{ $provider->accreditation_course }}
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-sm btn-outline-primary btn-view-provider"
+                                            data-name="{{ $provider->name }}" data-code="{{ $provider->code }}"
+                                            data-address="{{ $provider->address }}"
+                                            data-email="{{ $provider->email }}" data-phone="{{ $provider->phone }}"
+                                            data-course="{{ $provider->accreditation_course }}"
+                                            data-attachments="{{ json_encode($provider->atoc_attachment ?? []) }}"
+                                            title="View"><i class="bi bi-eye"></i></button>
+                                        <button class="btn btn-sm btn-outline-warning btn-edit-provider"
+                                            data-id="{{ $provider->id }}" data-name="{{ $provider->name }}"
+                                            data-code="{{ $provider->code }}" data-address="{{ $provider->address }}"
+                                            data-email="{{ $provider->email }}" data-phone="{{ $provider->phone }}"
+                                            data-course="{{ $provider->accreditation_course }}"
+                                            data-attachments="{{ json_encode($provider->atoc_attachment ?? []) }}"
+                                            title="Edit"><i class="bi bi-pencil"></i></button>
+                                        <button class="btn btn-sm btn-outline-danger btn-delete-provider"
+                                            data-id="{{ $provider->id }}" title="Delete"><i
+                                                class="bi bi-trash"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
                         @endforeach
                     </tbody>
                 </table>
@@ -151,36 +148,43 @@
                     <h5 class="modal-title" id="addSchoolModalLabel">Add Training Provider</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="addSchoolForm" action="{{ route('superadmin.flight.school.store') }}" method="POST" enctype="multipart/form-data">
+                <form id="addSchoolForm" action="{{ route('superadmin.flight.school.store') }}" method="POST"
+                    enctype="multipart/form-data">
                     @csrf
                     <div class="modal-body">
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label for="schoolName" class="form-label">Provider Name</label>
-                                <input type="text" class="form-control" id="schoolName" name="schoolName" required>
+                                <input type="text" class="form-control" id="schoolName" name="schoolName"
+                                    required>
                             </div>
                             <div class="col-md-6">
                                 <label for="schoolCode" class="form-label">Provider Code</label>
-                                <input type="text" class="form-control" id="schoolCode" name="schoolCode" required>
+                                <input type="text" class="form-control" id="schoolCode" name="schoolCode"
+                                    required>
                             </div>
 
                             <div class="col-md-6">
                                 <label for="schoolAddress" class="form-label">Address</label>
-                                <input type="text" class="form-control" id="schoolAddress" name="schoolAddress" required>
+                                <input type="text" class="form-control" id="schoolAddress" name="schoolAddress"
+                                    required>
                             </div>
 
                             <div class="col-md-6">
                                 <label for="contactEmail" class="form-label">Contact Email</label>
-                                <input type="email" class="form-control" id="contactEmail" name="contactEmail" required>
+                                <input type="email" class="form-control" id="contactEmail" name="contactEmail"
+                                    required>
                             </div>
                             <div class="col-md-6">
                                 <label for="contactPhone" class="form-label">Contact Phone</label>
-                                <input type="tel" class="form-control" id="contactPhone" name="contactPhone" required>
+                                <input type="tel" class="form-control" id="contactPhone" name="contactPhone"
+                                    required>
                             </div>
 
                             <div class="col-md-6">
                                 <label for="accreditation_course" class="form-label">Accreditation Course</label>
-                                <select class="form-select" id="accreditation_course" name="accreditation_course" required>
+                                <select class="form-select" id="accreditation_course" name="accreditation_course"
+                                    required>
                                     <option value="" selected disabled>Select accreditation course</option>
                                     <option value="PPL">PPL</option>
                                     <option value="CPL">CPL</option>
@@ -193,8 +197,12 @@
 
                             <div class="col-12">
                                 <label class="form-label fw-semibold">ATOC Attachments</label>
-                                <div class="file-upload-drag-area border border-dashed rounded-3 p-4 text-center position-relative mb-2" style="border-style: dashed !important; border-color: var(--purple) !important; background-color: var(--cobalt-light);">
-                                    <input type="file" class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer" id="add_atoc_attachment" name="atoc_attachment[]" multiple style="cursor: pointer;">
+                                <div class="file-upload-drag-area border border-dashed rounded-3 p-4 text-center position-relative mb-2"
+                                    style="border-style: dashed !important; border-color: var(--purple) !important; background-color: var(--cobalt-light);">
+                                    <input type="file"
+                                        class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer"
+                                        id="add_atoc_attachment" name="atoc_attachment[]" multiple
+                                        style="cursor: pointer;">
                                     <i class="bi bi-cloud-arrow-up-fill fs-2 text-primary"></i>
                                     <p class="mb-1 mt-2 fw-semibold">Drag & Drop files here or click to browse</p>
                                     <p class="text-muted small">Upload multiple files (PDF, images, documents)</p>
@@ -205,7 +213,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-outline-secondary"
+                            data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-primary">Save Provider</button>
                     </div>
                 </form>
@@ -214,7 +223,8 @@
     </div>
 
     <!-- Edit School Modal -->
-    <div class="modal fade" id="editSchoolModal" tabindex="-1" aria-labelledby="editSchoolModalLabel" aria-hidden="true">
+    <div class="modal fade" id="editSchoolModal" tabindex="-1" aria-labelledby="editSchoolModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -228,30 +238,36 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label for="editSchoolName" class="form-label">Provider Name</label>
-                                <input type="text" class="form-control" id="editSchoolName" name="schoolName" required>
+                                <input type="text" class="form-control" id="editSchoolName" name="schoolName"
+                                    required>
                             </div>
                             <div class="col-md-6">
                                 <label for="editSchoolCode" class="form-label">Provider Code</label>
-                                <input type="text" class="form-control" id="editSchoolCode" name="schoolCode" required>
+                                <input type="text" class="form-control" id="editSchoolCode" name="schoolCode"
+                                    required>
                             </div>
 
                             <div class="col-md-6">
                                 <label for="editSchoolAddress" class="form-label">Address</label>
-                                <input type="text" class="form-control" id="editSchoolAddress" name="schoolAddress" required>
+                                <input type="text" class="form-control" id="editSchoolAddress"
+                                    name="schoolAddress" required>
                             </div>
 
                             <div class="col-md-6">
                                 <label for="editContactEmail" class="form-label">Contact Email</label>
-                                <input type="email" class="form-control" id="editContactEmail" name="contactEmail" required>
+                                <input type="email" class="form-control" id="editContactEmail" name="contactEmail"
+                                    required>
                             </div>
                             <div class="col-md-6">
                                 <label for="editContactPhone" class="form-label">Contact Phone</label>
-                                <input type="tel" class="form-control" id="editContactPhone" name="contactPhone" required>
+                                <input type="tel" class="form-control" id="editContactPhone" name="contactPhone"
+                                    required>
                             </div>
 
                             <div class="col-md-6">
                                 <label for="editAccreditationCourse" class="form-label">Accreditation Course</label>
-                                <select class="form-select" id="editAccreditationCourse" name="accreditation_course" required>
+                                <select class="form-select" id="editAccreditationCourse" name="accreditation_course"
+                                    required>
                                     <option value="" disabled>Select accreditation course</option>
                                     <option value="PPL">PPL</option>
                                     <option value="CPL">CPL</option>
@@ -272,8 +288,12 @@
                             <!-- New Uploads Area -->
                             <div class="col-12">
                                 <label class="form-label fw-semibold">Add New Attachments</label>
-                                <div class="file-upload-drag-area border border-dashed rounded-3 p-4 text-center position-relative mb-2" style="border-style: dashed !important; border-color: var(--purple) !important; background-color: var(--cobalt-light);">
-                                    <input type="file" class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer" id="edit_atoc_attachment" name="atoc_attachment[]" multiple style="cursor: pointer;">
+                                <div class="file-upload-drag-area border border-dashed rounded-3 p-4 text-center position-relative mb-2"
+                                    style="border-style: dashed !important; border-color: var(--purple) !important; background-color: var(--cobalt-light);">
+                                    <input type="file"
+                                        class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer"
+                                        id="edit_atoc_attachment" name="atoc_attachment[]" multiple
+                                        style="cursor: pointer;">
                                     <i class="bi bi-cloud-arrow-up-fill fs-2 text-primary"></i>
                                     <p class="mb-1 mt-2 fw-semibold">Drag & Drop files here or click to browse</p>
                                     <p class="text-muted small">Upload multiple files (PDF, images, documents)</p>
@@ -283,7 +303,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-outline-secondary"
+                            data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-primary">Update Provider</button>
                     </div>
                 </form>
@@ -298,7 +319,8 @@
     </form>
 
     <!-- View School Modal -->
-    <div class="modal fade" id="viewSchoolModal" tabindex="-1" aria-labelledby="viewSchoolModalLabel" aria-hidden="true">
+    <div class="modal fade" id="viewSchoolModal" tabindex="-1" aria-labelledby="viewSchoolModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -402,7 +424,8 @@
             addFileListContainer.innerHTML = '';
             addSelectedFiles.forEach((file, index) => {
                 const fileCard = document.createElement('div');
-                fileCard.className = 'badge bg-light text-dark border p-2 d-flex align-items-center gap-2 rounded-pill shadow-sm';
+                fileCard.className =
+                    'badge bg-light text-dark border p-2 d-flex align-items-center gap-2 rounded-pill shadow-sm';
                 fileCard.style.whiteSpace = 'normal';
                 fileCard.innerHTML = `
                     <i class="bi bi-file-earmark-text text-primary"></i>
@@ -436,15 +459,15 @@
             $('#viewContactEmail').text(btn.data('email')).attr('href', 'mailto:' + btn.data('email'));
             $('#viewContactPhone').text(btn.data('phone'));
             $('#viewAccreditationCourse').text(btn.data('course'));
-            
+
             const attachmentsList = $('#viewAttachmentsList');
             attachmentsList.empty();
-            
+
             let attachments = [];
             try {
                 attachments = btn.data('attachments');
-            } catch(e) {}
-            
+            } catch (e) {}
+
             if (attachments && attachments.length > 0) {
                 attachments.forEach(file => {
                     const fileName = file.split('/').pop().substring(11); // remove timestamp prefix
@@ -484,7 +507,8 @@
             editFileListContainer.innerHTML = '';
             editSelectedFiles.forEach((file, index) => {
                 const fileCard = document.createElement('div');
-                fileCard.className = 'badge bg-light text-dark border p-2 d-flex align-items-center gap-2 rounded-pill shadow-sm';
+                fileCard.className =
+                    'badge bg-light text-dark border p-2 d-flex align-items-center gap-2 rounded-pill shadow-sm';
                 fileCard.style.whiteSpace = 'normal';
                 fileCard.innerHTML = `
                     <i class="bi bi-file-earmark-text text-primary"></i>
@@ -513,10 +537,10 @@
         $(document).on('click', '.btn-edit-provider', function() {
             const btn = $(this);
             const id = btn.data('id');
-            
+
             // Set dynamic action endpoint
             document.getElementById('editSchoolForm').action = `/superadmin/flight-school/${id}/update`;
-            
+
             $('#editSchoolId').val(id);
             $('#editSchoolName').val(btn.data('name'));
             $('#editSchoolCode').val(btn.data('code'));
@@ -524,23 +548,23 @@
             $('#editContactEmail').val(btn.data('email'));
             $('#editContactPhone').val(btn.data('phone'));
             $('#editAccreditationCourse').val(btn.data('course'));
-            
+
             // Reset files arrays
             editSelectedFiles = [];
             deletedAttachments = [];
             $('#edit_selected_files_list').empty();
             $('#deleted_attachments_container').empty();
             if (editFileInput) editFileInput.value = '';
-            
+
             // Show existing files
             const existingContainer = $('#edit_existing_attachments_list');
             existingContainer.empty();
-            
+
             let attachments = [];
             try {
                 attachments = btn.data('attachments');
-            } catch(e) {}
-            
+            } catch (e) {}
+
             if (attachments && attachments.length > 0) {
                 attachments.forEach(file => {
                     const fileName = file.split('/').pop().substring(11); // remove timestamp
@@ -555,7 +579,7 @@
             } else {
                 existingContainer.append('<div class="text-muted small w-100">No attachments uploaded.</div>');
             }
-            
+
             $('#editSchoolModal').modal('show');
         });
 
@@ -564,24 +588,27 @@
             const parent = $(this).closest('.badge');
             const path = parent.data('path');
             deletedAttachments.push(path);
-            
+
             // Add hidden input to form
             $('#deleted_attachments_container').append(`
                 <input type="hidden" name="deleted_attachments[]" value="${path}">
             `);
-            
+
             // Remove the badge from UI
             parent.remove();
-            
+
             if ($('#edit_existing_attachments_list').children().length === 0) {
-                $('#edit_existing_attachments_list').append('<div class="text-muted small w-100">No attachments uploaded.</div>');
+                $('#edit_existing_attachments_list').append(
+                    '<div class="text-muted small w-100">No attachments uploaded.</div>');
             }
         });
 
         // ================= DELETE PROVIDER =================
         $(document).on('click', '.btn-delete-provider', function() {
             const id = $(this).data('id');
-            if (confirm('Are you sure you want to delete this Training Provider? All associated files will be deleted permanently.')) {
+            if (confirm(
+                    'Are you sure you want to delete this Training Provider? All associated files will be deleted permanently.'
+                    )) {
                 const form = document.getElementById('globalDeleteForm');
                 form.action = `/superadmin/flight-school/${id}`;
                 form.submit();

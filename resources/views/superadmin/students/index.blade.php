@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NAAP</title>
+    <title>NAAP Superadmin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
@@ -142,7 +142,8 @@
                             <tr data-id="{{ $student->id }}">
                                 <td>
                                     <div class="school-code-wrap">
-                                        <span class="school-code">STU-{{ date('Y', strtotime($student->created_at)) }}-{{ sprintf('%03d', $student->id) }}</span>
+                                        <span
+                                            class="school-code">STU-{{ date('Y', strtotime($student->created_at)) }}-{{ sprintf('%03d', $student->id) }}</span>
                                     </div>
                                 </td>
                                 <td>{{ $student->first_name }}
@@ -157,18 +158,22 @@
                                     </span>
                                 </td>
                                 <td>
-                                    @foreach($student->stages as $stg)
+                                    @foreach ($student->stages as $stg)
                                         <div class="mb-1">
-                                            <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle" style="font-size: 0.72rem;">
-                                                {{ $stg->stage }} 
-                                                <span class="badge bg-primary ms-1" style="font-size: 0.62rem; line-height: 1;">{{ $stg->status }}</span>
+                                            <span
+                                                class="badge bg-secondary-subtle text-secondary border border-secondary-subtle"
+                                                style="font-size: 0.72rem;">
+                                                {{ $stg->stage }}
+                                                <span class="badge bg-primary ms-1"
+                                                    style="font-size: 0.62rem; line-height: 1;">{{ $stg->status }}</span>
                                             </span>
                                         </div>
                                     @endforeach
                                 </td>
                                 <td>
-                                    @foreach($student->stages as $stg)
-                                        <div class="mb-1" style="font-size: 0.82rem; font-weight: 500;">{{ $stg->required_hours }} hrs</div>
+                                    @foreach ($student->stages as $stg)
+                                        <div class="mb-1" style="font-size: 0.82rem; font-weight: 500;">
+                                            {{ $stg->required_hours }} hrs</div>
                                     @endforeach
                                 </td>
                                 <td>
@@ -216,7 +221,8 @@
     </main>
 
     <!-- Add Student Modal -->
-    <div class="modal fade" id="addStudentModal" tabindex="-1" aria-labelledby="addStudentModalLabel" aria-hidden="true">
+    <div class="modal fade" id="addStudentModal" tabindex="-1" aria-labelledby="addStudentModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -280,16 +286,19 @@
 
                             <!-- Staging Configurations Section -->
                             <div class="col-12 mt-4">
-                                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom border-secondary-subtle">
+                                <div
+                                    class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom border-secondary-subtle">
                                     <h6 class="fw-bold mb-0 text-primary attachments-section-title">
                                         <i class="bi bi-graph-up-arrow me-1"></i> Staging Configurations (Bulk)
                                     </h6>
-                                    <button type="button" class="btn btn-xs btn-primary d-flex align-items-center" id="addStageRowBtn">
+                                    <button type="button" class="btn btn-xs btn-primary d-flex align-items-center"
+                                        id="addStageRowBtn">
                                         <i class="bi bi-plus-lg me-1"></i> Add Stage
                                     </button>
                                 </div>
                                 <div class="table-responsive border rounded bg-light-subtle p-2">
-                                    <table class="table table-sm table-hover align-middle mb-0 attachments-table" id="stagingTable" style="font-size: 0.85rem;">
+                                    <table class="table table-sm table-hover align-middle mb-0 attachments-table"
+                                        id="stagingTable" style="font-size: 0.85rem;">
                                         <thead>
                                             <tr>
                                                 <th style="width: 45%;">Stage Name</th>
@@ -307,9 +316,11 @@
 
                             <!-- Licenses & Documents Section -->
                             <div class="col-12 mt-4">
-                                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom border-secondary-subtle">
+                                <div
+                                    class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom border-secondary-subtle">
                                     <h6 class="fw-bold mb-0 text-primary attachments-section-title">
-                                        <i class="bi bi-file-earmark-pdf-fill me-1"></i> Student Licenses & Scanned Attachments
+                                        <i class="bi bi-file-earmark-pdf-fill me-1"></i> Student Licenses & Scanned
+                                        Attachments
                                     </h6>
                                     <button type="button" class="btn btn-xs btn-primary d-flex align-items-center"
                                         id="addAttachmentRowBtn">
@@ -414,9 +425,11 @@
 
                             <!-- Current Stages Area -->
                             <div class="col-12 mt-3">
-                                <label class="form-label fw-bold text-success"><i class="bi bi-graph-up-arrow me-1"></i> Current Stages</label>
+                                <label class="form-label fw-bold text-success"><i
+                                        class="bi bi-graph-up-arrow me-1"></i> Current Stages</label>
                                 <div class="table-responsive border rounded bg-light-subtle p-2 mb-3">
-                                    <table class="table table-sm table-hover align-middle mb-0" id="editExistingStagesTable" style="font-size: 0.85rem;">
+                                    <table class="table table-sm table-hover align-middle mb-0"
+                                        id="editExistingStagesTable" style="font-size: 0.85rem;">
                                         <thead>
                                             <tr>
                                                 <th>Stage Name</th>
@@ -435,16 +448,19 @@
 
                             <!-- Add New Stages -->
                             <div class="col-12">
-                                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom border-secondary-subtle">
+                                <div
+                                    class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom border-secondary-subtle">
                                     <h6 class="fw-bold mb-0 text-primary attachments-section-title">
                                         <i class="bi bi-plus-lg me-1"></i> Add New Staging Configurations
                                     </h6>
-                                    <button type="button" class="btn btn-xs btn-primary d-flex align-items-center" id="editAddStageRowBtn">
+                                    <button type="button" class="btn btn-xs btn-primary d-flex align-items-center"
+                                        id="editAddStageRowBtn">
                                         <i class="bi bi-plus-lg me-1"></i> Add Stage
                                     </button>
                                 </div>
                                 <div class="table-responsive border rounded bg-light-subtle p-2">
-                                    <table class="table table-sm table-hover align-middle mb-0 attachments-table" id="editStagesTable" style="font-size: 0.85rem;">
+                                    <table class="table table-sm table-hover align-middle mb-0 attachments-table"
+                                        id="editStagesTable" style="font-size: 0.85rem;">
                                         <thead>
                                             <tr>
                                                 <th style="width: 45%;">Stage Name</th>
@@ -489,7 +505,8 @@
                                 <div
                                     class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom border-secondary-subtle">
                                     <h6 class="fw-bold mb-0 text-primary attachments-section-title">
-                                        <i class="bi bi-file-earmark-plus-fill me-1"></i> Add New Student Licenses & Document Attachments
+                                        <i class="bi bi-file-earmark-plus-fill me-1"></i> Add New Student Licenses &
+                                        Document Attachments
                                     </h6>
                                     <button type="button" class="btn btn-xs btn-primary d-flex align-items-center"
                                         id="editAddAttachmentRowBtn">
@@ -568,13 +585,15 @@
                         </div>
                     </div>
                     <div class="mb-3 border-top pt-3">
-                        <label class="fw-bold text-muted small text-uppercase mb-2">Staging Configurations & Progress</label>
+                        <label class="fw-bold text-muted small text-uppercase mb-2">Staging Configurations &
+                            Progress</label>
                         <div id="viewStudentStagesList" class="list-group">
                             <!-- Populated in JS -->
                         </div>
                     </div>
                     <div class="mb-3 border-top pt-3">
-                        <label class="fw-bold text-muted small text-uppercase mb-2">License & Document Attachments</label>
+                        <label class="fw-bold text-muted small text-uppercase mb-2">License & Document
+                            Attachments</label>
                         <div id="viewStudentLicensesList" class="list-group">
                             <!-- Downloadable list populated in JS -->
                         </div>
@@ -734,19 +753,38 @@
             const inputPrefix = formType === 'add' ? 'stages' : 'stages';
             const rowId = `${formType}_stage_row_${counter}`;
 
-            const options = [
-                { value: 'PPL Ground', text: 'PPL Ground' },
-                { value: 'PPL Flight', text: 'PPL Flight' },
-                { value: 'CPL Ground', text: 'CPL Ground' },
-                { value: 'IR Ground', text: 'IR Ground' },
-                { value: 'IR Flight', text: 'IR Flight' },
-                { value: 'ME Ground', text: 'ME Ground' }
+            const options = [{
+                    value: 'PPL Ground',
+                    text: 'PPL Ground'
+                },
+                {
+                    value: 'PPL Flight',
+                    text: 'PPL Flight'
+                },
+                {
+                    value: 'CPL Ground',
+                    text: 'CPL Ground'
+                },
+                {
+                    value: 'IR Ground',
+                    text: 'IR Ground'
+                },
+                {
+                    value: 'IR Flight',
+                    text: 'IR Flight'
+                },
+                {
+                    value: 'ME Ground',
+                    text: 'ME Ground'
+                }
             ];
 
-            let selectHtml = `<select class="form-select form-select-sm" name="${inputPrefix}[${counter}][stage]" required>`;
+            let selectHtml =
+            `<select class="form-select form-select-sm" name="${inputPrefix}[${counter}][stage]" required>`;
             selectHtml += `<option value="" disabled ${stage === '' ? 'selected' : ''}>Select stage</option>`;
             options.forEach(opt => {
-                selectHtml += `<option value="${opt.value}" ${stage === opt.value ? 'selected' : ''}>${opt.text}</option>`;
+                selectHtml +=
+                    `<option value="${opt.value}" ${stage === opt.value ? 'selected' : ''}>${opt.text}</option>`;
             });
             selectHtml += `</select>`;
 
@@ -911,7 +949,7 @@
             let stages = [];
             try {
                 stages = btn.data('stages');
-            } catch(e) {}
+            } catch (e) {}
 
             if (stages && stages.length > 0) {
                 stages.forEach(stg => {
@@ -987,10 +1025,10 @@
             editStageRowCounter = 0;
             deletedLicenses = [];
             deletedStages = [];
-            
+
             $('#editStagesTableBody').empty();
             $('#editAttachmentsTableBody').empty();
-            
+
             $('#deleted_licenses_container').empty();
             $('#deleted_stages_container').empty();
 
@@ -1001,16 +1039,18 @@
             let stages = [];
             try {
                 stages = btn.data('stages');
-            } catch(e) {}
+            } catch (e) {}
 
             if (stages && stages.length > 0) {
                 stages.forEach((stg, index) => {
                     const options = [
                         'PPL Ground', 'PPL Flight', 'CPL Ground', 'IR Ground', 'IR Flight', 'ME Ground'
                     ];
-                    let selectHtml = `<select class="form-select form-select-sm" name="existing_stages[${index}][stage]" required>`;
+                    let selectHtml =
+                        `<select class="form-select form-select-sm" name="existing_stages[${index}][stage]" required>`;
                     options.forEach(opt => {
-                        selectHtml += `<option value="${opt}" ${stg.stage === opt ? 'selected' : ''}>${opt}</option>`;
+                        selectHtml +=
+                            `<option value="${opt}" ${stg.stage === opt ? 'selected' : ''}>${opt}</option>`;
                     });
                     selectHtml += `</select>`;
 
@@ -1040,7 +1080,8 @@
                     `);
                 });
             } else {
-                existingStagesTbody.append('<tr><td colspan="4" class="text-center text-muted py-2">No stages found.</td></tr>');
+                existingStagesTbody.append(
+                    '<tr><td colspan="4" class="text-center text-muted py-2">No stages found.</td></tr>');
             }
 
             // Populate existing licenses
@@ -1094,7 +1135,8 @@
             btn.closest('tr').remove();
 
             if ($('#editExistingStagesTableBody').children().length === 0) {
-                $('#editExistingStagesTableBody').append('<tr><td colspan="4" class="text-center text-muted py-2">No stages found.</td></tr>');
+                $('#editExistingStagesTableBody').append(
+                    '<tr><td colspan="4" class="text-center text-muted py-2">No stages found.</td></tr>');
             }
         });
 
@@ -1132,7 +1174,8 @@
     </script>
 
     <!-- Superadmin Student Breakdown Modal -->
-    <div class="modal fade" id="superadminStudentBreakdownModal" tabindex="-1" aria-labelledby="superadminStudentBreakdownModalLabel" aria-hidden="true">
+    <div class="modal fade" id="superadminStudentBreakdownModal" tabindex="-1"
+        aria-labelledby="superadminStudentBreakdownModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
@@ -1179,22 +1222,30 @@
             if (Array.isArray(breakdown) && breakdown.length > 0) {
                 breakdown.forEach((stg) => {
                     const stgStatus = stg.status || 'In progress';
-                    const stgStatusClass = stgStatus === 'Completed' ? 'bg-success' : 'bg-warning text-dark';
+                    const stgStatusClass = stgStatus === 'Completed' ? 'bg-success' :
+                    'bg-warning text-dark';
 
                     let lessonsRowsHtml = '';
                     if (stg.lessons && stg.lessons.length > 0) {
                         stg.lessons.forEach(lsn => {
                             let badgeHtml = '<span class="badge bg-secondary">Pending</span>';
                             if (lsn.status === 'Completed') {
-                                badgeHtml = '<span class="badge bg-success"><i class="bi bi-check-circle-fill me-1"></i>Completed</span>';
+                                badgeHtml =
+                                    '<span class="badge bg-success"><i class="bi bi-check-circle-fill me-1"></i>Completed</span>';
                             } else if (lsn.status === 'Scheduled') {
-                                badgeHtml = '<span class="badge bg-primary"><i class="bi bi-calendar-event me-1"></i>Scheduled</span>';
+                                badgeHtml =
+                                    '<span class="badge bg-primary"><i class="bi bi-calendar-event me-1"></i>Scheduled</span>';
                             } else if (lsn.status) {
-                                badgeHtml = `<span class="badge bg-info text-dark">${lsn.status}</span>`;
+                                badgeHtml =
+                                    `<span class="badge bg-info text-dark">${lsn.status}</span>`;
                             }
 
-                            const routeBadge = lsn.route ? `<span class="badge bg-light text-primary border ms-1"><i class="bi bi-geo-alt me-1"></i>${lsn.route}</span>` : '';
-                            const schedDetails = lsn.date ? `Scheduled on ${lsn.date} ${routeBadge}` : '<span class="text-muted fs-7">Not scheduled yet</span>';
+                            const routeBadge = lsn.route ?
+                                `<span class="badge bg-light text-primary border ms-1"><i class="bi bi-geo-alt me-1"></i>${lsn.route}</span>` :
+                                '';
+                            const schedDetails = lsn.date ?
+                                `Scheduled on ${lsn.date} ${routeBadge}` :
+                                '<span class="text-muted fs-7">Not scheduled yet</span>';
 
                             lessonsRowsHtml += `
                                 <tr>
@@ -1205,7 +1256,8 @@
                             `;
                         });
                     } else {
-                        lessonsRowsHtml = '<tr><td colspan="3" class="text-center text-muted py-3"><i class="bi bi-info-circle me-1"></i> No scheduled or graded lessons for this stage yet.</td></tr>';
+                        lessonsRowsHtml =
+                            '<tr><td colspan="3" class="text-center text-muted py-3"><i class="bi bi-info-circle me-1"></i> No scheduled or graded lessons for this stage yet.</td></tr>';
                     }
 
                     const cardHtml = `
@@ -1238,7 +1290,9 @@
                     container.append(cardHtml);
                 });
             } else {
-                container.append('<div class="alert alert-secondary text-center">No stage or lesson breakdown available for this student.</div>');
+                container.append(
+                    '<div class="alert alert-secondary text-center">No stage or lesson breakdown available for this student.</div>'
+                    );
             }
 
             $('#superadminStudentBreakdownModal').modal('show');
@@ -1247,4 +1301,3 @@
 </body>
 
 </html>
-

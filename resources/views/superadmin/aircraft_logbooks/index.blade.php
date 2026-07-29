@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NAAP Superadmin - Aircraft Logbooks</title>
+    <title>NAAP Superadmin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
@@ -60,7 +60,9 @@
                                     {{ \Carbon\Carbon::parse($log->date_time)->format('M d, Y h:i A') }}
                                 </td>
                                 <td class="fw-semibold">{{ $log->aircraft }}</td>
-                                <td><span class="badge bg-primary px-2 py-1" style="background-color: var(--cobalt) !important;">{{ $log->provider_name ?? 'N/A' }}</span></td>
+                                <td><span class="badge bg-primary px-2 py-1"
+                                        style="background-color: var(--cobalt) !important;">{{ $log->provider_name ?? 'N/A' }}</span>
+                                </td>
                                 <td>{{ $log->student_name }}</td>
                                 <td>{{ $log->instructor_name }}</td>
                                 <td class="text-nowrap"><span
