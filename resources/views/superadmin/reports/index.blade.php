@@ -37,9 +37,8 @@
                     <p class="panel-subtitle">Generate and export report summaries based on grade sheets.</p>
                 </div>
                 <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                    <button class="btn-add-form" type="button"><i class="bi bi-filetype-pdf"></i> Export PDF</button>
-                    <button class="btn-add-form" type="button"><i class="bi bi-file-earmark-excel"></i> Export
-                        Excel</button>
+                    <a href="{{ route('superadmin.reports.export.pdf') }}" class="btn-add-form" style="text-decoration:none;"><i class="bi bi-filetype-pdf"></i> Export PDF</a>
+                    <a href="{{ route('superadmin.reports.export.excel') }}" class="btn-add-form" style="text-decoration:none;"><i class="bi bi-file-earmark-excel"></i> Export Excel</a>
                 </div>
             </div>
 

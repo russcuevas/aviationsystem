@@ -79,6 +79,8 @@ Route::middleware(['superadmin.auth'])->group(function () {
     Route::get('/superadmin/grade-sheets', [SuperadminGradeSheetsController::class, 'SuperadminGradeSheetsPage'])->name('superadmin.grade.sheets.page');
     Route::get('/superadmin/aircraft-logbook', [SuperadminAircraftLogBooksController::class, 'SuperadminAircraftLogBooksPage'])->name('superadmin.aircraft.logbook.page');
     Route::get('/superadmin/reports', [SuperadminReportsController::class, 'SuperadminReportsPage'])->name('superadmin.reports.page');
+    Route::get('/superadmin/reports/export-pdf', [SuperadminReportsController::class, 'exportPdf'])->name('superadmin.reports.export.pdf');
+    Route::get('/superadmin/reports/export-excel', [SuperadminReportsController::class, 'exportExcel'])->name('superadmin.reports.export.excel');
 });
 
 // ADMIN ROUTES
@@ -101,6 +103,8 @@ Route::middleware(['admin.auth'])->group(function () {
     Route::post('/admin/grade-sheets/{id}/status', [AdminGradeSheetsController::class, 'updateStatus'])->name('admin.grade.sheets.status.update');
 
     Route::get('/admin/reports', [AdminReportsController::class, 'AdminReportsPage'])->name('admin.reports.page');
+    Route::get('/admin/reports/export-pdf', [AdminReportsController::class, 'exportPdf'])->name('admin.reports.export.pdf');
+    Route::get('/admin/reports/export-excel', [AdminReportsController::class, 'exportExcel'])->name('admin.reports.export.excel');
 });
 
 // INSTRUCTOR ROUTES
